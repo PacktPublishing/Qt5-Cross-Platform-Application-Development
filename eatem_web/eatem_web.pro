@@ -4,5 +4,8 @@ CONFIG -= qt
 
 DISTFILES += \
     index.html \
-    main.css
+    main.css \
+    app.js \
+    canvas.js \
+    global.js
 
