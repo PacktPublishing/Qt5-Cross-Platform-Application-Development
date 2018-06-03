@@ -30,10 +30,6 @@ ApplicationWindow {
         anchors.fill: parent
         focus: true
         contextType: "2d"
-        property int player_x: window.width / 2
-        property int player_y: window.height / 2
-        property int mass: 20
-        property int radius: 4 + Math.sqrt(mass) * 6;
         property int color: Math.round(Math.random() * 360)
         property color fill_style: 'white'
         property var foods: []
@@ -48,7 +44,7 @@ ApplicationWindow {
 
             context.fillStyle = player_color_string
             context.beginPath();
-            context.arc(player_x, player_y, radius, 0, 2*Math.PI);
+            context.arc(this_player.x, this_player.y, this_player.radius, 0, 2*Math.PI);
             // context.stroke();
             context.fill();
             for (var i = 0; i < foods.length; i++)
@@ -71,15 +67,15 @@ ApplicationWindow {
             }
             for (i = eat_me.length -1; i >=0; i--)
                 foods.splice(eat_me[i], 1);
-            mass += eat_me.length
+            // mass += eat_me.length
         }
 
         function eat_food(food)
         {
-            var diff_x = food[0] - player_x
-            var diff_y = food[1] - player_y
+            var diff_x = food[0] - this_player.x
+            var diff_y = food[1] - this_player.y
             var distance = Math.sqrt(Math.pow(diff_x, 2)+ Math.pow(diff_y, 2))
-            return distance <= radius + 5
+            return distance <= this_player.radius + 5
 
 
         }
@@ -87,6 +83,7 @@ ApplicationWindow {
         MouseArea {
             id: mouse
             anchors.fill: parent
+            hoverEnabled: true
         }
 
         Timer {
@@ -97,27 +94,7 @@ ApplicationWindow {
             onTriggered: {
                 var mouse_x = mouse.mouseX;
                 var mouse_y = mouse.mouseY
-                var player_x = canvas.player_x
-                var player_y = canvas.player_y
-
-                if (mouse_x === 0 && mouse_y === 0)
-                    return;
-                var target_x = player_x - mouse_x
-                var target_y = player_y - mouse_y
-
-                var dist = Math.sqrt(Math.pow(target_x, 2) + Math.pow(target_y, 2));
-                // prevents jitter
-                if (dist < 3)
-                    return;
-                var deg = Math.atan2(target_y, target_x);
-                var slowDown = 1
-
-                var deltaY = 3 * Math.sin(deg)/ slowDown;
-                var deltaX = 3 * Math.cos(deg)/ slowDown;
-                // console.log(target_x, target_y, player_x, player_y, deltaX, deltaY)
-                // console.log(deltaX, deltaY)
-                canvas.player_x -= deltaX
-                canvas.player_y  -= deltaY
+                this_player.request_coordinates(mouse_x, mouse_y);
                 canvas.requestPaint()
             }
         }
