@@ -2,12 +2,17 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
+#include <QTimer>
+
 #include <QObject>
 #include <QVariantList>
+
 #include "virus.h"
 #include "food.h"
 #include "player.h"
 #include "util.h"
+
+#include <QDebug>
 
 Q_DECLARE_METATYPE(Virus *)
 Q_DECLARE_METATYPE(Food *)
@@ -22,12 +27,11 @@ QVariantList create_viruses()
     return result;
 }
 
-QVariantList create_food()
+QVariantList create_food(int game_width, int game_height, int number=500)
 {
     QVariantList result;
-    int number = 100;
     for(int i=0; i<number; i++)
-        result.append(QVariant::fromValue<Food*>(new Food()));
+        result.append(QVariant::fromValue<Food*>(new Food(game_width, game_height)));
     return result;
 
 }
@@ -41,8 +45,13 @@ void check_interactions(QVariantList players, QVariantList viruses, QVariantList
         for(QVariant food_variant : foods)
         {
             Food *food = food_variant.value<Food*>();
+            if (!food->get_enabled())
+                continue;
             if (touching(player, food))
             {
+                player->add_mass(1);
+                // food->generate();
+                food->set_enabled(false);
             }
         }
 
@@ -73,6 +82,9 @@ int main(int argc, char *argv[])
 {
     // qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
 
+    int game_height = 500;
+    int game_width = 500;
+
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QGuiApplication app(argc, argv);
@@ -82,7 +94,7 @@ int main(int argc, char *argv[])
     if (engine.rootObjects().isEmpty())
         return -1;
 
-    QVariantList food = create_food();
+    QVariantList food = create_food(game_width, game_height, 100);
     QVariantList viruses = create_viruses();
     QVariantList players;
 
@@ -92,9 +104,16 @@ int main(int argc, char *argv[])
     QQmlContext *root_context = engine.rootContext();
 
     root_context->setContextProperty("viruses", viruses);
-    root_context->setContextProperty("food", food);
+    root_context->setContextProperty("feed", food);
     root_context->setContextProperty("players", players);
     root_context->setContextProperty("this_player", this_player);
 
+    QTimer my_timer;
+    my_timer.setInterval(100);
+    QObject::connect(&my_timer, &QTimer::timeout, [players, viruses, food](){
+        check_interactions(players, viruses, food);
+    });
+
+    my_timer.start();
     return app.exec();
 }

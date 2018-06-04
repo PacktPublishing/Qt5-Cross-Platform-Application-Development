@@ -12,17 +12,11 @@ class Virus : public QObject
     Q_PROPERTY(int radius READ get_radius)
 
 public:
-    explicit Virus(QObject *parent = nullptr) :
-        _radius(10)
-    {
-        QRandomGenerator random = QRandomGenerator::securelySeeded();
-        _x = random.bounded(500);
-        _y = random.bounded(500);
-    }
+    explicit Virus(QObject *parent = nullptr);
 
-    int get_x() {return _x;}
-    int get_y() {return _y;}
-    int get_radius() {return _radius;}
+    int get_x();
+    int get_y();
+    int get_radius();
 
 
 private:

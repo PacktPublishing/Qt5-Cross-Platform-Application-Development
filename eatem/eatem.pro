@@ -16,7 +16,8 @@ SOURCES += \
         main.cpp \
     virus.cpp \
     food.cpp \
-    player.cpp
+    player.cpp \
+    cell.cpp
 
 RESOURCES += qml.qrc
 
@@ -35,4 +36,5 @@ HEADERS += \
     virus.h \
     food.h \
     util.h \
-    player.h
+    player.h \
+    cell.h

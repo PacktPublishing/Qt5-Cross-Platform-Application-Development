@@ -11,20 +11,6 @@ ApplicationWindow {
     title: qsTr("eatem")
     visible: true
 
-    onHeightChanged: {
-        if (window.height === 0)
-            return;
-        if (canvas.foods.length === 100)
-            return;
-        for (var i = 0; i < 100; i++)
-        {
-            var x = Math.round(Math.random()* window.width);
-            var y = Math.round(Math.random()* window.height);
-            var hue_num = Math.round(Math.random() * 360)
-            var hue_str = 'hsl(' + hue_num + ', 100%, 50%)'
-            canvas.foods.push([x, y, hue_str])
-        }
-    }
     Canvas {
         id: canvas
         anchors.fill: parent
@@ -32,52 +18,52 @@ ApplicationWindow {
         contextType: "2d"
         property int color: Math.round(Math.random() * 360)
         property color fill_style: 'white'
-        property var foods: []
-        property string player_color_string: 'hsl(' + color + ', 100%, 50%)'
+        property bool intialized: false
+        property var context
 
         onPaint: {
-            var context = canvas.getContext("2d");
-
+            context = getContext("2d");
             // clear background
             context.fillStyle = fill_style;
-            context.clearRect(0, 0, canvas.width, canvas.height)
-
-            context.fillStyle = player_color_string
-            context.beginPath();
-            context.arc(this_player.x, this_player.y, this_player.radius, 0, 2*Math.PI);
-            // context.stroke();
-            context.fill();
-            for (var i = 0; i < foods.length; i++)
-            {
-                context.beginPath();
-                var x = foods[i][0];
-                var y = foods[i][1];
-                var hue = foods[i][2];
-                context.fillStyle = hue;
-                context.arc(x, y, 5, 0, 2*Math.PI)
-                context.fill();
-            }
-            var eat_me = []
-            for (var i = 0; i < foods.length; i++)
-            {
-                if (eat_food(foods[i]))
-                {
-                    eat_me.push(i)
-                }
-            }
-            for (i = eat_me.length -1; i >=0; i--)
-                foods.splice(eat_me[i], 1);
-            // mass += eat_me.length
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            game_loop();
         }
 
-        function eat_food(food)
+        function game_loop()
         {
-            var diff_x = food[0] - this_player.x
-            var diff_y = food[1] - this_player.y
-            var distance = Math.sqrt(Math.pow(diff_x, 2)+ Math.pow(diff_y, 2))
-            return distance <= this_player.radius + 5
+            requestAnimationFrame(game_loop);
+            context.fillStyle = fill_style;
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            draw_food();
+            draw_players();
+        }
 
+        function draw_food()
+        {
+            for (var i = 0; i < feed.length / 2; i++)
+            {
+                var food = feed[i];
+                if (!food.enabled)
+                    continue;
+                context.beginPath();
+                context.fillStyle = food.hue;
+                context.arc(food.x, food.y, food.radius, 0, 2*Math.PI);
+                context.fill();
+            }
+        }
 
+        function draw_players()
+        {
+
+            for (var z=0; z < players.length; z++)
+            {
+                var player = players[z];
+                context.fillStyle = player.hue;
+                context.beginPath();
+                context.arc(this_player.x, this_player.y, this_player.radius, 0, 2*Math.PI);
+                // context.stroke();
+                context.fill();
+            }
         }
 
         MouseArea {

@@ -4,22 +4,19 @@
 #include <QObject>
 #include <QtMath>
 #include <QVariant>
+#include <QColor>
 #include <QDebug>
+#include "cell.h"
+
 
 class Player : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int x READ get_x)
-    Q_PROPERTY(int y READ get_y)
-    Q_PROPERTY(int radius READ get_radius)
-    Q_PROPERTY(int mass READ get_mass)
+    Q_PROPERTY(QColor hue READ get_hue)
 
 public:
     explicit Player(QObject *parent = nullptr);
-    int get_x() {return _x;}
-    int get_y() {return _y;}
-    int get_radius();
-    int get_mass() {return _mass;}
+    QColor get_hue();
 
     Q_INVOKABLE void request_coordinates(int x, int y);
 
@@ -27,9 +24,8 @@ public:
 
 private:
     void validate_coordinates();
-    int _x;
-    int _y;
-    int _mass;
+    QColor _hue;
+    QVariantList _cells;
 };
 
 #endif // PLAYER_H
