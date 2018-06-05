@@ -58,11 +58,14 @@ ApplicationWindow {
             for (var z=0; z < players.length; z++)
             {
                 var player = players[z];
+                player.draw_cells(context);
+                /*
                 context.fillStyle = player.hue;
                 context.beginPath();
                 context.arc(this_player.x, this_player.y, this_player.radius, 0, 2*Math.PI);
                 // context.stroke();
                 context.fill();
+                */
             }
         }
 

@@ -18,5 +18,6 @@ void Player::request_coordinates(int x, int y)
     for (QVariant cell_variant : _cells)
     {
         Cell *cell = cell_variant.type<Cell *>();
+        cell->request_coordinates(x, y);
     }
 }
