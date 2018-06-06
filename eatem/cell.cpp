@@ -1,4 +1,5 @@
 #include "cell.h"
+#include <QtMath>
 
 Cell::Cell(QObject *parent) : QObject(parent)
   , _x(100)
@@ -70,4 +71,12 @@ void Cell::request_coordinates(int x, int y)
 
     // insure we don't run off the map
     validate_coordinates();
+}
+
+bool Cell::is_object_touching(int object_x, int object_y)
+{
+    int diff_x = _x - object_x;
+    int diff_y = _y - object_y;
+    float distance = pow((pow(diff_x, 2) + pow(diff_y, 2)), 0.5);
+    return distance <= get_radius();
 }

@@ -40,6 +40,7 @@ public:
     QColor get_hue() { return _hue;}
     bool get_enabled() {return _enabled;}
     bool set_enabled(bool value) {_enabled = value;}
+    bool is_disabled() {return !_enabled;}
 
 
 private:
@@ -49,8 +50,8 @@ private:
     QColor _hue;
     bool _enabled;
 
-    int _game_width;
     int _game_height;
+    int _game_width;
 };
 
 #endif // FOOD_H

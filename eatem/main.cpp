@@ -10,13 +10,16 @@
 #include "virus.h"
 #include "food.h"
 #include "player.h"
-#include "util.h"
 
 #include <QDebug>
 
+// Need to declare these pointers as metatypes
+// so we can add them into `QVariants`.
+// Need to add them into `QVaraints` so that we can pass them to QML.
 Q_DECLARE_METATYPE(Virus *)
 Q_DECLARE_METATYPE(Food *)
 Q_DECLARE_METATYPE(Player *)
+
 
 QVariantList create_viruses()
 {
@@ -27,6 +30,7 @@ QVariantList create_viruses()
     return result;
 }
 
+
 QVariantList create_food(int game_width, int game_height, int number=500)
 {
     QVariantList result;
@@ -36,52 +40,48 @@ QVariantList create_food(int game_width, int game_height, int number=500)
 
 }
 
+
 void check_interactions(QVariantList players, QVariantList viruses, QVariantList foods)
 {
-    // NOTE: this will need another layer probably.
+    // For each Player variant ...
     for(QVariant player_variant : players)
     {
-        Player *player = qvariant_cast<Player*>(player_variant);
+        // cast each player variant into into a `Player` pointer
+        Player *player = player_variant.value<Player*>();
+
+        // Now iterate through every food variant
         for(QVariant food_variant : foods)
         {
+            // cast the food variant into into a `Food` pointer
             Food *food = food_variant.value<Food*>();
-            if (!food->get_enabled())
+            if (food->is_disabled())
                 continue;
-            if (touching(player, food))
-            {
-                player->add_mass(1);
-                // food->generate();
-                food->set_enabled(false);
-            }
+            player->handle_touch(food);
         }
 
+        // Now iterate through every virus variant
         for (QVariant virus_variant: viruses)
         {
-            Virus *virus = qvariant_cast<Virus*>(virus_variant);
-            if (touching(player, virus))
-            {
-            }
+            // cast the virius variant into into a `Virus` pointer
+            Virus *virus = virus_variant.value<Virus*>();
+            player->handle_touch(virus);
         }
 
+        // Now iterate through every other player variant
         for (QVariant other_player_variant : players)
         {
-            Player *other_player = qvariant_cast<Player*>(other_player_variant);
+            // cast the other player variant into into a `Virus` pointer
+            Player *other_player = other_player_variant.value<Player*>();
             if (player == other_player)
                 continue;
-            else if (touching(player, other_player))
-            {
-            }
+            player->handle_touch(other_player);
         }
-
-
     }
 }
 
 
 int main(int argc, char *argv[])
 {
-    // qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
-
     int game_height = 500;
     int game_width = 500;
 

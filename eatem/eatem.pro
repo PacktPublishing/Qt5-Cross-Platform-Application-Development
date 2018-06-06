@@ -35,6 +35,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     virus.h \
     food.h \
-    util.h \
     player.h \
     cell.h

@@ -18,6 +18,7 @@ public:
     int get_mass();
     void add_mass(int amount);
     void request_coordinates(int x, int y);
+    bool is_object_touching(int object_x, int object_y);
 
 private:
     void validate_coordinates();
