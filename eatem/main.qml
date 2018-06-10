@@ -70,6 +70,10 @@ ApplicationWindow {
             }
         }
 
+        Keys.onSpacePressed: {
+            this_player.request_split(mouse.mouseX, mouse.mouseY);
+        }
+
         MouseArea {
             id: mouse
             anchors.fill: parent

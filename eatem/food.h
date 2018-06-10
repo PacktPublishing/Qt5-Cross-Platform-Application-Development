@@ -15,24 +15,9 @@ class Food : public QObject
     Q_PROPERTY(bool enabled READ get_enabled)
     Q_PROPERTY(QColor hue READ get_hue)
 public:
-    explicit Food(int game_width, int game_height, QObject *parent = nullptr)
-        : QObject(parent)
-        , _game_height(game_height)
-        , _game_width(game_width)
-        , _radius(5)
-    {
-        generate();
-    }
+    explicit Food(int game_width, int game_height, QObject *parent = nullptr);
 
-    void generate()
-    {
-        // securely seeded ensures randomness
-        QRandomGenerator random = QRandomGenerator::securelySeeded();
-        _x = random.bounded(_game_width);
-        _y = random.bounded(_game_height);
-        _hue = QColor::fromHsl(random.bounded(360), 255, 127);
-        _enabled = true;
-    }
+    void generate();
 
     int get_x() {return _x;}
     int get_y() {return _y;}

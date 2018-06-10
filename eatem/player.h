@@ -6,6 +6,7 @@
 #include <QVariant>
 #include <QColor>
 #include <QDebug>
+
 #include "cell.h"
 #include "food.h"
 #include "virus.h"
@@ -22,8 +23,9 @@ class Player : public QObject
 
 public:
     explicit Player(QObject *parent = nullptr);
-    Q_INVOKABLE void draw_cells(QObject *context);
     Q_INVOKABLE void request_coordinates(int x, int y);
+    Q_INVOKABLE void request_split(int mouse_x, int mouse_y);
+
     QColor get_hue();
 
     void handle_touch(Food *food);
