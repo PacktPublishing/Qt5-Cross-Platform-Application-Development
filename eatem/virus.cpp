@@ -9,17 +9,17 @@ Virus::Virus(QObject *parent)
     _y = random.bounded(500);
 }
 
-int Virus::get_x()
+int Virus::x()
 {
     return _x;
 }
 
-int Virus::get_y()
+int Virus::y()
 {
     return _y;
 }
 
-int Virus::get_radius()
+int Virus::radius()
 {
     return _radius;
 }

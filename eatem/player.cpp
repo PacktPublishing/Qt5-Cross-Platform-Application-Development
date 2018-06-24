@@ -13,7 +13,7 @@ Player::Player(QObject *parent) : QObject(parent)
     _this_thing.append(QVariant::fromValue<Cell*>(start_cell));
 }
 
-QColor Player::get_hue()
+QColor Player::hue()
 {
     return _hue;
 }
@@ -27,7 +27,7 @@ void Player::request_coordinates(int x, int y)
     {
         for (Cell *other_cell : _cells)
         {
-            if (cell->is_object_touching(other_cell->get_x(), other_cell->get_y(), other_cell->get_radius()))
+            if (cell->is_object_touching(other_cell->x(), other_cell->y(), other_cell->radius()))
                     cell_touches.insert(cell, other_cell);
         }
 
@@ -49,7 +49,7 @@ void Player::handle_touch(Food *food)
 {
     for (Cell *cell : _cells)
     {
-        if (cell->is_object_touching(food->get_x(), food->get_y()))
+        if (cell->is_object_touching(food->x(), food->y()))
         {
             // disable the food
             food->set_enabled(false);

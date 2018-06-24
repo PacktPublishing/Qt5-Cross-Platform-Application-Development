@@ -21,7 +21,7 @@ Cell::Cell(QObject *parent, int initial_velocity)
     }
 }
 
-int Cell::get_radius()
+int Cell::radius()
 {
     return 4 + qSqrt(_mass) * 6;
 }
@@ -45,17 +45,17 @@ int Cell::get_mass()
     return _mass;
 }
 
-int Cell::get_x()
+int Cell::x()
 {
     return _x;
 }
 
-int Cell::get_y()
+int Cell::y()
 {
     return _y;
 }
 
-qreal Cell::get_radians(int x, int y)
+qreal Cell::calc_radians(int x, int y)
 {
     // NOTE: this works for second firing
     /*
@@ -67,7 +67,7 @@ qreal Cell::get_radians(int x, int y)
     int target_x = _x - x;
     int target_y =  _y - y;
     if (target_x == 0 && target_y == 0)
-        return;
+        return 0;
 
     int distance = qSqrt(pow(target_x, 2) + pow(target_y, 2));
     // prevents jitter
@@ -100,7 +100,7 @@ bool Cell::is_object_touching(int object_x, int object_y)
     int diff_x = _x - object_x;
     int diff_y = _y - object_y;
     float distance = pow((pow(diff_x, 2) + pow(diff_y, 2)), 0.5);
-    return distance <= get_radius();
+    return distance <= radius();
 }
 
 void Cell::timerEvent(QTimerEvent *event)

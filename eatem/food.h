@@ -9,8 +9,8 @@
 class Food : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int x READ get_x)
-    Q_PROPERTY(int y READ get_y)
+    Q_PROPERTY(int x READ x)
+    Q_PROPERTY(int y READ y)
     Q_PROPERTY(int radius READ get_radius)
     Q_PROPERTY(bool enabled READ get_enabled)
     Q_PROPERTY(QColor hue READ get_hue)
@@ -19,12 +19,13 @@ public:
 
     void generate();
 
-    int get_x() {return _x;}
-    int get_y() {return _y;}
-    int get_radius() {return _radius;}
-    QColor get_hue() { return _hue;}
-    bool get_enabled() {return _enabled;}
+    int x() {return _x;}
+    int y() {return _y;}
+    int radius() {return _radius;}
+    QColor hue() { return _hue;}
+    bool enabled() {return _enabled;}
     bool set_enabled(bool value) {_enabled = value;}
+    // NOTE: Figure out if this is needed
     bool is_disabled() {return !_enabled;}
 
 

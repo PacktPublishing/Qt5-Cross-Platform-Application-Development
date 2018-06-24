@@ -18,7 +18,7 @@ typedef QList<Cell*> CellList;
 class Player : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QColor hue READ get_hue)
+    Q_PROPERTY(QColor hue READ hue)
     Q_PROPERTY(QVariantList cells READ get_cells)
 
 public:
@@ -26,7 +26,7 @@ public:
     Q_INVOKABLE void request_coordinates(int x, int y);
     Q_INVOKABLE void request_split(int mouse_x, int mouse_y);
 
-    QColor get_hue();
+    QColor hue();
 
     void handle_touch(Food *food);
     void handle_touch(Virus *virus);

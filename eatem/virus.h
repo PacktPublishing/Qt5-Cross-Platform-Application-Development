@@ -7,16 +7,16 @@
 class Virus : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int x READ get_x)
-    Q_PROPERTY(int y READ get_y)
-    Q_PROPERTY(int radius READ get_radius)
+    Q_PROPERTY(int x READ x)
+    Q_PROPERTY(int y READ y)
+    Q_PROPERTY(int radius READ radius)
 
 public:
     explicit Virus(QObject *parent = nullptr);
 
-    int get_x();
-    int get_y();
-    int get_radius();
+    int x();
+    int y();
+    int radius();
 
 
 private:
