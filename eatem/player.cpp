@@ -23,10 +23,16 @@ QColor Player::hue()
 void Player::request_coordinates(int x, int y)
 {
     QMultiHash<Cell*, Cell*> cell_touches;
+    // For every cell
     for (Cell *cell : _cells)
     {
+        // Check if we're in contact with our own cells
+        // by iterating through every cell again
         for (Cell *other_cell : _cells)
         {
+            if (cell == other_cell)
+                continue;
+
             if (cell->is_object_touching(other_cell->x(), other_cell->y(), other_cell->radius()))
                     cell_touches.insert(cell, other_cell);
         }

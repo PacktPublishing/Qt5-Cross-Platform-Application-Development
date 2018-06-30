@@ -13,10 +13,6 @@ class Cell : public QObject
     Q_PROPERTY(int mass READ mass)
 public:
     explicit Cell(QObject *parent, int intial_velocity=0);
-    int x();
-    int y();
-    int radius();
-    int mass();
     void add_mass(int amount);
     void request_coordinates(int x, int y);
     bool is_object_touching(int object_x, int object_y);
@@ -25,7 +21,13 @@ public:
     qreal calc_radians(int x, int y);
 
     bool friendly_cell_touching();
-    void set_sister_cell_touching(bool touching);
+    // void set_sister_cell_touching(bool touching);
+
+    // Getters
+    int x();
+    int y();
+    int radius();
+    int mass();
 
 protected:
     void timerEvent(QTimerEvent *event);

@@ -40,7 +40,7 @@ void Cell::add_mass(int amount)
    _mass += amount;
 }
 
-int Cell::get_mass()
+int Cell::mass()
 {
     return _mass;
 }
@@ -81,7 +81,7 @@ qreal Cell::calc_radians(int x, int y)
 void Cell::request_coordinates(int x, int y)
 {
 
-    qreal radians = get_radians(x, y);
+    qreal radians = calc_radians(x, y);
 
     // calc deltas
     qreal delta_y = 3 * sin(radians);
@@ -97,6 +97,8 @@ void Cell::request_coordinates(int x, int y)
 
 bool Cell::is_object_touching(int object_x, int object_y)
 {
+    // FIXME: change to:
+    // (radius_1 + radius_2)2 > x_offset2 + y_offset2
     int diff_x = _x - object_x;
     int diff_y = _y - object_y;
     float distance = pow((pow(diff_x, 2) + pow(diff_y, 2)), 0.5);

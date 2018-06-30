@@ -11,9 +11,9 @@ class Food : public QObject
     Q_OBJECT
     Q_PROPERTY(int x READ x)
     Q_PROPERTY(int y READ y)
-    Q_PROPERTY(int radius READ get_radius)
-    Q_PROPERTY(bool enabled READ get_enabled)
-    Q_PROPERTY(QColor hue READ get_hue)
+    Q_PROPERTY(int radius READ radius)
+    Q_PROPERTY(bool enabled READ enabled)
+    Q_PROPERTY(QColor hue READ hue)
 public:
     explicit Food(int game_width, int game_height, QObject *parent = nullptr);
 
