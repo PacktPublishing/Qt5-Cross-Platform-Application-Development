@@ -23,3 +23,8 @@ int Virus::radius()
 {
     return _radius;
 }
+
+int Virus::mass()
+{
+    return _mass;
+}

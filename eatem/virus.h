@@ -17,12 +17,14 @@ public:
     int x();
     int y();
     int radius();
+    int mass();
 
 
 private:
     int _x;
     int _y;
     int _radius;
+    int _mass;
 };
 
 #endif // VIRUS_H

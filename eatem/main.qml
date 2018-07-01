@@ -1,10 +1,6 @@
 import QtQuick 2.11
 import QtQuick.Controls 1.4
 
-// Get key presses
-// http://doc.qt.io/qt-5/qtquick-usecase-userinput.html#keyboard-and-button-events
-
-// http://doc.qt.io/qt-5/qml-qtquick-keys.html#downPressed-signal
 
 ApplicationWindow {
     id: window
@@ -16,22 +12,18 @@ ApplicationWindow {
         anchors.fill: parent
         focus: true
         contextType: "2d"
-        property int color: Math.round(Math.random() * 360)
         property color fill_style: 'white'
-        property bool intialized: false
         property var context
 
         onPaint: {
             context = getContext("2d");
-            // clear background
-            context.fillStyle = fill_style;
-            context.clearRect(0, 0, canvas.width, canvas.height);
             game_loop();
         }
 
         function game_loop()
         {
             requestAnimationFrame(game_loop);
+            // clear background
             context.fillStyle = fill_style;
             context.clearRect(0, 0, canvas.width, canvas.height);
             draw_food();
@@ -64,7 +56,6 @@ ApplicationWindow {
                     var cell = player.cells[cell_number];
                     context.beginPath();
                     context.arc(cell.x, cell.y, cell.radius, 0, 2*Math.PI);
-                    // context.stroke();
                     context.fill();
                 }
             }
@@ -86,44 +77,9 @@ ApplicationWindow {
             repeat: true
             running: true
             onTriggered: {
-                var mouse_x = mouse.mouseX;
-                var mouse_y = mouse.mouseY
-                this_player.request_coordinates(mouse_x, mouse_y);
-                canvas.requestPaint()
-            }
-        }
-
-
-    }
-
-    /*
-    InputPanel {
-        id: inputPanel
-        z: 99
-        x: 0
-        y: window.height
-        width: window.width
-
-        states: State {
-            name: "visible"
-            when: inputPanel.active
-            PropertyChanges {
-                target: inputPanel
-                y: window.height - inputPanel.height
-            }
-        }
-        transitions: Transition {
-            from: ""
-            to: "visible"
-            reversible: true
-            ParallelAnimation {
-                NumberAnimation {
-                    properties: "y"
-                    duration: 250
-                    easing.type: Easing.InOutQuad
-                }
+                this_player.request_coordinates(mouse.mouseX, mouse.mouseY);
+                canvas.requestPaint();
             }
         }
     }
-    */
 }

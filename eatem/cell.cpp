@@ -1,6 +1,7 @@
 #include "cell.h"
 #include <QtMath>
 #include <QDebug>
+#include "player.h"
 
 Cell::Cell(QObject *parent, int initial_velocity)
     : QObject(parent)
@@ -10,7 +11,6 @@ Cell::Cell(QObject *parent, int initial_velocity)
     , _mass(20)
     , _initial_mass(20)
     , _velocity(initial_velocity)
-    , _friendly_cell_touching(false)
 {
     if (initial_velocity> 0)
     {
@@ -95,14 +95,30 @@ void Cell::request_coordinates(int x, int y)
     validate_coordinates();
 }
 
-bool Cell::is_object_touching(int object_x, int object_y)
+void Cell::request_coordinates(int x, int y, Cell *touching_cells)
 {
-    // FIXME: change to:
-    // (radius_1 + radius_2)2 > x_offset2 + y_offset2
-    int diff_x = _x - object_x;
-    int diff_y = _y - object_y;
-    float distance = pow((pow(diff_x, 2) + pow(diff_y, 2)), 0.5);
-    return distance <= radius();
+
+}
+
+void Cell::request_coordinates(int x, int y, QList<Cell *> touching_cells)
+{
+    if (touching_cells.isEmpty())
+    {
+        request_coordinates(x, y);
+    }
+
+
+}
+
+bool Cell::is_object_touching(int object_x, int object_y, int object_radius)
+{
+    // FIXME: clean up naming
+    int radiuses = qPow(object_radius + radius(), 2);
+    int diff_x = qPow(_x - object_x, 2);
+    int diff_y = qPow(_y - object_y, 2);
+
+    return radiuses > diff_x + diff_y;
+
 }
 
 void Cell::timerEvent(QTimerEvent *event)
@@ -115,14 +131,14 @@ void Cell::timerEvent(QTimerEvent *event)
     }
 }
 
-QPointer<Cell> Cell::request_split(int mouse_x, int mouse_y, QObject *new_cell_parent)
+QPointer<Cell> Cell::request_split(int mouse_x, int mouse_y, Player *owning_player)
 {
     QPointer<Cell> result;
     int two_times_intial = 2 * _initial_mass;
     if (_mass > two_times_intial)
     {
         // FIXME: add in velocity?
-        Cell *split_cell = new Cell(new_cell_parent);
+        Cell *split_cell = new Cell(owning_player);
         result = split_cell;
         _mass /= 2;
     }

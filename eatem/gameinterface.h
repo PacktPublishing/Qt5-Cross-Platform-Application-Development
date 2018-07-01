@@ -28,6 +28,8 @@ public slots:
     void check_game_object_interactions();
 
 protected:
+    void create_viruses();
+    void create_food(int number=500);
 
 private:
     Player* _this_player;

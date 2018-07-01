@@ -13,8 +13,9 @@
 
 int main(int argc, char *argv[])
 {
-    int game_height = 500;
-    int game_width = 500;
+    // FIXME: Now hardcoded into `GameInterface`
+    // int game_height = 500;
+    // int game_width = 500;
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
@@ -41,7 +42,7 @@ int main(int argc, char *argv[])
                      &game_interface,
                      &GameInterface::check_game_object_interactions);
 
-    my_timer.start();
+    interaction_timer.start();
 
     return app.exec();
 }

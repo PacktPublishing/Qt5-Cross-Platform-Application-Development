@@ -15,29 +15,51 @@ GameInterface::GameInterface(QObject *parent) : QObject(parent)
     // We're letting the templated function `fromValue` know
     // That it'll be ingesting the type `Player*`
     // Which is a pointer to our player instance.
+
+    create_food();
+    create_viruses();
 }
 
-QVariantList GameInterface::create_viruses()
+void GameInterface::create_viruses()
 {
-    QVariantList result;
     int number = 5;
     for(int i=0; i<number; i++)
-        result.append(QVariant::fromValue<Virus*>(new Virus()));
-    return result;
+        _viruses.append(QVariant::fromValue<Virus*>(new Virus()));
 }
 
 
-QVariantList GameInterface::create_food(int game_width, int game_height, int number=500)
+void GameInterface::create_food(int number)
 {
-    QVariantList result;
+    // FIXME: hardcoding magic numbers
+    int game_width = 500;
+    int game_height = 500;
     for(int i=0; i<number; i++)
-        result.append(QVariant::fromValue<Food*>(new Food(game_width, game_height)));
-    return result;
+        _food.append(QVariant::fromValue<Food*>(new Food(game_width, game_height)));
+}
+
+QVariantList GameInterface::get_food()
+{
+    return _food;
+}
+
+QVariantList GameInterface::get_viruses()
+{
+    return _viruses;
+}
+
+Player* GameInterface::get_this_player()
+{
+    return _this_player;
+}
+
+QVariantList GameInterface::get_players()
+{
+    return _players;
 }
 
 // howto handle collisions
 // https://www.reddit.com/r/gamedev/comments/6aqu5x/how_do_games_like_agario_handle_collisions/
-void GameInterface::check_interactions()
+void GameInterface::check_game_object_interactions()
 {
     // For each Player QVariant in our QVariantList `_players`...
     for(QVariant player_variant : _players)

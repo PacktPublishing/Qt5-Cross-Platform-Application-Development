@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QPointer>
 
+class Player;
+
 class Cell : public QObject
 {
     Q_OBJECT
@@ -15,13 +17,11 @@ public:
     explicit Cell(QObject *parent, int intial_velocity=0);
     void add_mass(int amount);
     void request_coordinates(int x, int y);
-    bool is_object_touching(int object_x, int object_y);
+    void request_coordinates(int x, int y, QList<Cell*> touching_cells);
+    void request_coordinates(int x, int y, Cell* touching_cells);
     bool is_object_touching(int object_x, int object_y, int object_radius);
-    QPointer<Cell> request_split(int mouse_x, int mouse_y, QObject *new_cell_parent);
+    QPointer<Cell> request_split(int mouse_x, int mouse_y, Player *owning_player);
     qreal calc_radians(int x, int y);
-
-    bool friendly_cell_touching();
-    // void set_sister_cell_touching(bool touching);
 
     // Getters
     int x();
@@ -43,7 +43,6 @@ private:
     int _timer_id;
     // NOTE: This should probably be static
     int _initial_mass;
-    bool _friendly_cell_touching;
 };
 
 #endif // CELL_H
