@@ -1,6 +1,8 @@
 #include "gameinterface.h"
 
-GameInterface::GameInterface(QObject *parent) : QObject(parent)
+GameInterface::GameInterface(QRect window_size, QObject *parent)
+    : QObject(parent)
+    , _game_size(window_size)
 {
     // create our player
     _this_player = new Player();
@@ -31,10 +33,8 @@ void GameInterface::create_viruses()
 void GameInterface::create_food(int number)
 {
     // FIXME: hardcoding magic numbers
-    int game_width = 500;
-    int game_height = 500;
     for(int i=0; i<number; i++)
-        _food.append(QVariant::fromValue<Food*>(new Food(game_width, game_height)));
+        _food.append(QVariant::fromValue<Food*>(new Food(_game_size)));
 }
 
 QVariantList GameInterface::get_food()

@@ -1,9 +1,8 @@
 #include "food.h"
 
-Food::Food(int game_width, int game_height, QObject *parent)
+Food::Food(QRect game_size, QObject *parent)
     : QObject(parent)
-    , _game_height(game_height)
-    , _game_width(game_width)
+    , _game_size(game_size)
     , _radius(5)
 {
     generate();
@@ -14,8 +13,9 @@ void Food::generate()
 {
     // securely seeded ensures randomness
     QRandomGenerator random = QRandomGenerator::securelySeeded();
-    _x = random.bounded(_game_width);
-    _y = random.bounded(_game_height);
+    _position.setX(random.bounded(_game_size.width()));
+    _position.setY(random.bounded(_game_size.height()));
+
     _hue = QColor::fromHsl(random.bounded(360), 255, 127);
     _enabled = true;
 }

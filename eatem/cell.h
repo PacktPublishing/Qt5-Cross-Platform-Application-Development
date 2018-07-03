@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QPointer>
+#include <QVector2D>
 
 class Player;
 
@@ -28,6 +29,7 @@ public:
     int y();
     int radius();
     int mass();
+    QVector2D position();
 
 protected:
     void timerEvent(QTimerEvent *event);
@@ -35,6 +37,7 @@ protected:
 private:
     void validate_coordinates();
 
+    QVector2D _position;
     int _x;
     int _y;
     // NOTE: used when firing

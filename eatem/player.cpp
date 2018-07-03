@@ -154,7 +154,7 @@ void Player::request_split(int mouse_x, int mouse_y)
             _javascript_cell_list.append(QVariant::fromValue<Cell*>(new_cell));
             _cells.append(new_cell);
             // TODO: put a smaller nubmer in here if we have a bunch of splits
-            _merge_timer_id = startTimer(2000);
+            _merge_timer_id = startTimer(5000);
             _can_merge = false;
         }
     }

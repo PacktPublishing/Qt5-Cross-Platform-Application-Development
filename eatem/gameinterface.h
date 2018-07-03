@@ -18,7 +18,7 @@ class GameInterface : public QObject
 {
     Q_OBJECT
 public:
-    explicit GameInterface(QObject *parent = nullptr);
+    explicit GameInterface(QRect window_size, QObject *parent = nullptr);
     QVariantList get_food();
     QVariantList get_viruses();
     QVariantList get_players();
@@ -26,6 +26,10 @@ public:
 
 public slots:
     void check_game_object_interactions();
+    void debug(int height)
+    {
+        qDebug() << height;
+    }
 
 protected:
     void create_viruses();
@@ -36,6 +40,7 @@ private:
     QVariantList _food;
     QVariantList _viruses;
     QVariantList _players;
+    QRect _game_size;
 };
 
 #endif // GAMEINTERFACE_H
