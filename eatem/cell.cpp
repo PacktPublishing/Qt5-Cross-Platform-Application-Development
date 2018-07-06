@@ -120,10 +120,6 @@ void Cell::request_coordinates(int x, int y, Cell *touching_cells)
 
     // Find the point of intersection
 
-    // int x_velocity_overlap = overlap * (_x - touching_cells->x()) / distance;
-    // int y_velocity_overlap = overlap * (_y - touching_cells->y()) / distance;
-
-    // qreal radians = calc_radians(x, y);
     // QVector2D mouse_velocity(3*cos(radians), 3*sin(radians));
     //_position -= (mouse_velocity - push_vector).normalized() * 3;
     _position -= push_vector;

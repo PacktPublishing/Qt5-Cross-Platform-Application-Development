@@ -4,23 +4,50 @@
 #include <QDebug>
 
 
+// The Player constructor function
 Player::Player(QObject *parent)
     : QObject(parent)
+    // `_can_merg`e tracks if we can remerge a cell
+    // into another cell.
+    // defaults to `true`, but changes to false when
+    // we request a split
     , _can_merge(true)
 {
+    // create a random number generator to get a random color
     QRandomGenerator random = QRandomGenerator::securelySeeded();
+
+    // get a random color using our random number generator.
+    // the hue is the only thing that changes here, the saturation and lightness
+    // remain constant
     _hue = QColor::fromHsl(random.bounded(360), 255, 127);
+
+    // A cell is the physcial part of the player, it's the actual representation on the screen
     Cell *start_cell = new Cell(this);
+
+    // `_cells` is a list of `Cell` objects. The `Player` class tracks and manages
+    // each cell. Players can request to split cells using the spacebar.
+    // If players run into a virus and they are bigger than it, it will also split them,
+    // to a certain point.
     _cells.append(start_cell);
+
+    // QML needs a `QVariantList`, so we maintain two lists
+    // 1. an actual cell object list
+    // 2. a `QVariantList` composed of `QVariant`s who's values are `Cell*` (`Cell` pointers)
+    // Here we create our first `QVariant` who's value is a pointer to our first player Cell
     _javascript_cell_list.append(QVariant::fromValue<Cell*>(start_cell));
 }
 
+// `hue`
+//     Hue getter function
 QColor Player::hue()
 {
+    // return the hue, which is a `QColor` instance
     return _hue;
 }
 
-void Player::_handle_two_cell_case(Cell *left, Cell *right, int x, int y)
+// `_handle_two_cell_case`
+//     A private function that...
+void Player::_handle_two_cell_case(Cell *left, Cell *right, int mouse_x, int mouse_y)
 {
     bool cells_touching = left->is_object_touching(right->x(), right->y(), right->radius());
     if (!cells_touching)
@@ -43,6 +70,8 @@ void Player::_handle_two_cell_case(Cell *left, Cell *right, int x, int y)
     }
 }
 
+// `combine_cells`
+//     A protected function that...
 void Player::combine_cells(Cell *left, Cell *right)
 {
     if (left->mass() > right->mass())
@@ -65,6 +94,9 @@ void Player::combine_cells(Cell *left, Cell *right)
 
 }
 
+
+// `request_coordinates`
+//     a `Q_INVOKABLE`
 // https://www.reddit.com/r/Agario/comments/34x2fa/game_mechanics_explained_in_depth_numbers_and/
 // https://stackoverflow.com/questions/5060082/eliminating-a-direction-from-a-vector
 void Player::request_coordinates(int x, int y)
