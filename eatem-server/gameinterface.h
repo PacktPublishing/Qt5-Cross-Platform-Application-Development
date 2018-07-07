@@ -3,6 +3,10 @@
 
 #include <QObject>
 
+#include <QWebChannel>
+#include <QWebSocketServer>
+#include "websocketclientwrapper.h"
+
 // `Player` class
 //    Complex class that manages our player
 #include "player.h"
@@ -64,6 +68,17 @@ private:
     QVariantList _viruses;
     QVariantList _players;
     QRect _game_size;
+
+
+    // The Web Channel
+    QWebChannel *_webchannel;
+
+    // Web Socket Server
+    QWebSocketServer *_websocket_server;
+
+    // WebSocket to QWebChannel interface (code not covered)
+    WebSocketClientWrapper *_client_wrapper;
+
 };
 
 #endif // GAMEINTERFACE_H

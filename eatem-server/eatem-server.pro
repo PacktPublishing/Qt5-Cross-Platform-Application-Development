@@ -1,6 +1,5 @@
-QT -= gui
-
-QT += core websockets
+# using gui for QColor
+QT += core gui websockets webchannel
 
 CONFIG += c++11 console
 CONFIG -= app_bundle
@@ -21,10 +20,14 @@ SOURCES += \
     virus.cpp \
     player.cpp \
     gameinterface.cpp \
-    cell.cpp
+    cell.cpp \
+    websocketclientwrapper.cpp \
+    websockettransport.cpp
 
 HEADERS += \
     virus.h \
     player.h \
     gameinterface.h \
-    cell.h
+    cell.h \
+    websocketclientwrapper.h \
+    websockettransport.h
