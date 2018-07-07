@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>app.js</file>
+        <file>qwebchannel.js</file>
     </qresource>
 </RCC>

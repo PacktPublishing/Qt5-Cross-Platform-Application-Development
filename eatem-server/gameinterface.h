@@ -57,6 +57,12 @@ public slots:
     void set_game_height(int height);
     void set_game_widget(int width);
 
+protected slots:
+    void handle_new_connection();
+
+signals:
+    void client_connected(WebSocketTransport *client);
+
 protected:
     void create_viruses();
     void create_food(int number=500);

@@ -21,7 +21,6 @@ SOURCES += \
     player.cpp \
     gameinterface.cpp \
     cell.cpp \
-    websocketclientwrapper.cpp \
     websockettransport.cpp
 
 HEADERS += \
@@ -29,5 +28,4 @@ HEADERS += \
     player.h \
     gameinterface.h \
     cell.h \
-    websocketclientwrapper.h \
     websockettransport.h

@@ -1,11 +1,51 @@
 import QtQuick 2.11
 import QtQuick.Controls 1.4
 
+import Qt.WebSockets 1.0
+import "qwebchannel.js" as WebChannel
+
 
 ApplicationWindow {
     id: window
     title: "eatem"
     visible: true
+
+    property var webchannel
+
+    // FIXME: break this functionality down a layer, not at the window level
+    // Game objects
+    property var feed
+    property var players
+    property var viruses
+    property var this_player
+
+    WebSocket {
+        id: socket
+        active: true
+        url: "ws://localhost:5555"
+
+        onStatusChanged: {
+            switch (socket.status) {
+            case WebSocket.Error:
+                console.error("Error: " + socket.errorString);
+                break;
+            case WebSocket.Closed:
+                console.error("Error: Socket at " + url + " closed.");
+                break;
+            case WebSocket.Open:
+                //open the webchannel with the socket as transport
+                new WebChannel.QWebChannel(socket, function(channel) {
+                    window.channel = channel;
+
+                    window.feed = channel.objects.feed;
+                    window.viruses = channel.objects.viruses;
+                    window.this_player = channel.objects.this_player;
+                    window.players = channel.objects.players;
+                });
+                break;
+            }
+        }
+    }
 
     Canvas {
         id: canvas
@@ -45,9 +85,9 @@ ApplicationWindow {
 
         function draw_food()
         {
-            for (var i = 0; i < feed.length / 2; i++)
+            for (var i = 0; i < window.feed.length / 2; i++)
             {
-                var food = feed[i];
+                var food = window.feed[i];
                 if (!food.enabled)
                     continue;
                 context.beginPath();
@@ -60,9 +100,9 @@ ApplicationWindow {
         function draw_players()
         {
 
-            for (var z=0; z < players.length; z++)
+            for (var z=0; z < window.players.length; z++)
             {
-                var player = players[z];
+                var player = window.players[z];
                 context.fillStyle = player.hue;
                 for (var cell_number=0; cell_number < player.cells.length; cell_number++)
                 {
@@ -75,7 +115,7 @@ ApplicationWindow {
         }
 
         Keys.onSpacePressed: {
-            this_player.request_split(mouse.mouseX, mouse.mouseY);
+            window.this_player.request_split(mouse.mouseX, mouse.mouseY);
         }
 
         MouseArea {
@@ -90,7 +130,7 @@ ApplicationWindow {
             repeat: true
             running: true
             onTriggered: {
-                this_player.request_coordinates(mouse.mouseX, mouse.mouseY);
+                window.this_player.request_coordinates(mouse.mouseX, mouse.mouseY);
                 canvas.requestPaint();
             }
         }

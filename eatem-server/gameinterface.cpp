@@ -22,8 +22,15 @@ GameInterface::GameInterface(QObject *parent)
     _webchannel->registerObject("viruses", _viruses);
     _webchannel->registerObject("players", _players);
 
-    connect(_client_wrapper, &WebSocketClientWrapper::clientConnected,
-            _webchannel, &QWebChannel::connectTo);
+    connect(_websocket_server, &QWebSocketServer::newConnection,
+            this, &GameInterface::handle_new_connection);
+    connect(this, &GameInterface::client_connected, _webchannel, &QWebChannel::connectTo);
+}
+
+void GameInterface::handle_new_connection()
+{
+    WebSocketTransport *trasnport = new WebSocketTransport(_websocket_server->nextPendingConnection());
+    emit client_connected(transport);
 }
 
 void GameInterface::create_viruses()
