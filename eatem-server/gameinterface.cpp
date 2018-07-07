@@ -1,4 +1,5 @@
 #include "gameinterface.h"
+#include <QWebSocket>
 
 
 GameInterface::GameInterface(QObject *parent)
@@ -24,13 +25,32 @@ GameInterface::GameInterface(QObject *parent)
 
     connect(_websocket_server, &QWebSocketServer::newConnection,
             this, &GameInterface::handle_new_connection);
+
+    // NOTE: Could get in this block and mess with it a bit in order to do some auth
+    // stuff to make sure our users are good
+
+    // Here's the code of `connectTo`
+
+    // connect(transport, &QWebChannelAbstractTransport::messageReceived,
+    //         d->publisher, &QMetaObjectPublisher::handleMessage,
+    //         Qt::UniqueConnection);
+    // connect(transport, SIGNAL(destroyed(QObject*)),
+    //         this, SLOT(_q_transportDestroyed(QObject*)));
+
     connect(this, &GameInterface::client_connected, _webchannel, &QWebChannel::connectTo);
 }
 
 void GameInterface::handle_new_connection()
 {
-    WebSocketTransport *trasnport = new WebSocketTransport(_websocket_server->nextPendingConnection());
+    QWebSocket *web_socket = _websocket_server->nextPendingConnection();
+    // QString origin = web_socket->origin();
+    WebSocketTransport *transport = new WebSocketTransport(web_socket);
     emit client_connected(transport);
+
+    // NOTE: I believe this is a memory leak. Should probably use a shared pointer
+    // Also, no delete logic currently
+    Player *new_player = new Player();
+    _players.append(QVariant::fromValue<Player*>(new_player));
 }
 
 void GameInterface::create_viruses()
@@ -111,15 +131,4 @@ void GameInterface::check_game_object_interactions()
             player->handle_touch(other_player);
         }
     }
-}
-
-void GameInterface::set_game_height(int height)
-{
-    qDebug() << height;
-    _game_size.setHeight(height);
-}
-
-void GameInterface::set_game_widget(int width)
-{
-    _game_size.setWidth(width);
 }

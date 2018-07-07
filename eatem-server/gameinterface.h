@@ -5,7 +5,7 @@
 
 #include <QWebChannel>
 #include <QWebSocketServer>
-#include "websocketclientwrapper.h"
+#include "websockettransport.h"
 
 // `Player` class
 //    Complex class that manages our player
@@ -44,7 +44,6 @@ class GameInterface : public QObject
     Q_OBJECT
 
 public:
-    // FIXME: Probably won't pass in the `window_size`
     explicit GameInterface(QObject *parent = nullptr);
     QVariantList get_food();
     QVariantList get_viruses();
@@ -54,8 +53,6 @@ public:
 
 public slots:
     void increment_game_step();
-    void set_game_height(int height);
-    void set_game_widget(int width);
 
 protected slots:
     void handle_new_connection();
@@ -69,22 +66,16 @@ protected:
     void check_game_object_interactions();
 
 private:
-    Player* _this_player;
     QVariantList _food;
     QVariantList _viruses;
     QVariantList _players;
     QRect _game_size;
-
 
     // The Web Channel
     QWebChannel *_webchannel;
 
     // Web Socket Server
     QWebSocketServer *_websocket_server;
-
-    // WebSocket to QWebChannel interface (code not covered)
-    WebSocketClientWrapper *_client_wrapper;
-
 };
 
 #endif // GAMEINTERFACE_H
