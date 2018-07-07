@@ -44,12 +44,8 @@ int main(int argc, char *argv[])
 
     // Step 1: get access to the root object
     // NOTE: the root object is currently the ApplicationWindow
-    QObject *window_object = engine.rootObjects().first();
-
-    // NOTE: probably need to get the cotent size instead
-    qDebug() << window_object->property("height");
-    QRect window_size(0, 0, window_object->property("height").toInt(), window_object->property("width").toInt());
-    qDebug() << window_size;
+    QObject *application_object = engine.rootObjects().first();
+    QObject *window_object = application_object->property("window").value<QObject*>();
 
     // ------------------------------------------
 
@@ -58,7 +54,7 @@ int main(int argc, char *argv[])
     // 1. creating food
     // 2. creating viruses
     // 3. Creating a list of players
-    GameInterface game_interface(window_size);
+    GameInterface game_interface;
 
     // We'll get out everything from the `game_interface` creates for us, and track
     // it in the QML context using the `setContextProperty` method.
@@ -70,8 +66,9 @@ int main(int argc, char *argv[])
     // NOTE: this method call  will go away when we set up the logic to create a player on arrival
     root_context->setContextProperty("this_player", game_interface.get_this_player());
 
-    // FIXME: Debug code for window height
-    QObject::connect(window_object, SIGNAL(height(int)), &game_interface, SLOT(debug(int)));
+    qDebug() << window_object;
+    QObject::connect(application_object, SIGNAL(height(int)), &game_interface, SLOT(set_game_height(int)));
+    QObject::connect(application_object, SIGNAL(width(int)), &game_interface, SLOT(set_game_width(int)));
 
     // We need to increment the game in a set amount of time.
     // We use a `QTimer` called `game_timestep` to trigger the game incremention
@@ -81,12 +78,10 @@ int main(int argc, char *argv[])
 
     // We connect the game's timestep `timeout` function to our `game_interface`,
     // specifically the `check_game_object_interactions` function
-    // FIXME: rename the `GameInterface::check_game_object_interactions`
-    // leaky abstraction
     QObject::connect(&game_timestep,
                      &QTimer::timeout,
                      &game_interface,
-                     &GameInterface::check_game_object_interactions);
+                     &GameInterface::increment_game_step);
 
     // Start our game timestep
     game_timestep.start();

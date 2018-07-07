@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QRandomGenerator>
-#include <QVector2D>
+#include <QPoint>
 #include <QRect>
 #include <QColor>
 
@@ -21,18 +21,18 @@ public:
 
     void generate();
 
-    int x() {return _position.x();}
-    int y() {return _position.y();}
-    int radius() {return _radius;}
-    QColor hue() { return _hue;}
-    bool enabled() {return _enabled;}
-    void set_enabled(bool value) {_enabled = value;}
-    // NOTE: Figure out if this is needed
-    bool is_disabled() {return !_enabled;}
+    int x();
+    int y();
+    int radius();
+    QColor hue();
+    bool enabled();
+    void set_enabled(bool value);
+    // FIXME: Figure out if this is needed
+    bool is_disabled();
 
 
 private:
-    QVector2D _position;
+    QPoint _position;
     int _radius;
     QColor _hue;
     bool _enabled;

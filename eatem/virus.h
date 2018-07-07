@@ -2,6 +2,7 @@
 #define VIRUS_H
 
 #include <QObject>
+#include <QPoint>
 #include <QRandomGenerator>
 
 class Virus : public QObject
@@ -21,8 +22,8 @@ public:
 
 
 private:
-    int _x;
-    int _y;
+    QPoint _position;
+    // FIXME: radius is dependent on mass
     int _radius;
     int _mass;
 };

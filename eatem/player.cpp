@@ -46,14 +46,14 @@ QColor Player::hue()
 }
 
 // `_handle_two_cell_case`
-//     A private function that...
+//         A private function that...
 void Player::_handle_two_cell_case(Cell *left, Cell *right, int mouse_x, int mouse_y)
 {
     bool cells_touching = left->is_object_touching(right->x(), right->y(), right->radius());
     if (!cells_touching)
     {
-        left->request_coordinates(x, y);
-        right->request_coordinates(x, y);
+        left->request_coordinates(mouse_x, mouse_y);
+        right->request_coordinates(mouse_x, mouse_y);
     }
     else if (_can_merge && cells_touching)
     {
@@ -61,12 +61,12 @@ void Player::_handle_two_cell_case(Cell *left, Cell *right, int mouse_x, int mou
     }
     else if (_can_merge)
     {
-        left->request_coordinates(x, y);
-        right->request_coordinates(x, y);
+        left->request_coordinates(mouse_x, mouse_y);
+        right->request_coordinates(mouse_x, mouse_y);
     }
     else {
-        left->request_coordinates(x, y, right);
-        right->request_coordinates(x, y, left);
+        left->request_coordinates(mouse_x, mouse_y, right);
+        right->request_coordinates(mouse_x, mouse_y, left);
     }
 }
 

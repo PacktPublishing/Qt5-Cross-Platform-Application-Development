@@ -5,18 +5,18 @@ Virus::Virus(QObject *parent)
     , _radius(10)
 {
     QRandomGenerator random = QRandomGenerator();
-    _x = random.bounded(500);
-    _y = random.bounded(500);
+    _position.setX(random.bounded(500));
+    _position.setY(random.bounded(500));
 }
 
 int Virus::x()
 {
-    return _x;
+    return _position.x();
 }
 
 int Virus::y()
 {
-    return _y;
+    return _position.y();
 }
 
 int Virus::radius()

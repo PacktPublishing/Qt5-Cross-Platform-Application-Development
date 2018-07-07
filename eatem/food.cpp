@@ -20,3 +20,37 @@ void Food::generate()
     _enabled = true;
 }
 
+int Food::x()
+{
+    return _position.x();
+}
+
+int Food::y()
+{
+    return _position.y();
+}
+
+int Food::radius()
+{
+    return _radius;
+}
+
+QColor Food::hue()
+{
+    return _hue;
+}
+
+bool Food::enabled()
+{
+    return _enabled;
+}
+
+void Food::set_enabled(bool value)
+{
+    _enabled = value;
+}
+
+bool Food::is_disabled()
+{
+    return !_enabled;
+}

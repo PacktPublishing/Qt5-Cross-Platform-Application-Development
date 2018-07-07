@@ -5,15 +5,12 @@
 
 Cell::Cell(QObject *parent, int initial_velocity)
     : QObject(parent)
-    // FIXME: have both these numbers tied together
-    , _mass(20)
-    , _initial_mass(20)
+    , _mass(Cell::initial_mass)
     , _velocity(initial_velocity)
 {
     _position = QVector2D(100, 100);
-    if (initial_velocity> 0)
+    if (initial_velocity > 0)
     {
-        // FIXME: this should set at the NHA
         // NOTE: can also pass in a timer type.
         // default is "coarse"
         _timer_id = startTimer(100);
@@ -104,16 +101,17 @@ QVector2D Cell::position()
     return _position;
 }
 
-void Cell::request_coordinates(int x, int y, Cell *touching_cells)
+void Cell::request_coordinates(int x, int y, Cell *touching_cell)
 {
     // https://gamedev.stackexchange.com/questions/74872/how-to-solve-the-overlap-of-two-circles-that-collide
     // QVector2D target(x, y);
 
     // Distance between the cells
-    float distance = abs(_position.distanceToPoint(touching_cells->position()));
+    float distance = abs(_position.distanceToPoint(touching_cell->position()));
     // half the amount of overlap
-    float overlap = 0.5 * (distance  - radius() - touching_cells->radius());
-    QVector2D push_vector = (_position - touching_cells->position()).normalized() * overlap;
+    // NOTE: may need to upper bound this?
+    float overlap = 0.5 * (distance  - radius() - touching_cell->radius());
+    QVector2D push_vector = (_position - touching_cell->position()).normalized() * overlap;
 
     // Ok now we need to remove all the magnitude in a certain direction
     // https://math.stackexchange.com/questions/598685/point-deflecting-off-of-a-circle?noredirect=1&lq=1
@@ -163,7 +161,7 @@ void Cell::timerEvent(QTimerEvent *event)
 QPointer<Cell> Cell::request_split(int mouse_x, int mouse_y, Player *owning_player)
 {
     QPointer<Cell> result;
-    int two_times_intial = 2 * _initial_mass;
+    int two_times_intial = 2 * Cell::initial_mass;
     if (_mass > two_times_intial)
     {
         // FIXME: add in velocity?

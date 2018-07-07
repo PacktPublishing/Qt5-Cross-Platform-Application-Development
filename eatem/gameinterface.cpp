@@ -1,9 +1,10 @@
 #include "gameinterface.h"
 
-GameInterface::GameInterface(QRect window_size, QObject *parent)
-    : QObject(parent)
-    , _game_size(window_size)
+
+GameInterface::GameInterface(QObject *parent) : QObject(parent)
 {
+    _game_size.setHeight(500);
+    _game_size.setWidth(500);
     // create our player
     _this_player = new Player();
     // Now we need to add our player to the list of players.
@@ -57,6 +58,11 @@ QVariantList GameInterface::get_players()
     return _players;
 }
 
+void GameInterface::increment_game_step()
+{
+    check_game_object_interactions();
+}
+
 // howto handle collisions
 // https://www.reddit.com/r/gamedev/comments/6aqu5x/how_do_games_like_agario_handle_collisions/
 void GameInterface::check_game_object_interactions()
@@ -95,4 +101,15 @@ void GameInterface::check_game_object_interactions()
             player->handle_touch(other_player);
         }
     }
+}
+
+void GameInterface::set_game_height(int height)
+{
+    qDebug() << height;
+    _game_size.setHeight(height);
+}
+
+void GameInterface::set_game_widget(int width)
+{
+    _game_size.setWidth(width);
 }

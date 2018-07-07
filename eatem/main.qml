@@ -4,7 +4,7 @@ import QtQuick.Controls 1.4
 
 ApplicationWindow {
     id: window
-    title: qsTr("eatem")
+    title: "eatem"
     visible: true
 
     Canvas {
@@ -22,11 +22,24 @@ ApplicationWindow {
 
         function game_loop()
         {
+            // You can't block with JavaScript...
+            // So normally this would look like a `while (true):` loop
+            // But since you never go back into the event loop with that pattern,
+            // your user interface would hang and become unresponsive.
+            // So instead we recursively register this same function
+            // on the next animation frame, using the `requestAnimationFrame` method
             requestAnimationFrame(game_loop);
-            // clear background
+
+            // Set the fill style to clear clear background
             context.fillStyle = fill_style;
+
+            // Clear the background
             context.clearRect(0, 0, canvas.width, canvas.height);
+
+            // draw the food
             draw_food();
+
+            // and draw the players
             draw_players();
         }
 
