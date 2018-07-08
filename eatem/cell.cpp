@@ -28,17 +28,13 @@ void Cell::validate_coordinates()
 {
     if (_position.x() < 0)
         _position.setX(0);
-    /*
-    else if (_position.x() > _game_size->x())
-        _position.setX(_game_size->x());
-        */
+    else if (_position.x() > _game_size->width())
+        _position.setX(_game_size->width());
 
     if (_position.y() < 0)
         _position.setY(0);
-    /*
-    else if (_position.y() > _game_size->y())
-        _position.setY(_game_size->y());
-        */
+    else if (_position.y() > _game_size->height())
+        _position.setY(_game_size->height());
 }
 
 void Cell::add_mass(qreal amount)
