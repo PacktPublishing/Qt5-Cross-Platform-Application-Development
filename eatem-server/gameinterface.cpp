@@ -6,7 +6,6 @@ GameInterface::GameInterface(QObject *parent)
     : QObject(parent)
     , _websocket_server(new QWebSocketServer("Eatem", QWebSocketServer::NonSecureMode))
     , _webchannel(new QWebChannel())
-    , _client_wrapper(new WebSocketClientWrapper(_websocket_server))
 {
     // TODO: make configurable
     bool listening = _websocket_server->listen(QHostAddress::LocalHost, 5555);
@@ -22,20 +21,12 @@ GameInterface::GameInterface(QObject *parent)
     _webchannel->registerObject("feed", _food);
     _webchannel->registerObject("viruses", _viruses);
     _webchannel->registerObject("players", _players);
+    _webchannel->registerObject("interface", this);
+    // NOTE: intentional memory link
+    _webchannel->registerObject("authentication", new QString());
 
     connect(_websocket_server, &QWebSocketServer::newConnection,
             this, &GameInterface::handle_new_connection);
-
-    // NOTE: Could get in this block and mess with it a bit in order to do some auth
-    // stuff to make sure our users are good
-
-    // Here's the code of `connectTo`
-
-    // connect(transport, &QWebChannelAbstractTransport::messageReceived,
-    //         d->publisher, &QMetaObjectPublisher::handleMessage,
-    //         Qt::UniqueConnection);
-    // connect(transport, SIGNAL(destroyed(QObject*)),
-    //         this, SLOT(_q_transportDestroyed(QObject*)));
 
     connect(this, &GameInterface::client_connected, _webchannel, &QWebChannel::connectTo);
 }
@@ -47,9 +38,22 @@ void GameInterface::handle_new_connection()
     WebSocketTransport *transport = new WebSocketTransport(web_socket);
     emit client_connected(transport);
 
-    // NOTE: I believe this is a memory leak. Should probably use a shared pointer
-    // Also, no delete logic currently
-    Player *new_player = new Player();
+    Player *new_player = new Player(GetRandomString());
+    // FIXME: Figure out a better way to manage this memory
+    // currently connecting the WebSocket destroyed to the Player delete Later slot
+    connect(web_socket, &QWebSocket::destroyed, new_player, &Player::deleteLater);
+    QJsonObject message;
+    /*
+     Set property type to be property update
+     "type": 2
+     set the object to be authentication
+     "object": "authentication"
+
+     "property": property Index
+     "value" my_authentication_string
+     */
+    transport->sendMessage(message);
+
     _players.append(QVariant::fromValue<Player*>(new_player));
 }
 

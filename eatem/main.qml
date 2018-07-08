@@ -18,6 +18,7 @@ ApplicationWindow {
     property var players
     property var viruses
     property var this_player
+    property string authentication
 
     WebSocket {
         id: socket
@@ -115,7 +116,7 @@ ApplicationWindow {
         }
 
         Keys.onSpacePressed: {
-            window.this_player.request_split(mouse.mouseX, mouse.mouseY);
+            window.this_player.request_split(mouse.mouseX, mouse.mouseY, window.authentication);
         }
 
         MouseArea {
@@ -130,7 +131,7 @@ ApplicationWindow {
             repeat: true
             running: true
             onTriggered: {
-                window.this_player.request_coordinates(mouse.mouseX, mouse.mouseY);
+                window.this_player.request_coordinates(mouse.mouseX, mouse.mouseY, window.authentication);
                 canvas.requestPaint();
             }
         }

@@ -22,11 +22,11 @@ class Player : public QObject
     Q_PROPERTY(QVariantList cells READ get_cells NOTIFY cells_updated)
 
 public:
-    explicit Player(QObject *parent = nullptr);
+    explicit Player(QString authentication, QObject *parent = nullptr);
     // NOTE: these are invokeables and not slots because it's easier to pass multiple functions
     // into a invokable?
-    Q_INVOKABLE void request_coordinates(int x, int y);
-    Q_INVOKABLE void request_split(int mouse_x, int mouse_y);
+    Q_INVOKABLE void request_coordinates(int x, int y, QString authenticate);
+    Q_INVOKABLE void request_split(int mouse_x, int mouse_y, QString authenticate);
 
     QColor hue();
 
@@ -82,6 +82,7 @@ private:
 
 
     int _merge_timer_id;
+    QString _authenticate;
 };
 
 #endif // PLAYER_H

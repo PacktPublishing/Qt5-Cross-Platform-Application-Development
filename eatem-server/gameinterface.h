@@ -5,6 +5,7 @@
 
 #include <QWebChannel>
 #include <QWebSocketServer>
+#include <QRandomGenerator>
 #include "websockettransport.h"
 
 // `Player` class
@@ -32,6 +33,31 @@ Q_DECLARE_METATYPE(Player *)
 // NOTE: `QVaraint` will NOT take object values, hence the use of pointers here
 
 
+// Use an anymous function
+namespace {
+
+    // https://stackoverflow.com/questions/18862963/qt-c-random-string-generation
+    QString GetRandomString()
+    {
+       const QString possibleCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
+       const int randomStringLength = 12; // assuming you want random strings of 12 characters
+       const int length_characters = possibleCharacters.length();
+
+       QRandomGenerator random = QRandomGenerator::securelySeeded();
+
+       QString randomString;
+       for(int i=0; i<randomStringLength; ++i)
+       {
+           int index = random.bounded(length_characters);
+           QChar nextChar = possibleCharacters.at(index);
+           randomString.append(nextChar);
+       }
+
+       return randomString;
+    }
+}
+
+
 // `GameInterface` class
 //    is an interface that abstracts away some of the game intialization logic for us.
 //    Additionally responsible for incrementing the game timestep.
@@ -45,11 +71,8 @@ class GameInterface : public QObject
 
 public:
     explicit GameInterface(QObject *parent = nullptr);
-    QVariantList get_food();
-    QVariantList get_viruses();
-    QVariantList get_players();
-    // NOTE: This will go away
-    Player* get_this_player();
+    // FIXME: Implement
+    Q_INVOKABLE int get_player_index(QString authentication);
 
 public slots:
     void increment_game_step();

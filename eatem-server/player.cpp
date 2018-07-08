@@ -5,8 +5,9 @@
 
 
 // The Player constructor function
-Player::Player(QObject *parent)
+Player::Player(QString authentication, QObject *parent)
     : QObject(parent)
+    , _authenticate(authentication)
     // `_can_merg`e tracks if we can remerge a cell
     // into another cell.
     // defaults to `true`, but changes to false when
@@ -99,8 +100,11 @@ void Player::combine_cells(Cell *left, Cell *right)
 //     a `Q_INVOKABLE`
 // https://www.reddit.com/r/Agario/comments/34x2fa/game_mechanics_explained_in_depth_numbers_and/
 // https://stackoverflow.com/questions/5060082/eliminating-a-direction-from-a-vector
-void Player::request_coordinates(int x, int y)
+void Player::request_coordinates(int x, int y, QString authenticate)
 {
+    if (authenticate != _authenticate)
+        return;
+
     // Hardcode in the most common options, no cell split
     if (_cells.length() == 1)
     {
@@ -170,8 +174,11 @@ void Player::handle_touch(Player *other_player)
 
 }
 
-void Player::request_split(int mouse_x, int mouse_y)
+void Player::request_split(int mouse_x, int mouse_y, QString authenticate)
 {
+    if (authenticate != _authenticate)
+        return;
+
     for (Cell* cell : _cells)
     {
         // Create a new pointer

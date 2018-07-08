@@ -110,5 +110,6 @@ void WebSocketTransport::textMessageReceived(const QString &messageData)
         qWarning() << "Received JSON message that is not an object: " << messageData;
         return;
     }
+    // NOTE: could do some validation here
     emit messageReceived(message.object(), this);
 }
