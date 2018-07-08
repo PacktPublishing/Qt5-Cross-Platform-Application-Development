@@ -18,12 +18,15 @@ class Food : public QObject
     Q_PROPERTY(QColor hue READ hue)
 public:
     explicit Food(QRect *game_size, QObject *parent = nullptr);
+    static constexpr qreal _mass = 78.54;
+    static constexpr qreal _radius = 5.0;
 
     void generate();
 
     int x();
     int y();
-    int radius();
+    qreal radius();
+    qreal mass();
     QColor hue();
     bool enabled();
     void set_enabled(bool value);
@@ -33,7 +36,6 @@ public:
 
 private:
     QPoint _position;
-    int _radius;
     QColor _hue;
     bool _enabled;
     QRect *_game_size;

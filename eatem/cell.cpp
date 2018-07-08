@@ -16,11 +16,12 @@ Cell::Cell(QRect *game_size, QObject *parent, int initial_velocity)
         // default is "coarse"
         _timer_id = startTimer(100);
     }
+
 }
 
 int Cell::radius()
 {
-    return 4 + qSqrt(_mass) * 6;
+    return qSqrt(_mass/M_PI);
 }
 
 void Cell::validate_coordinates()
@@ -40,12 +41,12 @@ void Cell::validate_coordinates()
         */
 }
 
-void Cell::add_mass(int amount)
+void Cell::add_mass(qreal amount)
 {
    _mass += amount;
 }
 
-int Cell::mass()
+qreal Cell::mass()
 {
     return _mass;
 }

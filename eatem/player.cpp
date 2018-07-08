@@ -88,8 +88,11 @@ int Player::calc_y()
 
 qreal Player::calc_zoom_factor()
 {
-    // FIXME
-    return 1.;
+    if (_cells.length() == 1)
+    {
+        float value = 30./_cells[0]->radius();
+        return value;
+    }
 }
 
 // `combine_cells`
@@ -169,7 +172,7 @@ void Player::handle_touch(Food *food)
             food->set_enabled(false);
 
             // add the mass
-            cell->add_mass(1);
+            cell->add_mass(food->mass());
 
             // we're done here!
             break;

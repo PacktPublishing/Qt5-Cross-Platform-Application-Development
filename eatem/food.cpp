@@ -3,7 +3,6 @@
 Food::Food(QRect *game_size, QObject *parent)
     : QObject(parent)
     , _game_size(game_size)
-    , _radius(5)
 {
     generate();
 }
@@ -30,7 +29,13 @@ int Food::y()
     return _position.y();
 }
 
-int Food::radius()
+qreal Food::mass()
+{
+    return _mass;
+}
+
+
+qreal Food::radius()
 {
     return _radius;
 }

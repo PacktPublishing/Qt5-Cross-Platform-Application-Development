@@ -2,6 +2,7 @@
 #define GAMEINTERFACE_H
 
 #include <QObject>
+#include <QTimer>
 
 // `Player` class
 //    Complex class that manages our player
@@ -38,6 +39,10 @@ class GameInterface : public QObject
     // `Q_OBJECT` is a macro so that we can use signals and slots on this class
 
     Q_OBJECT
+    Q_PROPERTY(QVariantList food READ get_food NOTIFY update_food)
+    Q_PROPERTY(QVariantList players READ get_players NOTIFY update_players)
+    Q_PROPERTY(QVariantList viruses READ get_viruses NOTIFY update_viruses)
+    Q_PROPERTY(Player* this_player READ get_this_player NOTIFY update_this_player)
 
 public:
     // FIXME: Probably won't pass in the `window_size`
@@ -47,6 +52,7 @@ public:
     QVariantList get_players();
     // NOTE: This will go away
     Player* get_this_player();
+    Q_INVOKABLE void set_game_size(int width, int height);
 
 public slots:
     void increment_game_step();
@@ -63,6 +69,10 @@ protected slots:
 
 signals:
     void create_game_objects();
+    void update_food();
+    void update_viruses();
+    void update_players();
+    void update_this_player();
 
 private:
     Player* _this_player;
@@ -70,6 +80,7 @@ private:
     QVariantList _viruses;
     QVariantList _players;
     QRect *_game_size;
+    QTimer _game_interval;
 };
 
 #endif // GAMEINTERFACE_H

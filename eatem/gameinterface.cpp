@@ -19,7 +19,20 @@ GameInterface::GameInterface(QObject *parent)
     // That it'll be ingesting the type `Player*`
     // Which is a pointer to our player instance.
 
+    emit update_this_player();
+
     connect(this, &GameInterface::create_game_objects, this, &GameInterface::slot_game_object_creation);
+    _game_interval.setInterval(100);
+    connect(&_game_interval, &QTimer::timeout, this, &GameInterface::increment_game_step);
+    _game_interval.start();
+}
+
+void GameInterface::set_game_size(int width, int height)
+{
+    _game_size->setHeight(height);
+    _game_size->setWidth(width);
+    // FIXME: change naming
+    slot_game_object_creation();
 }
 
 void GameInterface::create_viruses()
@@ -31,8 +44,10 @@ void GameInterface::create_viruses()
 
 void GameInterface::slot_game_object_creation()
 {
-    create_food();
+    create_food(1000);
     create_viruses();
+    emit update_food();
+    emit update_viruses();
 }
 
 

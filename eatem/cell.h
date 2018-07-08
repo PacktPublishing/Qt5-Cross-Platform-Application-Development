@@ -13,13 +13,13 @@ class Cell : public QObject
     Q_PROPERTY(int x READ x)
     Q_PROPERTY(int y READ y)
     Q_PROPERTY(int radius READ radius)
-    Q_PROPERTY(int mass READ mass)
+    Q_PROPERTY(qreal mass READ mass)
 
 public:
     explicit Cell(QRect *game_size, QObject *parent, int intial_velocity=0);
-    static const int initial_mass = 20;
+    static constexpr qreal initial_mass = 2827.43;
 
-    void add_mass(int amount);
+    void add_mass(qreal amount);
 
     void request_coordinates(int x, int y);
     void request_coordinates(int x, int y, QList<Cell*> touching_cells);
@@ -33,7 +33,7 @@ public:
     int x();
     int y();
     int radius();
-    int mass();
+    qreal mass();
     QVector2D position();
 
 protected:
@@ -48,10 +48,8 @@ private:
     // NOTE: used when firing
     int _velocity;
 
-    int _mass;
+    qreal _mass;
     int _timer_id;
-    // NOTE: This should probably be static
-    int _initial_mass;
 };
 
 #endif // CELL_H
