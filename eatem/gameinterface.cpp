@@ -19,8 +19,7 @@ GameInterface::GameInterface(QObject *parent) : QObject(parent)
     // That it'll be ingesting the type `Player*`
     // Which is a pointer to our player instance.
 
-    create_food();
-    create_viruses();
+    connect(this, &GameInterface::create_game_objects, this, &GameInterface::slot_game_object_creation);
 }
 
 void GameInterface::create_viruses()
@@ -28,6 +27,12 @@ void GameInterface::create_viruses()
     int number = 5;
     for(int i=0; i<number; i++)
         _viruses.append(QVariant::fromValue<Virus*>(new Virus()));
+}
+
+void GameInterface::slot_game_object_creation()
+{
+    create_food();
+    create_viruses();
 }
 
 
@@ -105,11 +110,12 @@ void GameInterface::check_game_object_interactions()
 
 void GameInterface::set_game_height(int height)
 {
-    qDebug() << height;
     _game_size.setHeight(height);
 }
 
-void GameInterface::set_game_widget(int width)
+void GameInterface::set_game_width(int width)
 {
     _game_size.setWidth(width);
+    // NOTE: Slight hack
+    emit create_game_objects();
 }

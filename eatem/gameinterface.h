@@ -51,12 +51,18 @@ public:
 public slots:
     void increment_game_step();
     void set_game_height(int height);
-    void set_game_widget(int width);
+    void set_game_width(int width);
 
 protected:
     void create_viruses();
     void create_food(int number=500);
     void check_game_object_interactions();
+
+protected slots:
+    void slot_game_object_creation();
+
+signals:
+    void create_game_objects();
 
 private:
     Player* _this_player;

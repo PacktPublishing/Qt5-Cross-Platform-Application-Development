@@ -1,6 +1,8 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QQuickItem>
+#include <QQmlProperty>
 
 #include <QTimer>
 
@@ -45,6 +47,11 @@ int main(int argc, char *argv[])
     // Step 1: get access to the root object
     // NOTE: the root object is currently the ApplicationWindow
     QObject *application_object = engine.rootObjects().first();
+
+    QQuickItem *content_item = QQmlProperty::read(application_object, "contentItem").value<QQuickItem *>();
+
+
+            // qvariant_cast<QQuickItem *>(QQmlProperty::read(application_object, "contentItem"));
     QObject *window_object = application_object->property("window").value<QObject*>();
 
     // ------------------------------------------
@@ -67,8 +74,13 @@ int main(int argc, char *argv[])
     root_context->setContextProperty("this_player", game_interface.get_this_player());
 
     qDebug() << window_object;
-    QObject::connect(application_object, SIGNAL(height(int)), &game_interface, SLOT(set_game_height(int)));
-    QObject::connect(application_object, SIGNAL(width(int)), &game_interface, SLOT(set_game_width(int)));
+    QObject::connect(content_item, &QQuickItem::heightChanged, [&game_interface, content_item](){
+        game_interface.set_game_height(content_item->height());
+    });
+
+    QObject::connect(content_item, &QQuickItem::widthChanged, [&game_interface, content_item](){
+        game_interface.set_game_width(content_item->width());
+    });
 
     // We need to increment the game in a set amount of time.
     // We use a `QTimer` called `game_timestep` to trigger the game incremention
