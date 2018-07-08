@@ -16,7 +16,7 @@ class Cell : public QObject
     Q_PROPERTY(int mass READ mass)
 
 public:
-    explicit Cell(QObject *parent, int intial_velocity=0);
+    explicit Cell(QRect *game_size, QObject *parent, int intial_velocity=0);
     static const int initial_mass = 20;
 
     void add_mass(int amount);
@@ -43,6 +43,7 @@ private:
     void validate_coordinates();
 
     QVector2D _position;
+    QRect *_game_size;
 
     // NOTE: used when firing
     int _velocity;

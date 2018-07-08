@@ -13,7 +13,7 @@ class Virus : public QObject
     Q_PROPERTY(int radius READ radius)
 
 public:
-    explicit Virus(QObject *parent = nullptr);
+    explicit Virus(QRect *game_size, QObject *parent = nullptr);
 
     int x();
     int y();
@@ -23,6 +23,7 @@ public:
 
 private:
     QPoint _position;
+    QRect *_game_size;
     // FIXME: radius is dependent on mass
     int _radius;
     int _mass;

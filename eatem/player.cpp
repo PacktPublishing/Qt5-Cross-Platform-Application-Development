@@ -5,13 +5,14 @@
 
 
 // The Player constructor function
-Player::Player(QObject *parent)
+Player::Player(QRect *game_size, QObject *parent)
     : QObject(parent)
     // `_can_merg`e tracks if we can remerge a cell
     // into another cell.
     // defaults to `true`, but changes to false when
     // we request a split
     , _can_merge(true)
+    , _game_size(game_size)
 {
     // create a random number generator to get a random color
     QRandomGenerator random = QRandomGenerator::securelySeeded();
@@ -22,7 +23,7 @@ Player::Player(QObject *parent)
     _hue = QColor::fromHsl(random.bounded(360), 255, 127);
 
     // A cell is the physcial part of the player, it's the actual representation on the screen
-    Cell *start_cell = new Cell(this);
+    Cell *start_cell = new Cell(_game_size, this);
 
     // `_cells` is a list of `Cell` objects. The `Player` class tracks and manages
     // each cell. Players can request to split cells using the spacebar.
@@ -68,6 +69,27 @@ void Player::_handle_two_cell_case(Cell *left, Cell *right, int mouse_x, int mou
         left->request_coordinates(mouse_x, mouse_y, right);
         right->request_coordinates(mouse_x, mouse_y, left);
     }
+}
+
+int Player::calc_x()
+{
+    if (_cells.length() == 1)
+        return _cells[0]->x();
+
+    // FIXME: need to calculate the center of player when they have more than one cell
+}
+
+int Player::calc_y()
+{
+    if (_cells.length() == 1)
+        return _cells[0]->y();
+    // FIXME: need to calculate the center of player when they have more than one cell
+}
+
+qreal Player::calc_zoom_factor()
+{
+    // FIXME
+    return 1.;
 }
 
 // `combine_cells`

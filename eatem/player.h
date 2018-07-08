@@ -20,9 +20,13 @@ class Player : public QObject
     Q_OBJECT
     Q_PROPERTY(QColor hue READ hue)
     Q_PROPERTY(QVariantList cells READ get_cells NOTIFY cells_updated)
+    Q_PROPERTY(int x READ calc_x)
+    Q_PROPERTY(int y READ calc_y)
+    Q_PROPERTY(qreal zoom_factor READ calc_zoom_factor)
+
 
 public:
-    explicit Player(QObject *parent = nullptr);
+    explicit Player(QRect *game_size, QObject *parent = nullptr);
     // NOTE: these are invokeables and not slots because it's easier to pass multiple functions
     // into a invokable?
     Q_INVOKABLE void request_coordinates(int x, int y);
@@ -35,6 +39,10 @@ public:
     void handle_touch(Player *other_player);
     bool _touching_helper(int other_x, int other_y);
     QVariantList get_cells();
+
+    int calc_x();
+    int calc_y();
+    qreal calc_zoom_factor();
 
 signals:
     void cells_updated();
@@ -82,6 +90,7 @@ private:
 
 
     int _merge_timer_id;
+    QRect *_game_size;
 };
 
 #endif // PLAYER_H

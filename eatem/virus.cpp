@@ -1,8 +1,9 @@
 #include "virus.h"
 
-Virus::Virus(QObject *parent)
+Virus::Virus(QRect *game_size, QObject *parent)
     : QObject(parent)
     , _radius(10)
+    , _game_size(game_size)
 {
     QRandomGenerator random = QRandomGenerator();
     _position.setX(random.bounded(500));

@@ -69,7 +69,7 @@ private:
     QVariantList _food;
     QVariantList _viruses;
     QVariantList _players;
-    QRect _game_size;
+    QRect *_game_size;
 };
 
 #endif // GAMEINTERFACE_H

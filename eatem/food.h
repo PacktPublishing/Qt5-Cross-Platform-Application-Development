@@ -17,7 +17,7 @@ class Food : public QObject
     Q_PROPERTY(bool enabled READ enabled)
     Q_PROPERTY(QColor hue READ hue)
 public:
-    explicit Food(QRect game_size, QObject *parent = nullptr);
+    explicit Food(QRect *game_size, QObject *parent = nullptr);
 
     void generate();
 
@@ -36,7 +36,7 @@ private:
     int _radius;
     QColor _hue;
     bool _enabled;
-    QRect _game_size;
+    QRect *_game_size;
 };
 
 #endif // FOOD_H

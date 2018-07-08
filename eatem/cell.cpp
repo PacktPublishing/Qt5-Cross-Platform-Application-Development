@@ -3,10 +3,11 @@
 #include <QDebug>
 #include "player.h"
 
-Cell::Cell(QObject *parent, int initial_velocity)
+Cell::Cell(QRect *game_size, QObject *parent, int initial_velocity)
     : QObject(parent)
     , _mass(Cell::initial_mass)
     , _velocity(initial_velocity)
+    , _game_size(game_size)
 {
     _position = QVector2D(100, 100);
     if (initial_velocity > 0)
@@ -26,9 +27,17 @@ void Cell::validate_coordinates()
 {
     if (_position.x() < 0)
         _position.setX(0);
+    /*
+    else if (_position.x() > _game_size->x())
+        _position.setX(_game_size->x());
+        */
+
     if (_position.y() < 0)
         _position.setY(0);
-    // todo: add in window coordinates
+    /*
+    else if (_position.y() > _game_size->y())
+        _position.setY(_game_size->y());
+        */
 }
 
 void Cell::add_mass(int amount)
@@ -80,6 +89,11 @@ void Cell::request_coordinates(int x, int y)
     if (abs(x-_position.x()) <= 1 && abs(y-_position.y()) <= 1)
         return;
 
+    QVector2D mouse(x, y);
+    QVector2D target = mouse - _position;
+    target.normalize();
+
+    /*
     qreal radians = calc_radians(x, y);
 
     // calc deltas
@@ -91,6 +105,9 @@ void Cell::request_coordinates(int x, int y)
     // move cell
     _position.setX(_position.x() - qRound(delta_x));
     _position.setY(_position.y() - qRound(delta_y));
+    */
+
+    _position += target;
 
     // ensure we don't run off the map
     validate_coordinates();
@@ -165,7 +182,7 @@ QPointer<Cell> Cell::request_split(int mouse_x, int mouse_y, Player *owning_play
     if (_mass > two_times_intial)
     {
         // FIXME: add in velocity?
-        Cell *split_cell = new Cell(owning_player);
+        Cell *split_cell = new Cell(_game_size, owning_player);
         result = split_cell;
         _mass /= 2;
     }

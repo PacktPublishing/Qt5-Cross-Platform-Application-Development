@@ -1,12 +1,12 @@
 #include "gameinterface.h"
 
 
-GameInterface::GameInterface(QObject *parent) : QObject(parent)
+GameInterface::GameInterface(QObject *parent)
+    : QObject(parent)
+    , _game_size(new QRect())
 {
-    _game_size.setHeight(500);
-    _game_size.setWidth(500);
     // create our player
-    _this_player = new Player();
+    _this_player = new Player(_game_size);
     // Now we need to add our player to the list of players.
     // Our list of players has a type of `QVariantList`
     // So in order to add to this list, we have to create a new QVariant
@@ -26,7 +26,7 @@ void GameInterface::create_viruses()
 {
     int number = 5;
     for(int i=0; i<number; i++)
-        _viruses.append(QVariant::fromValue<Virus*>(new Virus()));
+        _viruses.append(QVariant::fromValue<Virus*>(new Virus(_game_size)));
 }
 
 void GameInterface::slot_game_object_creation()
@@ -38,7 +38,6 @@ void GameInterface::slot_game_object_creation()
 
 void GameInterface::create_food(int number)
 {
-    // FIXME: hardcoding magic numbers
     for(int i=0; i<number; i++)
         _food.append(QVariant::fromValue<Food*>(new Food(_game_size)));
 }
@@ -110,12 +109,12 @@ void GameInterface::check_game_object_interactions()
 
 void GameInterface::set_game_height(int height)
 {
-    _game_size.setHeight(height);
+    _game_size->setHeight(height);
 }
 
 void GameInterface::set_game_width(int width)
 {
-    _game_size.setWidth(width);
+    _game_size->setWidth(width);
     // NOTE: Slight hack
     emit create_game_objects();
 }
