@@ -40,21 +40,6 @@ int main(int argc, char *argv[])
 
 
     // ------------------------------------------
-    // FIXME: This code is not in the right place
-    // ------------------------------------------
-
-
-    // Step 1: get access to the root object
-    // NOTE: the root object is currently the ApplicationWindow
-    QObject *application_object = engine.rootObjects().first();
-
-    QQuickItem *content_item = QQmlProperty::read(application_object, "contentItem").value<QQuickItem *>();
-
-
-            // qvariant_cast<QQuickItem *>(QQmlProperty::read(application_object, "contentItem"));
-    QObject *window_object = application_object->property("window").value<QObject*>();
-
-    // ------------------------------------------
 
     // Create our `GameInterface`, an interface which abstracts some of the game creation
     // aspects for us,  including:
@@ -63,17 +48,25 @@ int main(int argc, char *argv[])
     // 3. Creating a list of players
     GameInterface game_interface;
 
-    // We'll get out everything from the `game_interface` creates for us, and track
-    // it in the QML context using the `setContextProperty` method.
-    // The first argument in the method call is the name/accessor we'll use in QML
-    root_context->setContextProperty("viruses", game_interface.get_viruses());
-    root_context->setContextProperty("feed", game_interface.get_food());
+    // NOTE: hack to get around delayed creation
+    QObject::connect(&game_interface, &GameInterface::create_game_objects, [&root_context, &game_interface](){
+        // We'll get out everything from the `game_interface` creates for us, and track
+        // it in the QML context using the `setContextProperty` method.
+        // The first argument in the method call is the name/accessor we'll use in QML
+        root_context->setContextProperty("viruses", game_interface.get_viruses());
+        root_context->setContextProperty("feed", game_interface.get_food());
+    });
+
     root_context->setContextProperty("players", game_interface.get_players());
 
     // NOTE: this method call  will go away when we set up the logic to create a player on arrival
     root_context->setContextProperty("this_player", game_interface.get_this_player());
 
-    qDebug() << window_object;
+    // Step 1: get access to the root object
+    // NOTE: the root object is currently the ApplicationWindow
+    QObject *application_object = engine.rootObjects().first();
+    QQuickItem *content_item = QQmlProperty::read(application_object, "contentItem").value<QQuickItem *>();
+
     QObject::connect(content_item, &QQuickItem::heightChanged, [&game_interface, content_item](){
         game_interface.set_game_height(content_item->height());
     });
