@@ -36,7 +36,6 @@ ApplicationWindow {
             game_loop();
         }
 
-
         function game_loop()
         {
             // You can't block with JavaScript...
@@ -63,7 +62,6 @@ ApplicationWindow {
             App.draw_viruses(context, viruses, this_player);
         }
 
-
         Keys.onSpacePressed: {
             var x_y = translate_mouse(mouse);
             this_player.request_split(x_y[0], x_y[1]);
@@ -77,7 +75,6 @@ ApplicationWindow {
                 event.accepted = true
             }
         }
-
 
         MouseArea {
             id: mouse

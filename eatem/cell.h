@@ -22,12 +22,13 @@ public:
     void add_mass(qreal amount);
 
     void request_coordinates(int x, int y);
-    void request_coordinates(int x, int y, QList<Cell*> touching_cells);
     void request_coordinates(int x, int y, Cell* touching_cells);
+    void request_coordinates(int x, int y, QList<Cell*> touching_cells);
 
     bool is_object_touching(int object_x, int object_y, int object_radius);
+    // NOTE: Could probably make a typedef of this
     QPointer<Cell> request_split(int mouse_x, int mouse_y, Player *owning_player);
-    qreal calc_radians(int x, int y);
+    // qreal calc_radians(int x, int y);
 
     // Getters
     int x();

@@ -35,9 +35,8 @@ void GameInterface::set_game_size(int width, int height)
     slot_game_object_creation();
 }
 
-void GameInterface::create_viruses()
+void GameInterface::create_viruses(int number)
 {
-    int number = 5;
     for(int i=0; i<number; i++)
         _viruses.append(QVariant::fromValue<Virus*>(new Virus(_game_size)));
 }
@@ -133,7 +132,7 @@ void GameInterface::check_game_object_interactions()
         }
     }
 }
-
+/*
 void GameInterface::set_game_height(int height)
 {
     _game_size->setHeight(height);
@@ -145,3 +144,4 @@ void GameInterface::set_game_width(int width)
     // NOTE: Slight hack
     emit create_game_objects();
 }
+*/

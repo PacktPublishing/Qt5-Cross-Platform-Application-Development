@@ -57,13 +57,12 @@ int Cell::y()
     return _position.y();
 }
 
+/*
 qreal Cell::calc_radians(int x, int y)
 {
     // NOTE: this works for second firing
-    /*
     if (_timer_id > 0)
         return;
-    */
 
     // Cell [x, y] - mouse [x, y]
     QVector2D mouse(x, y);
@@ -80,6 +79,7 @@ qreal Cell::calc_radians(int x, int y)
     return atan2(target.y(), target.x());
 
 }
+*/
 
 void Cell::request_coordinates(int x, int y)
 {

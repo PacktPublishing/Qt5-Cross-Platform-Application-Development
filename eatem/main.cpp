@@ -1,15 +1,9 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-#include <QQuickItem>
-#include <QQmlProperty>
 
-#include <QTimer>
+// #include <QObject>
 
-#include <QObject>
-#include <QVariantList>
-
-#include "gameinterface.h"
 #include <QDebug>
 
 

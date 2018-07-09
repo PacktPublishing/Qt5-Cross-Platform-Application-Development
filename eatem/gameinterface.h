@@ -42,25 +42,27 @@ class GameInterface : public QObject
     Q_PROPERTY(QVariantList food READ get_food NOTIFY update_food)
     Q_PROPERTY(QVariantList players READ get_players NOTIFY update_players)
     Q_PROPERTY(QVariantList viruses READ get_viruses NOTIFY update_viruses)
+    // FIXME: Get rid of this
     Q_PROPERTY(Player* this_player READ get_this_player NOTIFY update_this_player)
 
 public:
-    // FIXME: Probably won't pass in the `window_size`
     explicit GameInterface(QObject *parent = nullptr);
     QVariantList get_food();
     QVariantList get_viruses();
     QVariantList get_players();
-    // NOTE: This will go away
-    Player* get_this_player();
+    // NOTE: The invokeableness of this will go away
     Q_INVOKABLE void set_game_size(int width, int height);
+
+    // FIXME: This will go away
+    Player* get_this_player();
 
 public slots:
     void increment_game_step();
-    void set_game_height(int height);
-    void set_game_width(int width);
+    // void set_game_height(int height);
+    // void set_game_width(int width);
 
 protected:
-    void create_viruses();
+    void create_viruses(int number=5);
     void create_food(int number=500);
     void check_game_object_interactions();
 
