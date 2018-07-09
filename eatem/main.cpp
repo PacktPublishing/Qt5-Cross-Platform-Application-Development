@@ -3,6 +3,7 @@
 #include <QQmlContext>
 
 // #include <QObject>
+#include "gameinterface.h"
 
 #include <QDebug>
 

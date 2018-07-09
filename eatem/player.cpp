@@ -76,32 +76,55 @@ int Player::calc_x()
     if (_cells.length() == 1)
         return _cells[0]->x();
 
-    // FIXME: need to calculate the center of player when they have more than one cell
+    int total_x = 0;
+    int total_y = 0;
+    for (Cell *cell : _cells)
+    {
+        total_x += cell->x();
+        total_y += cell->y();
+    }
+
+    // average x
+    int average_x = total_x / _cells.length();
+    int average_y = total_y / _cells.length();
+    _average_position.setX(average_x);
+    _average_position.setY(average_y);
+    return average_x;
 }
 
 int Player::calc_y()
 {
     if (_cells.length() == 1)
         return _cells[0]->y();
-    // FIXME: need to calculate the center of player when they have more than one cell
+
+    return _average_position.y();
 }
 
 qreal Player::calc_zoom_factor()
 {
-    if (_cells.length() == 1)
-    {
+    float value;
+    if (_cells.length() == 1){
         float value = 30./_cells[0]->radius();
-        if (value > 0.8)
-            return 1.;
-        else if (value > 0.7)
-            return .95;
-        else if (value > 0.6)
-            return .9;
-        else if (value > 0.5)
-            return .85;
-        else
-            return .8;
     }
+    else{
+        qreal total_mass = 0;
+        for (Cell *cell : _cells){
+            total_mass += cell->mass();
+        }
+        // TODO: validate if this makes sense
+        value = Cell::initial_mass / total_mass;
+    }
+
+    if (value > 0.8)
+        return 1.;
+    else if (value > 0.7)
+        return .95;
+    else if (value > 0.6)
+        return .9;
+    else if (value > 0.5)
+        return .85;
+    else
+        return .8;
 }
 
 // `combine_cells`

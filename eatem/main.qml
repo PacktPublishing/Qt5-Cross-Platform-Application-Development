@@ -96,7 +96,6 @@ ApplicationWindow {
             onTriggered: {
                 var x_y = canvas.translate_mouse(mouse);
                 canvas.this_player.request_coordinates(x_y[0], x_y[1]);
-                canvas.requestPaint();
             }
         }
     }
