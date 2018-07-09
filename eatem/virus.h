@@ -5,6 +5,7 @@
 #include <QPoint>
 #include <QRandomGenerator>
 #include <QRect>
+#include "food.h"
 
 class Virus : public QObject
 {
@@ -23,7 +24,7 @@ public:
     int radius();
     qreal mass();
     void add_mass(qreal mass);
-
+    void handle_touch(Food *food);
 
 private:
     QPoint _position;

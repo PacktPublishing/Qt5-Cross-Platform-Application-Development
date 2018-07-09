@@ -92,6 +92,7 @@ private:
 
     int _merge_timer_id;
     QRect *_game_size;
+    QPoint _average_position;
 };
 
 #endif // PLAYER_H

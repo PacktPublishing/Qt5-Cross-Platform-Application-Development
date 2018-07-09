@@ -91,16 +91,16 @@ qreal Player::calc_zoom_factor()
     if (_cells.length() == 1)
     {
         float value = 30./_cells[0]->radius();
-        if (value > 0.9)
+        if (value > 0.8)
             return 1.;
-        else if (value > 0.8)
-            return 0.95;
         else if (value > 0.7)
-            return 0.9;
+            return .95;
         else if (value > 0.6)
-            return 0.85;
+            return .9;
+        else if (value > 0.5)
+            return .85;
         else
-            return 0.8;
+            return .8;
     }
 }
 

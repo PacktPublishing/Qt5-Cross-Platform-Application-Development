@@ -86,6 +86,18 @@ void GameInterface::increment_game_step()
 // https://www.reddit.com/r/gamedev/comments/6aqu5x/how_do_games_like_agario_handle_collisions/
 void GameInterface::check_game_object_interactions()
 {
+    for (QVariant virus_variant : _viruses)
+    {
+        Virus *virus = virus_variant.value<Virus *>();
+        for (QVariant food_variant : _food)
+        {
+            Food *food = food_variant.value<Food *>();
+            // FIXME: need to actually clean up if players shoot food here
+            // and below as well
+            virus->handle_touch(food);
+        }
+
+    }
     // For each Player QVariant in our QVariantList `_players`...
     for(QVariant player_variant : _players)
     {

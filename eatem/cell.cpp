@@ -89,6 +89,8 @@ void Cell::request_coordinates(int x, int y)
     QVector2D mouse(x, y);
     QVector2D target = mouse - _position;
     target.normalize();
+    // FIXME: slow down with mass
+    target *= 3;
 
     /*
     qreal radians = calc_radians(x, y);
