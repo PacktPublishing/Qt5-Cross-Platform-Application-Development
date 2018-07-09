@@ -27,6 +27,7 @@ ApplicationWindow {
         property var players: game_interface.players
         property var viruses: game_interface.viruses
         property var this_player: game_interface.this_player
+        property int gridSize: 30
 
         onPaint: {
             context = getContext("2d");
@@ -49,7 +50,7 @@ ApplicationWindow {
 
             // Clear the background
             context.clearRect(0, 0, canvas.width, canvas.height);
-            draw_grid();
+            // draw_grid();
 
             // draw the food
             draw_food();
@@ -57,12 +58,14 @@ ApplicationWindow {
             // and draw the players
             draw_players();
 
+            draw_viruses();
+
         }
 
         function translate(object)
         {
-            var relative_x = object.x + (window.contentItem.width/2) - this_player.x;
-            var relative_y = object.y + (window.contentItem.height/2) - this_player.y;
+            var relative_x = object.x + (width/2) - this_player.x * this_player.zoom_factor;
+            var relative_y = object.y + (height/2) - this_player.y * this_player.zoom_factor;
 
             // FIXME: figure out what this magic number should actually be
             var zoomed_radius = object.radius * this_player.zoom_factor;
@@ -73,17 +76,16 @@ ApplicationWindow {
 
         function draw_grid()
         {
-            var gridSize = 30;    // define the space between each line
-            var width = window.contentItem.width;
-            var height = window.contentItem.height
-            var x = width/2 - this_player.x;  // x start point of the field
-            var y = height/2 - this_player.y  // y start point of the field
+            var x = this_player.x - width/2;  // x start point of the field
+            var y = this_player.y - height/2;  // y start point of the field
+            // console.log(x, height/2, this_player.x);
             var absolute_x, absolute_y;
-            // console.log()
 
             context.lineWidth = 1;
             context.beginPath();
             for(var i = 0; i * gridSize < height; i++) { // draw the horizontal lines
+                if (i==24)
+                    console.log(i, x);
                 absolute_x = x + this_player.x;
                 if (absolute_x <= 0 || absolute_x > 1000)
                     continue;
@@ -101,6 +103,33 @@ ApplicationWindow {
 
         }
 
+        function draw_viruses()
+        {
+            var x_y_radius, virus, x, y, radius;
+            for (var i = 0; i < viruses.length / 2; i++)
+            {
+                virus = viruses[i];
+                x_y_radius = translate(virus)
+
+                x = x_y_radius[0];
+                y = x_y_radius[1];
+                radius = x_y_radius[2];
+
+                if (x > width + radius || x < 0 - radius)
+                    continue;
+                if (y > height + radius || y < 0 - radius)
+                    continue;
+                context.beginPath();
+                context.fillStyle = "#33ff33"
+                context.arc(x,
+                            y,
+                            x_y_radius[2], 0, 2*Math.PI);
+
+                context.fill();
+            }
+
+        }
+
         function draw_food()
         {
             var x_y_radius, food, x, y;
@@ -113,14 +142,14 @@ ApplicationWindow {
                 x_y_radius = translate(food)
                 x = x_y_radius[0];
                 y = x_y_radius[1];
-                if (x > window.contentItem.width || x < 0)
+                if (x > width || x < 0)
                     continue;
-                if (y > window.contentItem.height || y < 0)
+                if (y > height || y < 0)
                     continue;
                 context.beginPath();
                 context.fillStyle = food.hue;
-                context.arc(x_y_radius[0],
-                            x_y_radius[1],
+                context.arc(x,
+                            y,
                             x_y_radius[2], 0, 2*Math.PI);
 
                 context.fill();
@@ -151,7 +180,6 @@ ApplicationWindow {
         }
 
         Keys.onSpacePressed: {
-            // FIXME: this is wrong now
             var x_y = translate_mouse(mouse);
             this_player.request_split(x_y[0], x_y[1]);
         }
@@ -164,9 +192,9 @@ ApplicationWindow {
 
         function translate_mouse(mouse)
         {
-            // NOTE: probably need to scale this as well
-            return [mouse.mouseX - (window.contentItem.width/2 * this_player.zoom_factor) + this_player.x,
-                    mouse.mouseY - (window.contentItem.height/2 * this_player.zoom_factor) + this_player.y];
+            // FIXME: this is messed up
+            return [mouse.mouseX - width/2,
+                    mouse.mouseY - height/2];
         }
 
         Timer {
@@ -175,6 +203,8 @@ ApplicationWindow {
             repeat: true
             running: true
             onTriggered: {
+                var this_player = canvas.this_player;
+                // console.debug(this_player.x, this_player.y, this_player.max_game_size_y(), this_player.max_game_size_x())
                 var x_y = canvas.translate_mouse(mouse);
                 canvas.this_player.request_coordinates(x_y[0], x_y[1]);
                 canvas.requestPaint();

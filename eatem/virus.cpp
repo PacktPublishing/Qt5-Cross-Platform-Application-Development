@@ -1,13 +1,14 @@
 #include "virus.h"
+#include <QtMath>
 
 Virus::Virus(QRect *game_size, QObject *parent)
     : QObject(parent)
-    , _radius(10)
     , _game_size(game_size)
+    , _mass(Virus::_initial_mass)
 {
-    QRandomGenerator random = QRandomGenerator();
-    _position.setX(random.bounded(500));
-    _position.setY(random.bounded(500));
+    QRandomGenerator random = QRandomGenerator::securelySeeded();
+    _position.setX(random.bounded(_game_size->width()));
+    _position.setY(random.bounded(_game_size->height()));
 }
 
 int Virus::x()
@@ -22,10 +23,15 @@ int Virus::y()
 
 int Virus::radius()
 {
-    return _radius;
+    return qSqrt(_mass/M_PI);
 }
 
-int Virus::mass()
+qreal Virus::mass()
 {
     return _mass;
+}
+
+void Virus::add_mass(qreal mass)
+{
+    _mass += mass;
 }
