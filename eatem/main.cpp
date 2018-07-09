@@ -39,9 +39,6 @@ int main(int argc, char *argv[])
 
     // Get the root context from our QML engine
     QQmlContext *root_context = engine.rootContext();
-    QObject* game_interface = root_context->findChild<QObject*>("game_interface");
-
-
     // ------------------------------------------
 
     // Create our `GameInterface`, an interface which abstracts some of the game creation

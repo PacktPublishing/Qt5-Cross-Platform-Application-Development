@@ -94,13 +94,13 @@ qreal Player::calc_zoom_factor()
         if (value > 0.9)
             return 1.;
         else if (value > 0.8)
-            return 0.9;
+            return 0.95;
         else if (value > 0.7)
-            return 0.8;
+            return 0.9;
         else if (value > 0.6)
-            return 0.7;
+            return 0.85;
         else
-            return 0.6;
+            return 0.8;
     }
 }
 
@@ -251,5 +251,10 @@ void Player::handle_touch(Virus *virus)
 
 void Player::explode_cell_from_virus(Cell *cell, Virus *virus)
 {
+    // FIXME
+}
 
+void Player::request_fire_food(int mouse_x, int mouse_y, QString authentication)
+{
+    // FIXME
 }

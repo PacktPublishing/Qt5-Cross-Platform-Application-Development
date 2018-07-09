@@ -2,10 +2,11 @@
 #define FOOD_H
 
 #include <QObject>
-#include <QRandomGenerator>
 #include <QPoint>
 #include <QRect>
 #include <QColor>
+#include <QVector2D>
+#include <QRandomGenerator>
 
 
 class Food : public QObject
@@ -18,8 +19,7 @@ class Food : public QObject
     Q_PROPERTY(QColor hue READ hue)
 public:
     explicit Food(QRect *game_size, QObject *parent = nullptr);
-    static constexpr qreal _mass = 78.54;
-    static constexpr qreal _radius = 5.0;
+    explicit Food(QVector2D intial_velocity, QPoint initial_position, QRect *game_size, QObject *parent = nullptr);
 
     void generate();
 
@@ -35,6 +35,9 @@ public:
 
 
 private:
+    static constexpr qreal _mass = 78.54;
+    static constexpr qreal _radius = 5.0;
+
     QPoint _position;
     QColor _hue;
     bool _enabled;

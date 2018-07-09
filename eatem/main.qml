@@ -64,13 +64,10 @@ ApplicationWindow {
 
         function translate(object)
         {
-            var relative_x = object.x + (width/2) - this_player.x * this_player.zoom_factor;
-            var relative_y = object.y + (height/2) - this_player.y * this_player.zoom_factor;
+            var relative_x = object.x + (width/2) - this_player.x;
+            var relative_y = object.y + (height/2) - this_player.y;
 
-            // FIXME: figure out what this magic number should actually be
             var zoomed_radius = object.radius * this_player.zoom_factor;
-            relative_x *= this_player.zoom_factor;
-            relative_y *= this_player.zoom_factor;
             return [relative_x, relative_y, zoomed_radius];
         }
 
@@ -78,14 +75,11 @@ ApplicationWindow {
         {
             var x = this_player.x - width/2;  // x start point of the field
             var y = this_player.y - height/2;  // y start point of the field
-            // console.log(x, height/2, this_player.x);
             var absolute_x, absolute_y;
 
             context.lineWidth = 1;
             context.beginPath();
             for(var i = 0; i * gridSize < height; i++) { // draw the horizontal lines
-                if (i==24)
-                    console.log(i, x);
                 absolute_x = x + this_player.x;
                 if (absolute_x <= 0 || absolute_x > 1000)
                     continue;
@@ -193,8 +187,8 @@ ApplicationWindow {
         function translate_mouse(mouse)
         {
             // FIXME: this is messed up
-            return [mouse.mouseX - width/2,
-                    mouse.mouseY - height/2];
+            return [mouse.mouseX - width/2 + this_player.x,
+                    mouse.mouseY - height/2 + this_player.y];
         }
 
         Timer {
@@ -203,8 +197,6 @@ ApplicationWindow {
             repeat: true
             running: true
             onTriggered: {
-                var this_player = canvas.this_player;
-                // console.debug(this_player.x, this_player.y, this_player.max_game_size_y(), this_player.max_game_size_x())
                 var x_y = canvas.translate_mouse(mouse);
                 canvas.this_player.request_coordinates(x_y[0], x_y[1]);
                 canvas.requestPaint();

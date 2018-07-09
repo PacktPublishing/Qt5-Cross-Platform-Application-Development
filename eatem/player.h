@@ -31,6 +31,7 @@ public:
     // into a invokable?
     Q_INVOKABLE void request_coordinates(int x, int y);
     Q_INVOKABLE void request_split(int mouse_x, int mouse_y);
+    Q_INVOKABLE void request_fire_food(int mouse_x, int mouse_y, QString authentication);
 
     QColor hue();
 
