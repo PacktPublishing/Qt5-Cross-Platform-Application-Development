@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QPointer>
 #include <QVector2D>
+#include <QTimerEvent>
 
 class Player;
 
@@ -16,7 +17,8 @@ class Cell : public QObject
     Q_PROPERTY(qreal mass READ mass)
 
 public:
-    explicit Cell(QRect *game_size, QObject *parent, int intial_velocity=0);
+    explicit Cell(QRect *game_size, QObject *parent);
+    explicit Cell(QVector2D start_position, QVector2D velocity, qreal mass, QRect *game_size, QObject *parent);
     static constexpr qreal initial_mass = 2827.43;
 
     void add_mass(qreal amount);
@@ -27,7 +29,7 @@ public:
 
     bool is_object_touching(int object_x, int object_y, int object_radius);
     // NOTE: Could probably make a typedef of this
-    QPointer<Cell> request_split(int mouse_x, int mouse_y, Player *owning_player);
+    QPointer<Cell> request_split(int mouse_x, int mouse_y);
     // qreal calc_radians(int x, int y);
 
     // Getters
@@ -47,7 +49,7 @@ private:
     QRect *_game_size;
 
     // NOTE: used when firing
-    int _velocity;
+    QVector2D _velocity;
 
     qreal _mass;
     int _timer_id;

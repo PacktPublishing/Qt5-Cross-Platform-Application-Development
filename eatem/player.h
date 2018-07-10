@@ -6,6 +6,7 @@
 #include <QVariant>
 #include <QColor>
 #include <QDebug>
+#include <QTimerEvent>
 
 #include "cell.h"
 #include "food.h"

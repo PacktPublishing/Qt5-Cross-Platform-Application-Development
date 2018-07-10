@@ -4,26 +4,31 @@
 #include <QRandomGenerator>
 #include "player.h"
 
-Cell::Cell(QRect *game_size, QObject *parent, int initial_velocity)
+Cell::Cell(QRect *game_size, QObject *parent)
     : QObject(parent)
     , _mass(Cell::initial_mass)
-    , _velocity(initial_velocity)
     , _game_size(game_size)
+    , _timer_id(-1)
 {
     QRandomGenerator random = QRandomGenerator::securelySeeded();
-    if (_game_size->width() == 0 && initial_velocity == 0)
+    if (_game_size->width() == 0)
         _position = QVector2D(random.bounded(1000), random.bounded(1000));
-    else if (initial_velocity == 0)
+    else
         _position = QVector2D(random.bounded(_game_size->width()), random.bounded(_game_size->height()));
-    // else
 
-    if (initial_velocity > 0)
-    {
-        // NOTE: can also pass in a timer type.
-        // default is "coarse"
-        _timer_id = startTimer(100);
-    }
 
+}
+
+Cell::Cell(QVector2D start_position, QVector2D velocity, qreal mass, QRect *game_size, QObject *parent)
+    : QObject(parent)
+    , _mass(mass)
+    , _position(start_position)
+    , _game_size(game_size)
+    , _velocity(velocity)
+{
+    // NOTE: can also pass in a timer type.
+    // default is "coarse"
+    _timer_id = startTimer(100);
 }
 
 int Cell::radius()
@@ -99,6 +104,12 @@ void Cell::request_coordinates(int x, int y)
     // FIXME: slow down with mass
     target *= 3;
 
+    if (_timer_id > 0)
+    {
+        target += _velocity;
+        _velocity *= 0.2;
+    }
+
     /*
     qreal radians = calc_radians(x, y);
 
@@ -173,23 +184,35 @@ bool Cell::is_object_touching(int object_x, int object_y, int object_radius)
 
 void Cell::timerEvent(QTimerEvent *event)
 {
-    if (_velocity <= 0)
+    if (event->timerId() == _timer_id)
     {
-        // FIXME: shut off timer
-        _timer_id;
-        return;
+
+
+        if (_velocity.x() <= 1 && _velocity.y() <= 1)
+        {
+            killTimer(_timer_id);
+            _timer_id = -1;
+        }
     }
+
 }
 
-QPointer<Cell> Cell::request_split(int mouse_x, int mouse_y, Player *owning_player)
+QPointer<Cell> Cell::request_split(int mouse_x, int mouse_y)
 {
     QPointer<Cell> result;
     int two_times_intial = 2 * Cell::initial_mass;
     if (_mass > two_times_intial)
     {
-        // FIXME: add in velocity?
-        Cell *split_cell = new Cell(_game_size, owning_player);
+        QVector2D mouse(mouse_x, mouse_y);
+        QVector2D target = mouse - _position;
+
+        target.normalize();
+        target *= 10;
+
+        // QVector2D start_position, QVector2D velocity, qreal mass, QRect *game_size, QPlayer *owning_player
+        Cell *split_cell = new Cell(_position, target, _mass/2, _game_size, parent());
         result = split_cell;
+
         _mass /= 2;
     }
 

@@ -214,7 +214,12 @@ void Player::handle_touch(Food *food)
 
 void Player::timerEvent(QTimerEvent *event)
 {
-    _can_merge = true;
+    if (event->timerId() == _merge_timer_id)
+    {
+        _can_merge = true;
+        killTimer(_merge_timer_id);
+        _merge_timer_id = -1;
+    }
 }
 
 void Player::handle_touch(Player *other_player)
@@ -234,7 +239,7 @@ void Player::request_split(int mouse_x, int mouse_y)
         // Create a new pointer
         QPointer<Cell> split_cell;
         // request the cells to split
-        split_cell = cell->request_split(mouse_x, mouse_y, this);
+        split_cell = cell->request_split(mouse_x, mouse_y);
         // check to see if we got a new split cell
         if (!split_cell.isNull())
         {
