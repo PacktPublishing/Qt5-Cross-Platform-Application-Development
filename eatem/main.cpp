@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
         return -1;
 
     // Get the root context from our QML engine
-    QQmlContext *root_context = engine.rootContext();
+    // QQmlContext *root_context = engine.rootContext();
     // ------------------------------------------
 
     // Create our `GameInterface`, an interface which abstracts some of the game creation

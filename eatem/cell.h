@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QPointer>
 #include <QVector2D>
-#include <QTimerEvent>
 
 class Player;
 
@@ -35,24 +34,21 @@ public:
     // Getters
     int x();
     int y();
-    int radius();
+    qreal radius();
     qreal mass();
     QVector2D position();
-
-protected:
-    void timerEvent(QTimerEvent *event);
 
 private:
     void validate_coordinates();
 
     QVector2D _position;
     QRect *_game_size;
+    qreal _mass;
 
     // NOTE: used when firing
     QVector2D _velocity;
 
-    qreal _mass;
-    int _timer_id;
+    int _velocity_ticks;
 };
 
 #endif // CELL_H
