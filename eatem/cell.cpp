@@ -1,6 +1,7 @@
 #include "cell.h"
 #include <QtMath>
 #include <QDebug>
+#include <QRandomGenerator>
 #include "player.h"
 
 Cell::Cell(QRect *game_size, QObject *parent, int initial_velocity)
@@ -9,7 +10,13 @@ Cell::Cell(QRect *game_size, QObject *parent, int initial_velocity)
     , _velocity(initial_velocity)
     , _game_size(game_size)
 {
-    _position = QVector2D(100, 100);
+    QRandomGenerator random = QRandomGenerator::securelySeeded();
+    if (_game_size->width() == 0 && initial_velocity == 0)
+        _position = QVector2D(random.bounded(1000), random.bounded(1000));
+    else if (initial_velocity == 0)
+        _position = QVector2D(random.bounded(_game_size->width()), random.bounded(_game_size->height()));
+    // else
+
     if (initial_velocity > 0)
     {
         // NOTE: can also pass in a timer type.
