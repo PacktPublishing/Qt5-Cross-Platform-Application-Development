@@ -2,8 +2,10 @@ function translate(object, this_player)
 {
     var relative_x = object.x + (width/2);
     var relative_y = object.y + (height/2);
-    var scaled_x = relative_x * this_player.zoom_factor;
-    var scaled_y = relative_y * this_player.zoom_factor;
+    // var scaled_x = relative_x * this_player.zoom_factor;
+    // var scaled_y = relative_y * this_player.zoom_factor;
+    var scaled_x = relative_x;
+    var scaled_y = relative_y;
     relative_x = scaled_x - this_player.x;
     relative_y = scaled_y - this_player.y;
     return [relative_x, relative_y];

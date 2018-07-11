@@ -37,12 +37,14 @@ void Cell::validate_coordinates()
     // Check to see if we're within the game width
     if (_position.x() < 0)
         _position.setX(0);
+    // Check to see if we're within the game width
     else if (_position.x() > _game_size->width())
         _position.setX(_game_size->width());
 
     // Check to see if we're within the game height
     if (_position.y() < 0)
         _position.setY(0);
+    // Check to see if we're within the game height
     else if (_position.y() > _game_size->height())
         _position.setY(_game_size->height());
 }
@@ -98,14 +100,39 @@ QVector2D Cell::position()
 void Cell::request_coordinates(int x, int y, Cell *touching_cell)
 {
     // https://gamedev.stackexchange.com/questions/74872/how-to-solve-the-overlap-of-two-circles-that-collide
-    QVector2D target(x, y);
+    QVector2D target_position(x, y);
+
+    // https://gamedev.stackexchange.com/questions/160485/subtracting-magnitude-from-2d-circle-contact/160489#160489
+    QVector2D to_target = target_position - _position;
+    // TODO: calculate me
+    QVector2D normal = (_position - touching_cell->position()).normalized();
+
+    float into_collision = QVector2D::dotProduct(to_target.normalized(), normal);
+    if (into_collision == 0)
+    {
+        qDebug() << to_target.normalized() << normal;
+        qDebug() << "Clobbared" << QVector2D::dotProduct(to_target.normalized(), normal);
+    }
+
+    QVector2D to_target_non_collide = (to_target - normal) * into_collision;
+    if (to_target_non_collide.x() == 0 && to_target_non_collide.y() == 0)
+    {
+        // Flip sign
+        normal.setX(-normal.x());
+        to_target_non_collide = (to_target - normal) * into_collision;
+    }
+    _position += to_target_non_collide;
 
     // Distance between the cells
-    float distance = abs(_position.distanceToPoint(touching_cell->position()));
+    // float distance = abs(_position.distanceToPoint(touching_cell->position()));
+
     // half the amount of overlap
-    // clamp to 0.5?
-    float overlap = qMax(0.5 * (distance  - radius() - touching_cell->radius()), 5.);
-    QVector2D push_vector = (_position - touching_cell->position()).normalized() * overlap;
+    // float overlap = 0.5 * (distance  - radius() - touching_cell->radius());
+
+    // FIXME: adjust this value?
+    // float push_velocity = qMax(overlap, 5.);
+    // Normal is (c2.center - c1.center) for c1
+    // QVector2D push_vector = (_position - touching_cell->position()).normalized();
 
     if (_velocity_ticks > 0)
     {
@@ -119,8 +146,8 @@ void Cell::request_coordinates(int x, int y, Cell *touching_cell)
 
     // QVector2D mouse_velocity(3*cos(radians), 3*sin(radians));
     //_position -= (mouse_velocity - push_vector).normalized() * 3;
-    qDebug() << overlap << distance << radius() << touching_cell->radius();
-    _position -= push_vector;
+    // qDebug() << overlap << distance << radius() << touching_cell->radius();
+    // _position -= push_vector;
     // touching_cells->position() += (mouse_velocity - push_vector).normalized() * 3;
 
     // move cell
@@ -161,7 +188,7 @@ QPointer<Cell> Cell::request_split(int mouse_x, int mouse_y)
 
         target.normalize();
         QVector2D normalized_target(target);
-        target *= 20;
+        target *= 2;
 
         // FIXME: think about pushing cell half the radius to the right
         Cell *split_cell = new Cell(_position, target, _mass/2, _game_size, parent());
