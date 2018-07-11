@@ -1,3 +1,22 @@
+function _draw_circle(centerX, centerY, radius, sides) {
+    var theta = 0;
+    var x = 0;
+    var y = 0;
+
+    graph.beginPath();
+
+    for (var i = 0; i < sides; i++) {
+        theta = (i / sides) * 2 * Math.PI;
+        x = centerX + radius * Math.sin(theta);
+        y = centerY + radius * Math.cos(theta);
+        graph.lineTo(x, y);
+    }
+
+    graph.closePath();
+    graph.stroke();
+    graph.fill();
+}
+
 function translate(object, this_player)
 {
     var relative_x = object.x + (width/2);
@@ -53,6 +72,9 @@ function draw_viruses(context, viruses, this_player)
             continue;
         if (y > height + radius || y < 0 - radius)
             continue;
+        // sets `strokeStyle`
+        // sets `fillStyle`
+        // sets `lineWidth`
         context.beginPath();
         context.fillStyle = "#33ff33"
         context.arc(x,

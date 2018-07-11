@@ -106,22 +106,19 @@ void Cell::request_coordinates(int x, int y, Cell *touching_cell)
     QVector2D to_target = target_position - _position;
     // TODO: calculate me
     QVector2D normal = (_position - touching_cell->position()).normalized();
+    QVector2D target_normalized = to_target.normalized();
 
-    float into_collision = QVector2D::dotProduct(to_target.normalized(), normal);
+    float into_collision = qMin(QVector2D::dotProduct(target_normalized, normal), (float) 0);
     if (into_collision == 0)
     {
-        qDebug() << to_target.normalized() << normal;
-        qDebug() << "Clobbared" << QVector2D::dotProduct(to_target.normalized(), normal);
+        to_target.setX(-to_target.x());
+        into_collision = QVector2D::dotProduct(to_target, normal);
     }
 
     QVector2D to_target_non_collide = (to_target - normal) * into_collision;
-    if (to_target_non_collide.x() == 0 && to_target_non_collide.y() == 0)
-    {
-        // Flip sign
-        normal.setX(-normal.x());
-        to_target_non_collide = (to_target - normal) * into_collision;
-    }
-    _position += to_target_non_collide;
+    // FIXME: add in some sort of clamp down to 3.
+    // or could add in as an acceleration, to avoid the zig-zag
+    _position += to_target_non_collide.normalized()*3;
 
     // Distance between the cells
     // float distance = abs(_position.distanceToPoint(touching_cell->position()));
@@ -141,14 +138,6 @@ void Cell::request_coordinates(int x, int y, Cell *touching_cell)
     }
     // Ok now we need to remove all the magnitude in a certain direction
     // https://math.stackexchange.com/questions/598685/point-deflecting-off-of-a-circle?noredirect=1&lq=1
-
-    // Find the point of intersection
-
-    // QVector2D mouse_velocity(3*cos(radians), 3*sin(radians));
-    //_position -= (mouse_velocity - push_vector).normalized() * 3;
-    // qDebug() << overlap << distance << radius() << touching_cell->radius();
-    // _position -= push_vector;
-    // touching_cells->position() += (mouse_velocity - push_vector).normalized() * 3;
 
     // move cell
     validate_coordinates();
@@ -173,7 +162,6 @@ bool Cell::is_object_touching(int object_x, int object_y, int object_radius)
     int diff_y = qPow(_position.y() - object_y, 2);
 
     return radiuses > diff_x + diff_y;
-
 }
 
 QPointer<Cell> Cell::request_split(int mouse_x, int mouse_y)
@@ -193,7 +181,6 @@ QPointer<Cell> Cell::request_split(int mouse_x, int mouse_y)
         // FIXME: think about pushing cell half the radius to the right
         Cell *split_cell = new Cell(_position, target, _mass/2, _game_size, parent());
 
-        // FIXME: Validate sign here
         _position += normalized_target;
 
         // QVector2D start_position, QVector2D velocity, qreal mass, QRect *game_size, QPlayer *owning_player
