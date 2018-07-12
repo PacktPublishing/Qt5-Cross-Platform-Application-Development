@@ -147,8 +147,6 @@ void Cell::request_coordinates(QVector2D position, QList<Cell *> touching_cells)
     {
         request_coordinates(position);
     }
-
-
 }
 
 bool Cell::is_object_touching(QVector2D other_center, int object_radius)

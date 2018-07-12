@@ -1,20 +1,20 @@
-function _draw_circle(centerX, centerY, radius, sides) {
+function _draw_circle(context, centerX, centerY, radius, sides) {
     var theta = 0;
     var x = 0;
     var y = 0;
 
-    graph.beginPath();
+    context.beginPath();
 
     for (var i = 0; i < sides; i++) {
         theta = (i / sides) * 2 * Math.PI;
         x = centerX + radius * Math.sin(theta);
         y = centerY + radius * Math.cos(theta);
-        graph.lineTo(x, y);
+        context.lineTo(x, y);
     }
 
-    graph.closePath();
-    graph.stroke();
-    graph.fill();
+    context.closePath();
+    context.stroke();
+    context.fill();
 }
 
 function translate(object, this_player)
@@ -72,16 +72,11 @@ function draw_viruses(context, viruses, this_player)
             continue;
         if (y > height + radius || y < 0 - radius)
             continue;
-        // sets `strokeStyle`
-        // sets `fillStyle`
-        // sets `lineWidth`
-        context.beginPath();
-        context.fillStyle = "#33ff33"
-        context.arc(x,
-                    y,
-                    virus.radius, 0, 2*Math.PI);
 
-        context.fill();
+        context.fillStyle = "#33ff33"
+        context.lineWidth = 10
+        context.strokeStyle = "#19D119"
+        _draw_circle(context, x, y, virus.radius, 40);
     }
 
 }

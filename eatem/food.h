@@ -31,9 +31,7 @@ public:
     bool enabled();
     QPoint position();
     void set_enabled(bool value);
-    // FIXME: Figure out if this is needed
     bool is_disabled();
-
 
 private:
     static constexpr qreal _mass = 78.54;

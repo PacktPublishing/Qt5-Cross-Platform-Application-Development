@@ -18,6 +18,8 @@ public:
     explicit Virus(QRect *game_size, QObject *parent = nullptr);
     static constexpr qreal _initial_mass = 22167;
     static constexpr qreal _radius = 84;
+    // agario clone has the intial mass at 100-150, split at 180
+    // static constexpr qreal _split_mass =
 
     int x();
     int y();
