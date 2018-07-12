@@ -56,7 +56,7 @@ protected:
 
 private:
     void validate_coordinates();
-    void _handle_two_cell_case(Cell* left, Cell* right, int x, int mouse_y);
+    void _handle_two_cell_case(Cell* left, Cell* right, QVector2D mouse_position);
 
     // --------------------------------------------------------
     // Here's a list of all our private variables for the class

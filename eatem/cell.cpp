@@ -69,13 +69,12 @@ int Cell::y()
     return _position.y();
 }
 
-void Cell::request_coordinates(int x, int y)
+void Cell::request_coordinates(QVector2D mouse_position)
 {
-    if (abs(x-_position.x()) <= 1 && abs(y-_position.y()) <= 1)
+    if (abs(mouse_position.x()-_position.x()) <= 1 && abs(mouse_position.y()-_position.y()) <= 1)
         return;
 
-    QVector2D mouse(x, y);
-    QVector2D target = mouse - _position;
+    QVector2D target = mouse_position - _position;
     target.normalize();
     // FIXME: slow down with mass
     target *= 3;
@@ -97,11 +96,9 @@ QVector2D Cell::position()
     return _position;
 }
 
-void Cell::request_coordinates(int x, int y, Cell *touching_cell)
+void Cell::request_coordinates(QVector2D target_position, Cell *touching_cell)
 {
     // https://gamedev.stackexchange.com/questions/74872/how-to-solve-the-overlap-of-two-circles-that-collide
-    QVector2D target_position(x, y);
-
     // https://gamedev.stackexchange.com/questions/160485/subtracting-magnitude-from-2d-circle-contact/160489#160489
     QVector2D to_target = target_position - _position;
     // TODO: calculate me
@@ -143,36 +140,43 @@ void Cell::request_coordinates(int x, int y, Cell *touching_cell)
     validate_coordinates();
 }
 
-void Cell::request_coordinates(int x, int y, QList<Cell *> touching_cells)
+void Cell::request_coordinates(QVector2D position, QList<Cell *> touching_cells)
 {
     qDebug() << "Made it here";
     if (touching_cells.isEmpty())
     {
-        request_coordinates(x, y);
+        request_coordinates(position);
     }
 
 
 }
 
-bool Cell::is_object_touching(int object_x, int object_y, int object_radius)
+bool Cell::is_object_touching(QVector2D other_center, int object_radius)
 {
-    // FIXME: clean up naming
     int radiuses = qPow(object_radius + radius(), 2);
-    int diff_x = qPow(_position.x() - object_x, 2);
-    int diff_y = qPow(_position.y() - object_y, 2);
+    int diff_x = qPow(_position.x() - other_center.x(), 2);
+    int diff_y = qPow(_position.y() - other_center.y(), 2);
 
     return radiuses > diff_x + diff_y;
 }
 
-QPointer<Cell> Cell::request_split(int mouse_x, int mouse_y)
+bool Cell::is_object_touching(QPoint center_point, int object_radius)
+{
+    // FIXME: clean up naming
+    int radiuses = qPow(object_radius + radius(), 2);
+    int diff_x = qPow(_position.x() - center_point.x(), 2);
+    int diff_y = qPow(_position.y() - center_point.y(), 2);
+
+    return radiuses > diff_x + diff_y;
+}
+
+QPointer<Cell> Cell::request_split(QVector2D mouse_position)
 {
     QPointer<Cell> result;
     int two_times_intial = 2 * Cell::initial_mass;
     if (_mass > two_times_intial)
     {
-        QVector2D mouse(mouse_x, mouse_y);
-
-        QVector2D target = _position - mouse;
+        QVector2D target = _position - mouse_position;
 
         target.normalize();
         QVector2D normalized_target(target);

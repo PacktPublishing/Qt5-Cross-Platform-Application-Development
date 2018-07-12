@@ -25,6 +25,7 @@ public:
     qreal mass();
     void add_mass(qreal mass);
     void handle_touch(Food *food);
+    QPoint position();
 
 private:
     QPoint _position;

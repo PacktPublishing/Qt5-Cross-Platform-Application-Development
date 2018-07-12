@@ -29,6 +29,7 @@ public:
     qreal mass();
     QColor hue();
     bool enabled();
+    QPoint position();
     void set_enabled(bool value);
     // FIXME: Figure out if this is needed
     bool is_disabled();

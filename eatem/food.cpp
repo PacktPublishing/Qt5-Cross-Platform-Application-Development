@@ -15,6 +15,10 @@ Food::Food(QVector2D intial_velocity, QPoint initial_position, QRect *game_size,
     // FIXME: add in velocity handeling
 }
 
+QPoint Food::position()
+{
+    return _position;
+}
 
 void Food::generate()
 {

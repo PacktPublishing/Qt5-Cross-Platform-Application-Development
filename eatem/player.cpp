@@ -48,13 +48,13 @@ QColor Player::hue()
 
 // `_handle_two_cell_case`
 //         A private function that...
-void Player::_handle_two_cell_case(Cell *left, Cell *right, int mouse_x, int mouse_y)
+void Player::_handle_two_cell_case(Cell *left, Cell *right, QVector2D mouse_position)
 {
-    bool cells_touching = left->is_object_touching(right->x(), right->y(), right->radius());
+    bool cells_touching = left->is_object_touching(right->position(), right->radius());
     if (!cells_touching)
     {
-        left->request_coordinates(mouse_x, mouse_y);
-        right->request_coordinates(mouse_x, mouse_y);
+        left->request_coordinates(mouse_position);
+        right->request_coordinates(mouse_position);
     }
     else if (_can_merge && cells_touching)
     {
@@ -62,12 +62,12 @@ void Player::_handle_two_cell_case(Cell *left, Cell *right, int mouse_x, int mou
     }
     else if (_can_merge)
     {
-        left->request_coordinates(mouse_x, mouse_y);
-        right->request_coordinates(mouse_x, mouse_y);
+        left->request_coordinates(mouse_position);
+        right->request_coordinates(mouse_position);
     }
     else {
-        left->request_coordinates(mouse_x, mouse_y, right);
-        right->request_coordinates(mouse_x, mouse_y, left);
+        left->request_coordinates(mouse_position, right);
+        right->request_coordinates(mouse_position, left);
     }
 }
 
@@ -158,10 +158,11 @@ void Player::combine_cells(Cell *left, Cell *right)
 // https://stackoverflow.com/questions/5060082/eliminating-a-direction-from-a-vector
 void Player::request_coordinates(int x, int y)
 {
+    QVector2D mouse_position(x, y);
     // Hardcode in the most common options, no cell split
     if (_cells.length() == 1)
     {
-        _cells[0]->request_coordinates(x, y);
+        _cells[0]->request_coordinates(mouse_position);
         return;
     }
     // Hardcode in second most common option, cell split once
@@ -169,7 +170,7 @@ void Player::request_coordinates(int x, int y)
     {
         Cell* left = _cells[0];
         Cell* right = _cells[1];
-        return _handle_two_cell_case(left, right, x, y);
+        return _handle_two_cell_case(left, right, mouse_position);
     }
 
     _cell_touches.clear();
@@ -184,12 +185,12 @@ void Player::request_coordinates(int x, int y)
             if (cell == other_cell)
                 continue;
 
-            if (cell->is_object_touching(other_cell->x(), other_cell->y(), other_cell->radius()))
+            if (cell->is_object_touching(other_cell->position(), other_cell->radius()))
                     _cell_touches.insert(cell, other_cell);
         }
 
         QList<Cell*> all_cell_touches = _cell_touches.values(cell);
-        cell->request_coordinates(x, y, all_cell_touches);
+        cell->request_coordinates(mouse_position, all_cell_touches);
     }
 }
 
@@ -198,7 +199,7 @@ void Player::handle_touch(Food *food)
 {
     for (Cell *cell : _cells)
     {
-        if (cell->is_object_touching(food->x(), food->y(), food->radius()))
+        if (cell->is_object_touching(food->position(), food->radius()))
         {
             // disable the food
             food->set_enabled(false);
@@ -234,12 +235,13 @@ void Player::handle_touch(Player *other_player)
 
 void Player::request_split(int mouse_x, int mouse_y)
 {
+    QVector2D mouse_position(mouse_x, mouse_y);
     for (Cell* cell : _cells)
     {
         // Create a new pointer
         QPointer<Cell> split_cell;
         // request the cells to split
-        split_cell = cell->request_split(mouse_x, mouse_y);
+        split_cell = cell->request_split(mouse_position);
         // check to see if we got a new split cell
         if (!split_cell.isNull())
         {
@@ -264,7 +266,7 @@ void Player::handle_touch(Virus *virus)
     for(Cell *cell : _cells)
     {
         // TODO: add in fudge factor to radius
-        if (cell->is_object_touching(virus->x(), virus->y(), virus->radius()))
+        if (cell->is_object_touching(virus->position(), virus->radius()))
         {
             // compare mass since there's no math
             if (cell->mass() <= virus->mass())

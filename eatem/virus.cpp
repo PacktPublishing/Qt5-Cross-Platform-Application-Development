@@ -11,6 +11,11 @@ Virus::Virus(QRect *game_size, QObject *parent)
     _position.setY(random.bounded(_game_size->height()));
 }
 
+QPoint Virus::position()
+{
+    return _position;
+}
+
 void Virus::handle_touch(Food *food)
 {
     if (!food->enabled())
