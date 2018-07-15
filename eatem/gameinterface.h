@@ -3,22 +3,12 @@
 
 #include <QObject>
 #include <QTimer>
+#include <QVariant>
 
-#include "player.h"
-#include "virus.h"
-#include "food.h"
+class Player;
+class Food;
+class Virus;
 
-
-// Need to declare these pointers as Qt metatypes using the
-// `Q_DECLARE_METATYPE` macro so that we can add them into `QVariants`.
-// We need to add them into `QVaraint` so that we can pass them to QML
-// in a `QVariantList`. `QVariantList` works as a list in JavaScript
-
-Q_DECLARE_METATYPE(Virus *)
-Q_DECLARE_METATYPE(Food *)
-Q_DECLARE_METATYPE(Player *)
-
-// NOTE: `QVaraint` will NOT take object values, hence the use of pointers here
 
 
 // `GameInterface` class
@@ -29,7 +19,6 @@ Q_DECLARE_METATYPE(Player *)
 class GameInterface : public QObject
 {
     // `Q_OBJECT` is a macro so that we can use signals and slots on this class
-
     Q_OBJECT
     Q_PROPERTY(QVariantList food READ get_food NOTIFY update_food)
     Q_PROPERTY(QVariantList players READ get_players NOTIFY update_players)

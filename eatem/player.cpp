@@ -1,8 +1,15 @@
 #include "player.h"
 #include <QRandomGenerator>
+#include <QTimerEvent>
 #include <QPointer>
 #include <QDebug>
+#include <QtMath>
 #include "gameinterface.h"
+#include "cell.h"
+#include "food.h"
+#include "virus.h"
+
+Q_DECLARE_METATYPE(Cell *)
 
 
 // The Player constructor function

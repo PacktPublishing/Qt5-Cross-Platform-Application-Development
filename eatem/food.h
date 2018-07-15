@@ -3,11 +3,10 @@
 
 #include <QObject>
 #include <QPoint>
-#include <QRect>
 #include <QColor>
 #include <QVector2D>
-#include <QRandomGenerator>
 
+class QRect;
 
 class Food : public QObject
 {
@@ -19,14 +18,19 @@ class Food : public QObject
     Q_PROPERTY(QColor hue READ hue)
 
 public:
+    // Default constructor, uses `game_size` to ensure creation in the game
     explicit Food(QRect *game_size, QObject *parent = nullptr);
+    // Constructor used when players `fire` off, or create food from themselves
     explicit Food(QVector2D initial_velocity,
                   QPoint initial_position,
                   qreal mass,
                   QRect *game_size,
                   QObject *parent = nullptr);
 
+    // the standard mass used in creation
     static constexpr qreal initial_mass = 78.54;
+    // create a "new" instance of food. Re-enables the food if it's been
+    // disabled (consumed)
     void generate();
 
     int x();
@@ -40,6 +44,7 @@ public:
     bool is_disabled();
 
 protected:
+    // when food is `fired` by players, it has velocity and thus needs an event handeling
     void timerEvent(QTimerEvent *event);
 
 private:

@@ -2,20 +2,17 @@
 #define PLAYER_H
 
 #include <QObject>
-#include <QtMath>
 #include <QVariant>
 #include <QColor>
-#include <QDebug>
-#include <QTimerEvent>
+#include <QPoint>
 
-#include "cell.h"
-#include "food.h"
-#include "virus.h"
-
-Q_DECLARE_METATYPE(Cell *)
-typedef QList<Cell*> CellList;
+class Cell;
+class Food;
+class Virus;
+class QTimerEvent;
 class GameInterface;
 
+typedef QList<Cell*> CellList;
 
 class Player : public QObject
 {

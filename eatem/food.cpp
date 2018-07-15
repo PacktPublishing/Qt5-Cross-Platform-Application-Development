@@ -1,5 +1,7 @@
 #include "food.h"
 #include <QTimerEvent>
+#include <QRandomGenerator>
+#include <QRect>
 
 Food::Food(QRect *game_size, QObject *parent)
     : QObject(parent)

@@ -1,5 +1,18 @@
 #include "gameinterface.h"
+#include "player.h"
+#include "virus.h"
+#include "food.h"
 
+
+// Need to declare these pointers as Qt metatypes using the
+// `Q_DECLARE_METATYPE` macro so that we can add them into `QVariants`.
+// We need to add them into `QVaraint` so that we can pass them to QML
+// in a `QVariantList`. `QVariantList` works as a list in JavaScript
+
+Q_DECLARE_METATYPE(Virus *)
+Q_DECLARE_METATYPE(Food *)
+Q_DECLARE_METATYPE(Player *)
+// NOTE: `QVaraint` will NOT take object values, hence the use of pointers here
 
 GameInterface::GameInterface(QObject *parent)
     : QObject(parent)
@@ -91,8 +104,10 @@ void GameInterface::check_game_object_interactions()
         for (QVariant food_variant : _food)
         {
             Food *food = food_variant.value<Food *>();
-            // FIXME: need to actually clean up if players shoot food here
-            // and below as well
+
+            if (food->is_disabled())
+                continue;
+
             virus->handle_touch(food);
         }
 

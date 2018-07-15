@@ -2,6 +2,7 @@
 #include <QtMath>
 #include <QDebug>
 #include <QRandomGenerator>
+#include <QRect>
 #include "player.h"
 #include "food.h"
 
