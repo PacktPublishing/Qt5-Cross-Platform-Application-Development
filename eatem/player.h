@@ -14,6 +14,7 @@
 
 Q_DECLARE_METATYPE(Cell *)
 typedef QList<Cell*> CellList;
+class GameInterface;
 
 
 class Player : public QObject
@@ -25,9 +26,11 @@ class Player : public QObject
     Q_PROPERTY(int y READ calc_y)
     Q_PROPERTY(qreal zoom_factor READ calc_zoom_factor)
 
-
 public:
-    explicit Player(QRect *game_size, QObject *parent = nullptr);
+    explicit Player(QRect *game_size,
+                    GameInterface *game_interface = nullptr,
+                    QObject *parent = nullptr);
+
     // NOTE: these are invokeables and not slots because it's easier to pass multiple functions
     // into a invokable?
     Q_INVOKABLE void request_coordinates(int x, int y);
@@ -94,6 +97,7 @@ private:
     int _merge_timer_id;
     QRect *_game_size;
     QPoint _average_position;
+    GameInterface *_game_interface;
 };
 
 #endif // PLAYER_H

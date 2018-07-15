@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QRandomGenerator>
 #include "player.h"
+#include "food.h"
 
 Cell::Cell(QRect *game_size, QObject *parent)
     : QObject(parent)
@@ -77,12 +78,13 @@ void Cell::request_coordinates(QVector2D mouse_position)
     QVector2D target = mouse_position - _position;
     target.normalize();
     // FIXME: slow down with mass
-    target *= 3;
 
-    if (_velocity_ticks > 0)
-    {
-        // target += _velocity;
+    if (_velocity_ticks > 0) {
+        target += _velocity;
         _velocity_ticks -= 1;
+    }
+    else {
+        target *= 3;
     }
 
     _position += target;
@@ -108,35 +110,30 @@ void Cell::request_coordinates(QVector2D target_position, Cell *touching_cell)
     float into_collision = qMin(QVector2D::dotProduct(target_normalized, normal), (float) 0);
     if (into_collision == 0)
     {
-        to_target.setX(-to_target.x());
-        into_collision = QVector2D::dotProduct(to_target, normal);
+        to_target.setX(-target_normalized.x());
+        into_collision = QVector2D::dotProduct(target_normalized, normal);
     }
 
     QVector2D to_target_non_collide = (to_target - normal) * into_collision;
-    // FIXME: add in some sort of clamp down to 3.
-    // or could add in as an acceleration, to avoid the zig-zag
-    _position += to_target_non_collide.normalized()*3;
-
-    // Distance between the cells
-    // float distance = abs(_position.distanceToPoint(touching_cell->position()));
-
-    // half the amount of overlap
-    // float overlap = 0.5 * (distance  - radius() - touching_cell->radius());
-
-    // FIXME: adjust this value?
-    // float push_velocity = qMax(overlap, 5.);
-    // Normal is (c2.center - c1.center) for c1
-    // QVector2D push_vector = (_position - touching_cell->position()).normalized();
 
     if (_velocity_ticks > 0)
     {
-        // push_vector += _velocity;
+        // FIXME: rename `_velocity`
+        // NOTE: `to_target_non_collide` is not normalized here
+        qDebug() << _velocity << to_target_non_collide << _position;
+        to_target_non_collide += _velocity;
         _velocity_ticks -= 1;
     }
-    // Ok now we need to remove all the magnitude in a certain direction
-    // https://math.stackexchange.com/questions/598685/point-deflecting-off-of-a-circle?noredirect=1&lq=1
+    else
+    {
+        to_target_non_collide.normalize();
+        to_target_non_collide *= 3;
+    }
 
-    // move cell
+    // FIXME: add in some sort of clamp down to 3.
+    // or could add in as an acceleration, to avoid the zig-zag
+    _position += to_target_non_collide;
+    // validate that we haven't run off the map
     validate_coordinates();
 }
 
@@ -174,11 +171,11 @@ QPointer<Cell> Cell::request_split(QVector2D mouse_position)
     int two_times_intial = 2 * Cell::initial_mass;
     if (_mass > two_times_intial)
     {
-        QVector2D target = _position - mouse_position;
+        QVector2D target = mouse_position - _position;
 
         target.normalize();
         QVector2D normalized_target(target);
-        target *= 2;
+        target *= 3;
 
         // FIXME: think about pushing cell half the radius to the right
         Cell *split_cell = new Cell(_position, target, _mass/2, _game_size, parent());
@@ -189,6 +186,26 @@ QPointer<Cell> Cell::request_split(QVector2D mouse_position)
         result = split_cell;
 
         _mass /= 2;
+    }
+
+    return result;
+}
+
+QPointer<Food> Cell::request_fire_food(QPoint mouse_position)
+{
+    QPointer<Food> result;
+    qreal requested_mass = Food::initial_mass * 2;
+    if (_mass - requested_mass > Cell::initial_mass)
+    {
+        // FIXME: calculate
+        QVector2D intial_velocity;
+
+        // Need to put the new food starting position outside of the
+        // current cell
+        QPoint starting_position;
+
+        Food *new_food = new Food(intial_velocity, starting_position, requested_mass, _game_size);
+        result = new_food;
     }
 
     return result;

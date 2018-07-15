@@ -4,16 +4,8 @@
 #include <QObject>
 #include <QTimer>
 
-// `Player` class
-//    Complex class that manages our player
 #include "player.h"
-
-// `Virus` class
-//     simple class that stores attributes (x/y coordinates, radius) for our virus
 #include "virus.h"
-
-// `Food` class
-//     simple class that stores attributes (x/y coordinates, color) for our food
 #include "food.h"
 
 
@@ -50,6 +42,8 @@ public:
     QVariantList get_food();
     QVariantList get_viruses();
     QVariantList get_players();
+    void track_food_fired_by_players(Food *new_food);
+
     // NOTE: The invokeableness of this will go away
     Q_INVOKABLE void set_game_size(int width, int height);
 

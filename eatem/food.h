@@ -17,10 +17,16 @@ class Food : public QObject
     Q_PROPERTY(int radius READ radius)
     Q_PROPERTY(bool enabled READ enabled)
     Q_PROPERTY(QColor hue READ hue)
+
 public:
     explicit Food(QRect *game_size, QObject *parent = nullptr);
-    explicit Food(QVector2D intial_velocity, QPoint initial_position, QRect *game_size, QObject *parent = nullptr);
+    explicit Food(QVector2D initial_velocity,
+                  QPoint initial_position,
+                  qreal mass,
+                  QRect *game_size,
+                  QObject *parent = nullptr);
 
+    static constexpr qreal initial_mass = 78.54;
     void generate();
 
     int x();
@@ -33,14 +39,20 @@ public:
     void set_enabled(bool value);
     bool is_disabled();
 
+protected:
+    void timerEvent(QTimerEvent *event);
+
 private:
-    static constexpr qreal _mass = 78.54;
     static constexpr qreal _radius = 5.0;
 
     QPoint _position;
     QColor _hue;
     bool _enabled;
     QRect *_game_size;
+    qreal _mass;
+    int _velocity_ticker;
+    QVector2D _initial_velocity;
+    int _timer_id;
 };
 
 #endif // FOOD_H

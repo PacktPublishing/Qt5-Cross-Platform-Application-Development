@@ -5,6 +5,7 @@
 #include <QPointer>
 #include <QVector2D>
 
+class Food;
 class Player;
 
 class Cell : public QObject
@@ -30,6 +31,7 @@ public:
     bool is_object_touching(QVector2D other_center, int object_radius);
     // NOTE: Could probably make a typedef of this
     QPointer<Cell> request_split(QVector2D mouse_position);
+    QPointer<Food> request_fire_food(QPoint mouse_position);
     // qreal calc_radians(int x, int y);
 
     // Getters

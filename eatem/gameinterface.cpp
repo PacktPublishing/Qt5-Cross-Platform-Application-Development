@@ -145,3 +145,8 @@ void GameInterface::set_game_width(int width)
     emit create_game_objects();
 }
 */
+
+void GameInterface::track_food_fired_by_players(Food *new_food)
+{
+    _food.append(QVariant::fromValue<Food*>(new_food));
+}

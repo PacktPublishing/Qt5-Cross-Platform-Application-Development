@@ -1,18 +1,35 @@
 #include "food.h"
+#include <QTimerEvent>
 
 Food::Food(QRect *game_size, QObject *parent)
     : QObject(parent)
     , _game_size(game_size)
+    , _mass(Food::initial_mass)
 {
     generate();
 }
 
-Food::Food(QVector2D intial_velocity, QPoint initial_position, QRect *game_size, QObject *parent)
+Food::Food(QVector2D initial_velocity, QPoint initial_position, qreal mass, QRect *game_size, QObject *parent)
     : QObject(parent)
     , _game_size(game_size)
     , _position(initial_position)
+    , _mass(mass)
+    , _initial_velocity(initial_velocity)
+    , _velocity_ticker(10)
+    , _timer_id(startTimer(500))
+
 {
-    // FIXME: add in velocity handeling
+}
+
+void Food::timerEvent(QTimerEvent *event)
+{
+    if (event->timerId() == _timer_id)
+    {
+        if (_velocity_ticker == 0)
+            killTimer(_timer_id);
+
+        _velocity_ticker--;
+    }
 }
 
 QPoint Food::position()

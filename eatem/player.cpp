@@ -2,11 +2,13 @@
 #include <QRandomGenerator>
 #include <QPointer>
 #include <QDebug>
+#include "gameinterface.h"
 
 
 // The Player constructor function
-Player::Player(QRect *game_size, QObject *parent)
+Player::Player(QRect *game_size, GameInterface *game_interface, QObject *parent)
     : QObject(parent)
+    , _game_interface(game_interface)
     // `_can_merg`e tracks if we can remerge a cell
     // into another cell.
     // defaults to `true`, but changes to false when
@@ -286,5 +288,16 @@ void Player::explode_cell_from_virus(Cell *cell, Virus *virus)
 
 void Player::request_fire_food(int mouse_x, int mouse_y, QString authentication)
 {
-    // FIXME
+    QPoint mouse_position(mouse_x, mouse_y);
+
+    for (Cell* cell : _cells)
+    {
+        // Create a new pointer
+        QPointer<Food> new_food;
+        // request the cells to split
+        new_food = cell->request_fire_food(mouse_position);
+        // check to see if we got a new split cell
+        if (!new_food.isNull() && _game_interface)
+            _game_interface->track_food_fired_by_players(new_food);
+    }
 }
