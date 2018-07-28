@@ -25,7 +25,7 @@ Cell::Cell(QVector2D start_position, QVector2D velocity, qreal mass, QRect *game
     , _position(start_position)
     , _game_size(game_size)
     , _velocity(velocity)
-    , _velocity_ticks(10)
+    , _velocity_ticks(30)
 {
 }
 
@@ -78,14 +78,13 @@ void Cell::request_coordinates(QVector2D mouse_position)
 
     QVector2D target = mouse_position - _position;
     target.normalize();
-    // FIXME: slow down with mass
 
     if (_velocity_ticks > 0) {
         target += _velocity;
         _velocity_ticks -= 1;
     }
     else {
-        target *= 3;
+        target *= velocity();
     }
 
     _position += target;
@@ -101,50 +100,63 @@ QVector2D Cell::position()
 
 void Cell::request_coordinates(QVector2D target_position, Cell *touching_cell)
 {
-    // https://gamedev.stackexchange.com/questions/74872/how-to-solve-the-overlap-of-two-circles-that-collide
-    // https://gamedev.stackexchange.com/questions/160485/subtracting-magnitude-from-2d-circle-contact/160489#160489
     QVector2D to_target = target_position - _position;
-    // TODO: calculate me
-    QVector2D normal = (_position - touching_cell->position()).normalized();
     QVector2D target_normalized = to_target.normalized();
 
-    float into_collision = qMin(QVector2D::dotProduct(target_normalized, normal), (float) 0);
-    if (into_collision == 0)
-    {
-        to_target.setX(-target_normalized.x());
-        into_collision = QVector2D::dotProduct(target_normalized, normal);
-    }
+    QVector2D collision_normal = (_position - touching_cell->position()).normalized();
+    float into_collision_contribution;
 
-    QVector2D to_target_non_collide = (to_target - normal) * into_collision;
+    into_collision_contribution = qMin(QVector2D::dotProduct(target_normalized, collision_normal), (float) 0);
+    collision_normal *= into_collision_contribution;
 
-    if (_velocity_ticks > 0)
-    {
-        // FIXME: rename `_velocity`
-        // NOTE: `to_target_non_collide` is not normalized here
-        qDebug() << _velocity << to_target_non_collide << _position;
+    QVector2D to_target_non_collide = target_normalized - collision_normal;
+
+    if (_velocity_ticks > 0) {
         to_target_non_collide += _velocity;
         _velocity_ticks -= 1;
     }
-    else
-    {
-        to_target_non_collide.normalize();
-        to_target_non_collide *= 3;
+    else {
+        to_target_non_collide *= velocity();
     }
 
     // FIXME: add in some sort of clamp down to 3.
     // or could add in as an acceleration, to avoid the zig-zag
     _position += to_target_non_collide;
-    // validate that we haven't run off the map
+
     validate_coordinates();
+}
+
+qreal Cell::velocity()
+{
+    return 3.;
 }
 
 void Cell::request_coordinates(QVector2D position, QList<Cell *> touching_cells)
 {
-    qDebug() << "Made it here";
     if (touching_cells.isEmpty())
-    {
-        request_coordinates(position);
+        return request_coordinates(position);
+
+    QVector2D to_target = position - _position;
+    QVector2D target_normalized = to_target.normalized();
+    QVector2D to_target_non_collide(target_normalized);
+
+    for (Cell* touching_cell : touching_cells) {
+        QVector2D collision_normal = (_position - touching_cell->position()).normalized();
+        float into_collision_contribution;
+        into_collision_contribution = qMin(QVector2D::dotProduct(target_normalized, collision_normal), (float) 0);
+        collision_normal *= into_collision_contribution;
+        to_target_non_collide -= collision_normal;
     }
+
+    if (_velocity_ticks > 0) {
+        to_target_non_collide += _velocity;
+        _velocity_ticks -= 1;
+    }
+    else {
+        to_target_non_collide *= velocity();
+    }
+
+    _position += to_target_non_collide;
 }
 
 bool Cell::is_object_touching(QVector2D other_center, int object_radius)
@@ -176,7 +188,7 @@ QPointer<Cell> Cell::request_split(QVector2D mouse_position)
 
         target.normalize();
         QVector2D normalized_target(target);
-        target *= 3;
+        target *= 10;
 
         // FIXME: think about pushing cell half the radius to the right
         Cell *split_cell = new Cell(_position, target, _mass/2, _game_size, parent());

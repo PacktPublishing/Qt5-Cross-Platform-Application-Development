@@ -40,6 +40,7 @@ public:
     qreal radius();
     qreal mass();
     QVector2D position();
+    qreal velocity();
 
 private:
     void validate_coordinates();

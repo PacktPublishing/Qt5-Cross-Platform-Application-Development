@@ -174,6 +174,8 @@ void Player::request_coordinates(int x, int y)
         _cells[0]->request_coordinates(mouse_position);
         return;
     }
+    // FIXME: handle `_can_merge` at this level?
+
     // Hardcode in second most common option, cell split once
     else if(_cells.length() == 2)
     {
