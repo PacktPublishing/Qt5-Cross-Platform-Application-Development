@@ -59,7 +59,7 @@ function draw_grid()
 function draw_viruses(context, viruses, this_player)
 {
     var x_y, virus, x, y, radius;
-    for (var i = 0; i < viruses.length / 2; i++)
+    for (var i = 0; i < viruses.length; i++)
     {
         virus = viruses[i];
         radius = virus.radius
@@ -85,9 +85,10 @@ function draw_food(context, feed, this_player)
 {
     var x_y, food, x, y;
 
-    for (var i = 0; i < feed.length / 2; i++)
+    for (var i = 0; i < feed.length; i++)
     {
         food = feed[i];
+
         if (!food.enabled)
             continue;
         x_y = translate(food, this_player);
