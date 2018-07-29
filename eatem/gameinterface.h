@@ -10,12 +10,6 @@ class Food;
 class Virus;
 
 
-
-// `GameInterface` class
-//    is an interface that abstracts away some of the game intialization logic for us.
-//    Additionally responsible for incrementing the game timestep.
-//    NOTE: If the game was more complex, we'd break the timestep
-//    logic out separately of the interface
 class GameInterface : public QObject
 {
     // `Q_OBJECT` is a macro so that we can use signals and slots on this class
@@ -23,8 +17,6 @@ class GameInterface : public QObject
     Q_PROPERTY(QVariantList food READ get_food NOTIFY update_food)
     Q_PROPERTY(QVariantList players READ get_players NOTIFY update_players)
     Q_PROPERTY(QVariantList viruses READ get_viruses NOTIFY update_viruses)
-    // FIXME: Get rid of this
-    Q_PROPERTY(Player* this_player READ get_this_player NOTIFY update_this_player)
 
 public:
     explicit GameInterface(QObject *parent = nullptr);
@@ -32,12 +24,12 @@ public:
     QVariantList get_viruses();
     QVariantList get_players();
     void track_food_fired_by_players(Food *new_food);
+    void track_new_virus(Virus *virus);
+    void remove_virus_from_game(Virus *virus);
 
     // NOTE: The invokeableness of this will go away
     Q_INVOKABLE void set_game_size(int width, int height);
-
-    // FIXME: This will go away
-    Player* get_this_player();
+    Q_INVOKABLE Player* get_this_player(QString authentication);
 
 public slots:
     void increment_game_step();
@@ -60,7 +52,6 @@ signals:
     void update_this_player();
 
 private:
-    Player* _this_player;
     QVariantList _food;
     QVariantList _viruses;
     QVariantList _players;

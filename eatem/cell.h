@@ -31,7 +31,7 @@ public:
     bool is_object_touching(QVector2D other_center, int object_radius);
     // NOTE: Could probably make a typedef of this
     QPointer<Cell> request_split(QVector2D mouse_position);
-    QPointer<Food> request_fire_food(QPoint mouse_position);
+    QPointer<Food> request_fire_food(QVector2D mouse_position, QColor player_hue);
     // qreal calc_radians(int x, int y);
 
     // Getters
@@ -41,6 +41,7 @@ public:
     qreal mass();
     QVector2D position();
     qreal velocity();
+    void set_mass(qreal mass);
 
 private:
     void validate_coordinates();

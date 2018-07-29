@@ -2,6 +2,7 @@
 #include "player.h"
 #include "virus.h"
 #include "food.h"
+#include <QDebug>
 
 
 // Need to declare these pointers as Qt metatypes using the
@@ -19,14 +20,14 @@ GameInterface::GameInterface(QObject *parent)
     , _game_size(new QRect())
 {
     // create our player
-    _this_player = new Player(_game_size);
+    Player *this_player = new Player(_game_size, this);
     // Now we need to add our player to the list of players.
     // Our list of players has a type of `QVariantList`
     // So in order to add to this list, we have to create a new QVariant
 
     // QVariant is a templated class. This means that we need
     // to let the class know what our type is
-    _players.append(QVariant::fromValue<Player*>(_this_player));
+    _players.append(QVariant::fromValue<Player*>(this_player));
     // Note the syntax `QVariant::fromValue<Player*>`
     // We're letting the templated function `fromValue` know
     // That it'll be ingesting the type `Player*`
@@ -50,8 +51,10 @@ void GameInterface::set_game_size(int width, int height)
 
 void GameInterface::create_viruses(int number)
 {
-    for(int i=0; i<number; i++)
-        _viruses.append(QVariant::fromValue<Virus*>(new Virus(_game_size)));
+    for(int i=0; i < number; i++) {
+        Virus *virus = new Virus(_game_size, this);
+        _viruses.append(QVariant::fromValue<Virus*>(virus));
+    }
 }
 
 void GameInterface::slot_game_object_creation()
@@ -79,9 +82,12 @@ QVariantList GameInterface::get_viruses()
     return _viruses;
 }
 
-Player* GameInterface::get_this_player()
+Player* GameInterface::get_this_player(QString authentication)
 {
-    return _this_player;
+    Q_UNUSED(authentication)
+
+    // FIXME: this will be a for loop
+    return _players[0].value<Player *>();
 }
 
 QVariantList GameInterface::get_players()
@@ -98,6 +104,9 @@ void GameInterface::increment_game_step()
 // https://www.reddit.com/r/gamedev/comments/6aqu5x/how_do_games_like_agario_handle_collisions/
 void GameInterface::check_game_object_interactions()
 {
+    if (_viruses.empty())
+        return;
+
     for (QVariant virus_variant : _viruses)
     {
         Virus *virus = virus_variant.value<Virus *>();
@@ -164,4 +173,16 @@ void GameInterface::set_game_width(int width)
 void GameInterface::track_food_fired_by_players(Food *new_food)
 {
     _food.append(QVariant::fromValue<Food*>(new_food));
+    emit update_food();
+}
+
+void GameInterface::track_new_virus(Virus *virus)
+{
+    _viruses.append(QVariant::fromValue<Virus *>(virus));
+    emit update_viruses();
+}
+
+void GameInterface::remove_virus_from_game(Virus *virus)
+{
+   _viruses.removeOne(QVariant::fromValue<Virus*>(virus));
 }

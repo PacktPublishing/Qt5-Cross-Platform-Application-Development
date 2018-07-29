@@ -1,9 +1,11 @@
 #include "player.h"
-#include <QRandomGenerator>
-#include <QTimerEvent>
-#include <QPointer>
+
 #include <QDebug>
 #include <QtMath>
+#include <QPointer>
+#include <QTimerEvent>
+#include <QRandomGenerator>
+
 #include "gameinterface.h"
 #include "cell.h"
 #include "food.h"
@@ -60,6 +62,7 @@ QColor Player::hue()
 void Player::_handle_two_cell_case(Cell *left, Cell *right, QVector2D mouse_position)
 {
     bool cells_touching = left->is_object_touching(right->position(), right->radius());
+    // bool overlaped_enough
     if (!cells_touching)
     {
         left->request_coordinates(mouse_position);
@@ -165,8 +168,10 @@ void Player::combine_cells(Cell *left, Cell *right)
 //     a `Q_INVOKABLE`
 // https://www.reddit.com/r/Agario/comments/34x2fa/game_mechanics_explained_in_depth_numbers_and/
 // https://stackoverflow.com/questions/5060082/eliminating-a-direction-from-a-vector
-void Player::request_coordinates(int x, int y)
+void Player::request_coordinates(int x, int y, QString authentication)
 {
+    Q_UNUSED(authentication)
+
     QVector2D mouse_position(x, y);
     // Hardcode in the most common options, no cell split
     if (_cells.length() == 1)
@@ -244,8 +249,10 @@ void Player::handle_touch(Player *other_player)
 
 }
 
-void Player::request_split(int mouse_x, int mouse_y)
+void Player::request_split(int mouse_x, int mouse_y, QString authentication)
 {
+    Q_UNUSED(authentication)
+
     QVector2D mouse_position(mouse_x, mouse_y);
     for (Cell* cell : _cells)
     {
@@ -292,19 +299,42 @@ void Player::handle_touch(Virus *virus)
 
 void Player::explode_cell_from_virus(Cell *cell, Virus *virus)
 {
-    // FIXME
+    if (!_game_interface)
+        return;
+
+    int number_new_cells = (int) cell->mass() % (int) Cell::initial_mass;
+    if (number_new_cells + _cells.length() > 16)
+        number_new_cells = 16 - _cells.length();
+
+    _can_merge = false;
+    cell->set_mass(Cell::initial_mass);
+    // two radians
+    qreal delta = 6.283 / number_new_cells;
+
+    for (int i=0; i < number_new_cells; i++)
+    {
+        QVector2D velocity(qSin(delta * i), qCos(delta * i));
+        velocity *= 10;
+        Cell *new_cell = new Cell(cell->position(), velocity, Cell::initial_mass, _game_size, this);
+        _cells.append(new_cell);
+        _javascript_cell_list.append(QVariant::fromValue<Cell *>(new_cell));
+    }
+
+    _game_interface->remove_virus_from_game(virus);
 }
 
 void Player::request_fire_food(int mouse_x, int mouse_y, QString authentication)
 {
-    QPoint mouse_position(mouse_x, mouse_y);
+    Q_UNUSED(authentication)
+
+    QVector2D mouse_position(mouse_x, mouse_y);
 
     for (Cell* cell : _cells)
     {
         // Create a new pointer
         QPointer<Food> new_food;
         // request the cells to split
-        new_food = cell->request_fire_food(mouse_position);
+        new_food = cell->request_fire_food(mouse_position, _hue);
         // check to see if we got a new split cell
         if (!new_food.isNull() && _game_interface)
             _game_interface->track_food_fired_by_players(new_food);

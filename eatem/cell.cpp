@@ -1,8 +1,10 @@
 #include "cell.h"
+
 #include <QtMath>
 #include <QDebug>
-#include <QRandomGenerator>
 #include <QRect>
+#include <QRandomGenerator>
+
 #include "player.h"
 #include "food.h"
 
@@ -131,6 +133,11 @@ qreal Cell::velocity()
     return 3.;
 }
 
+void Cell::set_mass(qreal mass)
+{
+   _mass = mass;
+}
+
 void Cell::request_coordinates(QVector2D position, QList<Cell *> touching_cells)
 {
     if (touching_cells.isEmpty())
@@ -204,21 +211,24 @@ QPointer<Cell> Cell::request_split(QVector2D mouse_position)
     return result;
 }
 
-QPointer<Food> Cell::request_fire_food(QPoint mouse_position)
+QPointer<Food> Cell::request_fire_food(QVector2D mouse_position, QColor player_hue)
 {
     QPointer<Food> result;
-    qreal requested_mass = Food::initial_mass * 2;
+    qreal requested_mass = Food::initial_mass * 20;
     if (_mass - requested_mass > Cell::initial_mass)
     {
-        // FIXME: calculate
-        QVector2D intial_velocity;
+        QVector2D to_target = (mouse_position - _position).normalized();
+        QVector2D start(to_target);
+        start *= radius();
+        start *= 1.3;
 
         // Need to put the new food starting position outside of the
         // current cell
-        QPoint starting_position;
-
-        Food *new_food = new Food(intial_velocity, starting_position, requested_mass, _game_size);
+        QPoint starting_position(_position.x() + start.x(), _position.y() + start.y());
+        to_target *= 10;
+        Food *new_food = new Food(to_target, starting_position, requested_mass, _game_size, player_hue);
         result = new_food;
+        _mass -= requested_mass;
     }
 
     return result;

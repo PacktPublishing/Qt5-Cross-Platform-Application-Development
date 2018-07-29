@@ -2,10 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
-// #include <QObject>
 #include "gameinterface.h"
-
-#include <QDebug>
 
 
 int main(int argc, char *argv[])

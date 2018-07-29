@@ -14,6 +14,7 @@ ApplicationWindow {
         id: game_interface
         Component.onCompleted: {
             game_interface.set_game_size(1000, 1000);
+            canvas.this_player = game_interface.get_this_player("AUTHENTICATION");
         }
 
     }
@@ -28,8 +29,9 @@ ApplicationWindow {
         property var feed: game_interface.food
         property var players: game_interface.players
         property var viruses: game_interface.viruses
-        property var this_player: game_interface.this_player
+        property var this_player
         property int gridSize: 30
+        property string authentication
 
         onPaint: {
             context = getContext("2d");
@@ -64,14 +66,14 @@ ApplicationWindow {
 
         Keys.onSpacePressed: {
             var x_y = translate_mouse(mouse);
-            this_player.request_split(x_y[0], x_y[1]);
+            this_player.request_split(x_y[0], x_y[1], "AUTHENTICATION");
         }
 
         Keys.onPressed: {
             if (event.key === Qt.Key_W)
             {
                 var x_y = translate_mouse(mouse);
-                this_player.request_fire_food(x_y[0], x_y[1], "FIXME PUT AUTH HERE");
+                this_player.request_fire_food(x_y[0], x_y[1], "AUTHENTICATION");
                 event.accepted = true
             }
         }
@@ -95,7 +97,7 @@ ApplicationWindow {
             running: true
             onTriggered: {
                 var x_y = canvas.translate_mouse(mouse);
-                canvas.this_player.request_coordinates(x_y[0], x_y[1]);
+                canvas.this_player.request_coordinates(x_y[0], x_y[1], "AUTHENTICATION");
             }
         }
     }

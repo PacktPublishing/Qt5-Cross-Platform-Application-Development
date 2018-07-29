@@ -28,10 +28,8 @@ public:
                     GameInterface *game_interface = nullptr,
                     QObject *parent = nullptr);
 
-    // NOTE: these are invokeables and not slots because it's easier to pass multiple functions
-    // into a invokable?
-    Q_INVOKABLE void request_coordinates(int x, int y);
-    Q_INVOKABLE void request_split(int mouse_x, int mouse_y);
+    Q_INVOKABLE void request_coordinates(int x, int y, QString authentication);
+    Q_INVOKABLE void request_split(int mouse_x, int mouse_y, QString authentication);
     Q_INVOKABLE void request_fire_food(int mouse_x, int mouse_y, QString authentication);
 
     QColor hue();
@@ -62,35 +60,11 @@ private:
     // Here's a list of all our private variables for the class
     // --------------------------------------------------------
 
-    // `_hue`
-    //      The color of the cells/this player
     QColor _hue;
-
-    // `_cells`
-    //      a list of all the cells
     CellList _cells;
-    // The type, `CellList` is `QList` of `Cell*` ( QList<Cell*> )
-    // and is defined on line 15 of this document
-
-
-    // `_javascript_cell_list`
-    //     is a list of all the cells
     QVariantList _javascript_cell_list;
-    // QML needs a `QVariantList` which acts as list in JavaScript
-    // `QVariantList` ==  `QList<QVariant>`
-    // Because this class manages the list of `Cell` pointers, it
-    // also manages this list.
-
-
-    // `_can_merge`
-    //     tracks if a cell can combine again if the player has multiple cells
     bool _can_merge;
-
-    // `_cell_touches`
-    //     A hash of all the cells that touch each other
     QMultiHash<Cell*, Cell*> _cell_touches;
-
-
     int _merge_timer_id;
     QRect *_game_size;
     QPoint _average_position;

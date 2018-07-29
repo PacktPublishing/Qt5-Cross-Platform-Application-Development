@@ -59,6 +59,7 @@ function draw_grid()
 function draw_viruses(context, viruses, this_player)
 {
     var x_y, virus, x, y, radius;
+    // console.log(viruses.length);
     for (var i = 0; i < viruses.length; i++)
     {
         virus = viruses[i];
@@ -76,7 +77,7 @@ function draw_viruses(context, viruses, this_player)
         context.fillStyle = "#33ff33"
         context.lineWidth = 10
         context.strokeStyle = "#19D119"
-        _draw_circle(context, x, y, virus.radius, 40);
+        _draw_circle(context, x, y, virus.radius, 12);
     }
 
 }

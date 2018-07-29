@@ -25,6 +25,7 @@ public:
                   QPoint initial_position,
                   qreal mass,
                   QRect *game_size,
+                  QColor hue,
                   QObject *parent = nullptr);
 
     // the standard mass used in creation
@@ -42,14 +43,14 @@ public:
     QPoint position();
     void set_enabled(bool value);
     bool is_disabled();
+    QVector2D intial_velocity();
 
 protected:
     // when food is `fired` by players, it has velocity and thus needs an event handeling
     void timerEvent(QTimerEvent *event);
+    void validate_coordinates();
 
 private:
-    static constexpr qreal _radius = 5.0;
-
     QPoint _position;
     QColor _hue;
     bool _enabled;
