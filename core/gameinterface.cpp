@@ -20,33 +20,29 @@ GameInterface::GameInterface(QObject *parent)
     , _game_size(new QRect())
 {
     // create our player
-    Player *this_player = new Player(_game_size, this);
+    // Player *this_player = new Player(_game_size, this);
     // Now we need to add our player to the list of players.
     // Our list of players has a type of `QVariantList`
     // So in order to add to this list, we have to create a new QVariant
 
     // QVariant is a templated class. This means that we need
     // to let the class know what our type is
-    _players.append(QVariant::fromValue<Player*>(this_player));
+    // _players.append(QVariant::fromValue<Player*>(this_player));
     // Note the syntax `QVariant::fromValue<Player*>`
     // We're letting the templated function `fromValue` know
     // That it'll be ingesting the type `Player*`
     // Which is a pointer to our player instance.
 
-    emit update_this_player();
+    // emit update_this_player();
 
-    connect(this, &GameInterface::create_game_objects, this, &GameInterface::slot_game_object_creation);
     _game_interval.setInterval(100);
     connect(&_game_interval, &QTimer::timeout, this, &GameInterface::increment_game_step);
-    _game_interval.start();
 }
 
 void GameInterface::set_game_size(int width, int height)
 {
     _game_size->setHeight(height);
     _game_size->setWidth(width);
-    // FIXME: change naming
-    slot_game_object_creation();
 }
 
 void GameInterface::create_viruses(int number)
@@ -57,7 +53,7 @@ void GameInterface::create_viruses(int number)
     }
 }
 
-void GameInterface::slot_game_object_creation()
+void GameInterface::create_game_objects()
 {
     create_food(1000);
     create_viruses();
@@ -98,6 +94,12 @@ QVariantList GameInterface::get_players()
 void GameInterface::increment_game_step()
 {
     check_game_object_interactions();
+}
+
+void GameInterface::remove_player(Player *player)
+{
+    _players.removeOne(QVariant::fromValue<Player*>(player));
+    emit update_players();
 }
 
 // howto handle collisions
@@ -148,7 +150,7 @@ void GameInterface::check_game_object_interactions()
         // Now iterate through every other player variant
         for (QVariant other_player_variant : _players)
         {
-            // cast the other player variant into into a `Virus` pointer
+            // cast the other player variant into into a `Player` pointer
             Player *other_player = other_player_variant.value<Player*>();
             if (player == other_player)
                 continue;
@@ -184,5 +186,24 @@ void GameInterface::track_new_virus(Virus *virus)
 
 void GameInterface::remove_virus_from_game(Virus *virus)
 {
-   _viruses.removeOne(QVariant::fromValue<Virus*>(virus));
+    _viruses.removeOne(QVariant::fromValue<Virus*>(virus));
+}
+
+QRect *GameInterface::game_size()
+{
+    return _game_size;
+
+}
+
+void GameInterface::start_game()
+{
+    // FIXME: add in checks for game size!
+    create_game_objects();
+    _game_interval.start();
+}
+
+void GameInterface::add_player(Player *player)
+{
+    _players.append(QVariant::fromValue<Player*>(player));
+    emit update_players();
 }

@@ -1,40 +1,53 @@
 #include "game.h"
+#include "player.h"
+#include <QJsonObject>
+#include <QWebSocket>
+#include <QJsonArray>
+#include "authentication.h"
 
-namespace {
-     // https://stackoverflow.com/questions/18862963/qt-c-random-string-generation
-    QString GetRandomString()
-    {
-       const QString possibleCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
-       const int randomStringLength = 12; // assuming you want random strings of 12 characters
-       const int length_characters = possibleCharacters.length();
-        QRandomGenerator random = QRandomGenerator::securelySeeded();
-        QString randomString;
-       for(int i=0; i<randomStringLength; ++i)
-       {
-           int index = random.bounded(length_characters);
-           QChar nextChar = possibleCharacters.at(index);
-           randomString.append(nextChar);
-       }
-        return randomString;
-    }
+// https://stackoverflow.com/questions/18862963/qt-c-random-string-generation
+QString GetRandomString()
+{
+   const QString possibleCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
+   const int randomStringLength = 12; // assuming you want random strings of 12 characters
+   const int length_characters = possibleCharacters.length();
+    QRandomGenerator random = QRandomGenerator::securelySeeded();
+    QString randomString;
+   for(int i=0; i<randomStringLength; ++i)
+   {
+       int index = random.bounded(length_characters);
+       QChar nextChar = possibleCharacters.at(index);
+       randomString.append(nextChar);
+   }
+    return randomString;
 }
 
 Game::Game(QObject *parent)
     : QObject(parent)
-    , _websocket_server(new QWebSocketServer("Eatem", QWebSocketServer::NonSecureMode))
     , _webchannel(new QWebChannel())
+    , _websocket_server(new QWebSocketServer("Eatem", QWebSocketServer::NonSecureMode))
     , _game_interface(new GameInterface(this))
+    , _auth(new Authentication())
+{
+    _webchannel->registerObject("interface", _game_interface);
+    _webchannel->registerObject("authentication", _auth);
+    connect(_websocket_server, &QWebSocketServer::newConnection,
+            this, &Game::handle_new_connection);
+
+    connect(this, &Game::client_connected, _webchannel, &QWebChannel::connectTo);
+
+}
+
+void Game::start()
 {
     bool listening = _websocket_server->listen(QHostAddress::LocalHost, 5555);
-    Q_UNUSED(listening)
-    _webchannel->registerObject("interface", _game_interface);
-    // NOTE: intentional memory link
-    _webchannel->registerObject("authentication", new QString());
-    connect(_websocket_server, &QWebSocketServer::newConnection,
-            this, &GameInterface::handle_new_connection);
+    qDebug() << listening;
+    if (!listening)
+        return;
 
-    connect(this, &GameInterface::client_connected, _webchannel, &QWebChannel::connectTo);
-
+    // NOTE: should think about setting game interval in here too?
+    _game_interface->set_game_size(1000, 1000);
+    _game_interface->start_game();
 }
 
 void Game::handle_new_connection()
@@ -43,19 +56,30 @@ void Game::handle_new_connection()
     // QString origin = web_socket->origin();
     WebSocketTransport *transport = new WebSocketTransport(web_socket);
     emit client_connected(transport);
-    Player *new_player = new Player(GetRandomString());
+    QString authentication = GetRandomString();
+    Player *new_player = new Player(authentication, _game_interface->game_size(), _game_interface);
+    _game_interface->add_player(new_player);
     // FIXME: Figure out a better way to manage this memory
     // currently connecting the WebSocket destroyed to the Player delete Later slot
-    connect(web_socket, &QWebSocket::destroyed, new_player, &Player::deleteLater);
+    connect(web_socket, &QWebSocket::destroyed, [this, new_player](){
+        _game_interface->remove_player(new_player);
+        new_player->deleteLater();});
+    // https://code.woboq.org/qt5/qtwebchannel/src/webchannel/qmetaobjectpublisher.cpp.html#290
+    // NOTE: might want to take the "specific update" route as seen in the code
+    // FIXME: Should probably use consts instead of hardcoding strings in here
     QJsonObject message;
-    /*
-    Set property type to be property update
-    "type": 2
-    set the object to be authentication
-    "object": "authentication"
-    "property": property Index
-    "value" my_authentication_string
-    */
-    transport->sendMessage(message);
-    _players.append(QVariant::fromValue<Player*>(new_player));
+
+    QJsonObject properties;
+    properties["0"] = authentication;
+
+    message[QStringLiteral("object")] = "authentication";
+    // Note: probably leave signals empty?
+    message[QStringLiteral("signals")] = QJsonObject();
+
+    // for index in properities
+    // propertyValue = propertyMap[index]
+    // object.__propertyCache__[propertyIndex] = propertyValue;
+    message[QStringLiteral("properties")] = properties;
+    message["type"] = 2;
+    // transport->sendMessage(message);
 }

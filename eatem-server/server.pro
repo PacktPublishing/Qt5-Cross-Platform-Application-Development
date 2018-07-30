@@ -24,4 +24,5 @@ SOURCES += \
 
 HEADERS += \
     game.h \
-    websockettransport.h
+    websockettransport.h \
+    authentication.h

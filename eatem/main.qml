@@ -1,23 +1,44 @@
 import QtQuick 2.11
 import QtQuick.Controls 1.4
-import GameInterfaces 1.0
 
 import "../core/app.js" as App
+import "../core/qwebchannel.js" as WebChannel
+import Qt.WebSockets 1.0
 
 
 ApplicationWindow {
     id: window
     title: "eatem"
     visible: true
+    property var game_interface
 
-    GameInterface {
-        id: game_interface
-        Component.onCompleted: {
-            game_interface.set_game_size(1000, 1000);
-            canvas.this_player = game_interface.get_this_player("AUTHENTICATION");
+    WebSocket {
+        id: socket
+        active: true
+        url: "ws://localhost:5555"
+         onStatusChanged: {
+            switch (socket.status) {
+            case WebSocket.Error:
+                console.error("Error: " + socket.errorString);
+                break;
+            case WebSocket.Closed:
+                console.error("Error: Socket at " + url + " closed.");
+                break;
+            case WebSocket.Open:
+                //open the webchannel with the socket as transport
+                new WebChannel.QWebChannel(socket, function(channel) {
+                    window.channel = channel;
+                    window.game_interface = channel.objects.interface;
+                    canvas.feed = window.game_interface.food;
+                    canvas.players = window.game_interface.players;
+                    canvas.viruses = window.game_interface.viruses
+                });
+                canvas.game_loop();
+                break;
+            }
         }
-
     }
+
 
     Canvas {
         id: canvas
@@ -26,16 +47,16 @@ ApplicationWindow {
         contextType: "2d"
         property color clear_color: 'white'
         property var context
-        property var feed: game_interface.food
-        property var players: game_interface.players
-        property var viruses: game_interface.viruses
+        property var feed
+        property var players
+        property var viruses
         property var this_player
         property int gridSize: 30
         property string authentication
 
-        onPaint: {
+        Component.onCompleted:
+        {
             context = getContext("2d");
-            game_loop();
         }
 
         function game_loop()

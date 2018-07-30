@@ -15,7 +15,7 @@ Q_DECLARE_METATYPE(Cell *)
 
 
 // The Player constructor function
-Player::Player(QRect *game_size, GameInterface *game_interface, QObject *parent)
+Player::Player(QString authentication, QRect *game_size, GameInterface *game_interface, QObject *parent)
     : QObject(parent)
     , _game_interface(game_interface)
     // `_can_merg`e tracks if we can remerge a cell
@@ -24,6 +24,7 @@ Player::Player(QRect *game_size, GameInterface *game_interface, QObject *parent)
     // we request a split
     , _can_merge(true)
     , _game_size(game_size)
+    , _authentication(authentication)
 {
     // create a random number generator to get a random color
     QRandomGenerator random = QRandomGenerator::securelySeeded();
@@ -137,6 +138,11 @@ qreal Player::calc_zoom_factor()
         return .85;
     else
         return .8;
+}
+
+QString Player::authentication()
+{
+    return _authentication;
 }
 
 // `combine_cells`

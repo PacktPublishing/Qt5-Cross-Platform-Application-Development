@@ -5,6 +5,7 @@
 #include <QVariant>
 #include <QColor>
 #include <QPoint>
+#include <QString>
 
 class Cell;
 class Food;
@@ -24,7 +25,8 @@ class Player : public QObject
     Q_PROPERTY(qreal zoom_factor READ calc_zoom_factor)
 
 public:
-    explicit Player(QRect *game_size,
+    explicit Player(QString authentication,
+                    QRect *game_size,
                     GameInterface *game_interface = nullptr,
                     QObject *parent = nullptr);
 
@@ -43,6 +45,7 @@ public:
     int calc_x();
     int calc_y();
     qreal calc_zoom_factor();
+    QString authentication();
 
 signals:
     void cells_updated();
@@ -69,6 +72,7 @@ private:
     QRect *_game_size;
     QPoint _average_position;
     GameInterface *_game_interface;
+    QString _authentication;
 };
 
 #endif // PLAYER_H

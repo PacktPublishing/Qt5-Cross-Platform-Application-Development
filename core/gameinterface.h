@@ -26,26 +26,26 @@ public:
     void track_food_fired_by_players(Food *new_food);
     void track_new_virus(Virus *virus);
     void remove_virus_from_game(Virus *virus);
+    QRect *game_size();
+    void start_game();
+    void add_player(Player* player);
 
-    // NOTE: The invokeableness of this will go away
-    Q_INVOKABLE void set_game_size(int width, int height);
+    void set_game_size(int width, int height);
     Q_INVOKABLE Player* get_this_player(QString authentication);
 
 public slots:
     void increment_game_step();
+    void remove_player(Player *player);
     // void set_game_height(int height);
     // void set_game_width(int width);
 
 protected:
+    void create_game_objects();
     void create_viruses(int number=5);
     void create_food(int number=500);
     void check_game_object_interactions();
 
-protected slots:
-    void slot_game_object_creation();
-
 signals:
-    void create_game_objects();
     void update_food();
     void update_viruses();
     void update_players();

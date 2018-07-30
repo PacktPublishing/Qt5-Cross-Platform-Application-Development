@@ -9,11 +9,16 @@
 
 #include "gameinterface.h"
 
+
+class Authentication;
+
+
 class Game : public QObject
 {
     Q_OBJECT
 public:
     explicit Game(QObject *parent = nullptr);
+    void start();
 
 protected slots:
     void handle_new_connection();
@@ -27,6 +32,7 @@ private:
     QWebChannel *_webchannel;
      // Web Socket Server
     QWebSocketServer *_websocket_server;
+    Authentication *_auth;
 };
 
 #endif // GAME_H

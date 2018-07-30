@@ -2,8 +2,6 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
-#include "gameinterface.h"
-
 
 int main(int argc, char *argv[])
 {
@@ -12,8 +10,6 @@ int main(int argc, char *argv[])
 
     // Create our application, which controls our event loop
     QGuiApplication app(argc, argv);
-
-    qmlRegisterType<GameInterface>("GameInterfaces", 1, 0, "GameInterface");
 
     // Create our QML application engine, which handles our QML
     QQmlApplicationEngine engine;
