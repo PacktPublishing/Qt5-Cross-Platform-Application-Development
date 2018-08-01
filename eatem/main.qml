@@ -11,11 +11,29 @@ ApplicationWindow {
     title: "eatem"
     visible: true
     property var game_interface
+    property string authentication;
 
     WebSocket {
         id: socket
         active: true
         url: "ws://localhost:5555"
+
+        property var send: function(arg) {
+            sendTextMessage(arg);
+        }
+
+        onTextMessageReceived: {
+            onmessage({data: message});
+        }
+
+        property var onmessage
+
+        function set_auth_code(new_auth)
+        {
+            window.authentication = new_auth;
+
+        }
+
          onStatusChanged: {
             switch (socket.status) {
             case WebSocket.Error:
@@ -26,14 +44,19 @@ ApplicationWindow {
                 break;
             case WebSocket.Open:
                 //open the webchannel with the socket as transport
-                new WebChannel.QWebChannel(socket, function(channel) {
-                    window.channel = channel;
-                    window.game_interface = channel.objects.interface;
-                    canvas.feed = window.game_interface.food;
-                    canvas.players = window.game_interface.players;
-                    canvas.viruses = window.game_interface.viruses
+                new WebChannel.QWebChannel(socket, set_auth_code, function(channel) {
+                    var game_interface = channel.objects.interface
+                    window.game_interface = game_interface;
+                    canvas.feed = game_interface.food;
+                    canvas.players = game_interface.players;
+                    canvas.viruses = game_interface.viruses
+                    console.log(authentication)
+                    game_interface.get_player(authentication, function(this_player){
+                        canvas.this_player = this_player;
+                        console.log(this_player);
+                        canvas.running = true;
+                    });
                 });
-                canvas.game_loop();
                 break;
             }
         }
@@ -53,9 +76,15 @@ ApplicationWindow {
         property var this_player
         property int gridSize: 30
         property string authentication
+        property bool running: false
 
-        Component.onCompleted:
+        onRunningChanged:
         {
+            game_loop();
+            lineTimer.start();
+        }
+
+        onPaint: {
             context = getContext("2d");
         }
 
@@ -86,15 +115,21 @@ ApplicationWindow {
         }
 
         Keys.onSpacePressed: {
+            if (!running)
+                return;
+
             var x_y = translate_mouse(mouse);
-            this_player.request_split(x_y[0], x_y[1], "AUTHENTICATION");
+            this_player.request_split(x_y[0], x_y[1], window.authentication);
         }
 
         Keys.onPressed: {
+            if (!running)
+                return;
+
             if (event.key === Qt.Key_W)
             {
                 var x_y = translate_mouse(mouse);
-                this_player.request_fire_food(x_y[0], x_y[1], "AUTHENTICATION");
+                this_player.request_fire_food(x_y[0], x_y[1], window.authentication);
                 event.accepted = true
             }
         }
@@ -115,10 +150,9 @@ ApplicationWindow {
             id: lineTimer
             interval: 10
             repeat: true
-            running: true
             onTriggered: {
                 var x_y = canvas.translate_mouse(mouse);
-                canvas.this_player.request_coordinates(x_y[0], x_y[1], "AUTHENTICATION");
+                canvas.this_player.request_coordinates(x_y[0], x_y[1], window.authentication);
             }
         }
     }

@@ -11,10 +11,9 @@ class Player;
 class Cell : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int x READ x)
-    Q_PROPERTY(int y READ y)
-    Q_PROPERTY(int radius READ radius)
-    Q_PROPERTY(qreal mass READ mass)
+    Q_PROPERTY(int x READ x NOTIFY x_changed)
+    Q_PROPERTY(int y READ y NOTIFY y_changed)
+    Q_PROPERTY(int radius READ radius NOTIFY radius_changed)
 
 public:
     explicit Cell(QRect *game_size, QObject *parent);
@@ -42,6 +41,11 @@ public:
     QVector2D position();
     qreal velocity();
     void set_mass(qreal mass);
+
+signals:
+    void x_changed();
+    void y_changed();
+    void radius_changed();
 
 private:
     void validate_coordinates();

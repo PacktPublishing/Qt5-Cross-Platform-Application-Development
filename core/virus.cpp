@@ -51,6 +51,9 @@ void Virus::validate_coordinates()
     // Check to see if we're within the game height
     else if (_position.y() > _game_size->height())
         _position.setY(_game_size->height());
+
+    emit x_change();
+    emit y_change();
 }
 
 void Virus::timerEvent(QTimerEvent *event)
@@ -115,4 +118,5 @@ qreal Virus::mass()
 void Virus::add_mass(qreal mass)
 {
     _mass += mass;
+    emit radius_change();
 }

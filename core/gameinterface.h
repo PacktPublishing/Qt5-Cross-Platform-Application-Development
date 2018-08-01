@@ -31,7 +31,7 @@ public:
     void add_player(Player* player);
 
     void set_game_size(int width, int height);
-    Q_INVOKABLE Player* get_this_player(QString authentication);
+    Q_INVOKABLE Player* get_player(QString authentication);
 
 public slots:
     void increment_game_step();

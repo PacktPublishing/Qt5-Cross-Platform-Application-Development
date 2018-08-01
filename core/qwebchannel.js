@@ -51,9 +51,10 @@ var QWebChannelMessageTypes = {
     disconnectFromSignal: 8,
     setProperty: 9,
     response: 10,
+    auth: 11,
 };
 
-var QWebChannel = function(transport, initCallback)
+var QWebChannel = function(transport, auth_callback, initCallback)
 {
     if (typeof transport !== "object" || typeof transport.send !== "function") {
         console.error("The QWebChannel expects a transport object with a send function and onmessage callback property." +
@@ -87,6 +88,10 @@ var QWebChannel = function(transport, initCallback)
                 break;
             case QWebChannelMessageTypes.propertyUpdate:
                 channel.handlePropertyUpdate(data);
+                break;
+            case QWebChannelMessageTypes.auth:
+                if (auth_callback)
+                    auth_callback(data.auth)
                 break;
             default:
                 console.error("invalid message received:", message.data);

@@ -10,6 +10,7 @@ Food::Food(QRect *game_size, QObject *parent)
     : QObject(parent)
     , _game_size(game_size)
     , _mass(Food::initial_mass)
+    , _hue(QColor::fromHsl(QRandomGenerator::securelySeeded().bounded(360), 255, 127))
 {
     generate();
 }
@@ -71,7 +72,6 @@ void Food::generate()
     _position.setX(random.bounded(_game_size->width()));
     _position.setY(random.bounded(_game_size->height()));
 
-    _hue = QColor::fromHsl(random.bounded(360), 255, 127);
     _enabled = true;
 }
 
@@ -109,6 +109,7 @@ bool Food::enabled()
 void Food::set_enabled(bool value)
 {
     _enabled = value;
+    emit enabled_changed();
 }
 
 bool Food::is_disabled()

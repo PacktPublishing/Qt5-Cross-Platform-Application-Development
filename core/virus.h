@@ -13,9 +13,9 @@ class GameInterface;
 class Virus : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int x READ x)
-    Q_PROPERTY(int y READ y)
-    Q_PROPERTY(int radius READ radius)
+    Q_PROPERTY(int x READ x NOTIFY x_change)
+    Q_PROPERTY(int y READ y NOTIFY y_change)
+    Q_PROPERTY(int radius READ radius NOTIFY radius_change)
 
 public:
     explicit Virus(QRect *game_size, GameInterface *game_interface = nullptr, QObject *parent = nullptr);
@@ -32,6 +32,11 @@ public:
     void add_mass(qreal mass);
     void handle_touch(Food *food);
     QPoint position();
+
+signals:
+    void x_change();
+    void y_change();
+    void radius_change();
 
 protected:
     void timerEvent(QTimerEvent *event);

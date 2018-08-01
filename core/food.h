@@ -11,11 +11,11 @@ class QRect;
 class Food : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int x READ x)
-    Q_PROPERTY(int y READ y)
-    Q_PROPERTY(int radius READ radius)
-    Q_PROPERTY(bool enabled READ enabled)
-    Q_PROPERTY(QColor hue READ hue)
+    Q_PROPERTY(int x READ x NOTIFY x_changed)
+    Q_PROPERTY(int y READ y NOTIFY y_changed)
+    Q_PROPERTY(int radius READ radius CONSTANT)
+    Q_PROPERTY(bool enabled READ enabled NOTIFY enabled_changed)
+    Q_PROPERTY(QColor hue READ hue CONSTANT)
 
 public:
     // Default constructor, uses `game_size` to ensure creation in the game
@@ -44,6 +44,11 @@ public:
     void set_enabled(bool value);
     bool is_disabled();
     QVector2D intial_velocity();
+
+signals:
+    void x_changed();
+    void y_changed();
+    void enabled_changed();
 
 protected:
     // when food is `fired` by players, it has velocity and thus needs an event handeling

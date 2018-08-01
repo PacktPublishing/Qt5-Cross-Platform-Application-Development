@@ -18,11 +18,11 @@ typedef QList<Cell*> CellList;
 class Player : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QColor hue READ hue)
+    Q_PROPERTY(QColor hue READ hue CONSTANT)
     Q_PROPERTY(QVariantList cells READ get_cells NOTIFY cells_updated)
-    Q_PROPERTY(int x READ calc_x)
-    Q_PROPERTY(int y READ calc_y)
-    Q_PROPERTY(qreal zoom_factor READ calc_zoom_factor)
+    Q_PROPERTY(int x READ calc_x NOTIFY x_changed)
+    Q_PROPERTY(int y READ calc_y NOTIFY y_changed)
+    Q_PROPERTY(qreal zoom_factor READ calc_zoom_factor NOTIFY zoom_changed)
 
 public:
     explicit Player(QString authentication,
@@ -34,7 +34,7 @@ public:
     Q_INVOKABLE void request_split(int mouse_x, int mouse_y, QString authentication);
     Q_INVOKABLE void request_fire_food(int mouse_x, int mouse_y, QString authentication);
 
-    QColor hue();
+    const QColor hue() const;
 
     void handle_touch(Food *food);
     void handle_touch(Virus *virus);
@@ -49,6 +49,9 @@ public:
 
 signals:
     void cells_updated();
+    void x_changed();
+    void y_changed();
+    void zoom_changed();
 
 protected:
     void combine_cells(Cell* left, Cell* right);
@@ -63,7 +66,7 @@ private:
     // Here's a list of all our private variables for the class
     // --------------------------------------------------------
 
-    QColor _hue;
+    const QColor _hue;
     CellList _cells;
     QVariantList _javascript_cell_list;
     bool _can_merge;

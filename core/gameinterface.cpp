@@ -78,13 +78,20 @@ QVariantList GameInterface::get_viruses()
     return _viruses;
 }
 
-Player* GameInterface::get_this_player(QString authentication)
+Player* GameInterface::get_player(QString authentication)
 {
-    Q_UNUSED(authentication)
-
-    // FIXME: this will be a for loop
-    return _players[0].value<Player *>();
+    for (QVariant player_variant : _players)
+    {
+        Player *player = player_variant.value<Player *>();
+        if (player->authentication() == authentication)
+        {
+            qDebug() << "found player" << player_variant;
+            return player;
+        }
+    }
+    // FIXME: default error?
 }
+
 
 QVariantList GameInterface::get_players()
 {

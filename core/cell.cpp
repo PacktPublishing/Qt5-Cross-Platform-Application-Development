@@ -51,11 +51,15 @@ void Cell::validate_coordinates()
     // Check to see if we're within the game height
     else if (_position.y() > _game_size->height())
         _position.setY(_game_size->height());
+
+    emit x_changed();
+    emit y_changed();
 }
 
 void Cell::add_mass(qreal amount)
 {
    _mass += amount;
+   emit radius_changed();
 }
 
 qreal Cell::mass()
@@ -136,6 +140,7 @@ qreal Cell::velocity()
 void Cell::set_mass(qreal mass)
 {
    _mass = mass;
+   emit radius_changed();
 }
 
 void Cell::request_coordinates(QVector2D position, QList<Cell *> touching_cells)
@@ -206,6 +211,7 @@ QPointer<Cell> Cell::request_split(QVector2D mouse_position)
         result = split_cell;
 
         _mass /= 2;
+        emit radius_changed();
     }
 
     return result;

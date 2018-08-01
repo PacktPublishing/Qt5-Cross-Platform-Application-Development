@@ -25,15 +25,11 @@ Player::Player(QString authentication, QRect *game_size, GameInterface *game_int
     , _can_merge(true)
     , _game_size(game_size)
     , _authentication(authentication)
-{
-    // create a random number generator to get a random color
-    QRandomGenerator random = QRandomGenerator::securelySeeded();
-
     // get a random color using our random number generator.
     // the hue is the only thing that changes here, the saturation and lightness
     // remain constant
-    _hue = QColor::fromHsl(random.bounded(360), 255, 127);
-
+    , _hue(QColor::fromHsl(QRandomGenerator::securelySeeded().bounded(360),255, 127))
+{
     // A cell is the physcial part of the player, it's the actual representation on the screen
     Cell *start_cell = new Cell(_game_size, this);
 
@@ -52,7 +48,7 @@ Player::Player(QString authentication, QRect *game_size, GameInterface *game_int
 
 // `hue`
 //     Hue getter function
-QColor Player::hue()
+const QColor Player::hue() const
 {
     // return the hue, which is a `QColor` instance
     return _hue;
@@ -176,13 +172,16 @@ void Player::combine_cells(Cell *left, Cell *right)
 // https://stackoverflow.com/questions/5060082/eliminating-a-direction-from-a-vector
 void Player::request_coordinates(int x, int y, QString authentication)
 {
-    Q_UNUSED(authentication)
+    if (authentication != _authentication)
+        return;
 
     QVector2D mouse_position(x, y);
     // Hardcode in the most common options, no cell split
     if (_cells.length() == 1)
     {
         _cells[0]->request_coordinates(mouse_position);
+        emit x_changed();
+        emit y_changed();
         return;
     }
     // FIXME: handle `_can_merge` at this level?
@@ -192,7 +191,10 @@ void Player::request_coordinates(int x, int y, QString authentication)
     {
         Cell* left = _cells[0];
         Cell* right = _cells[1];
-        return _handle_two_cell_case(left, right, mouse_position);
+        _handle_two_cell_case(left, right, mouse_position);
+        emit x_changed();
+        emit y_changed();
+        return;
     }
 
     _cell_touches.clear();
@@ -214,6 +216,8 @@ void Player::request_coordinates(int x, int y, QString authentication)
         QList<Cell*> all_cell_touches = _cell_touches.values(cell);
         cell->request_coordinates(mouse_position, all_cell_touches);
     }
+    emit x_changed();
+    emit y_changed();
 }
 
 
@@ -257,7 +261,8 @@ void Player::handle_touch(Player *other_player)
 
 void Player::request_split(int mouse_x, int mouse_y, QString authentication)
 {
-    Q_UNUSED(authentication)
+    if (authentication != _authentication)
+        return;
 
     QVector2D mouse_position(mouse_x, mouse_y);
     for (Cell* cell : _cells)
@@ -276,6 +281,7 @@ void Player::request_split(int mouse_x, int mouse_y, QString authentication)
             // TODO: put a smaller nubmer in here if we have a bunch of splits
             _merge_timer_id = startTimer(5000);
             _can_merge = false;
+            emit cells_updated();
         }
     }
 }
@@ -331,7 +337,8 @@ void Player::explode_cell_from_virus(Cell *cell, Virus *virus)
 
 void Player::request_fire_food(int mouse_x, int mouse_y, QString authentication)
 {
-    Q_UNUSED(authentication)
+    if (authentication != _authentication)
+        return;
 
     QVector2D mouse_position(mouse_x, mouse_y);
 

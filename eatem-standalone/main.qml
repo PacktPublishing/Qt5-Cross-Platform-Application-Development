@@ -26,9 +26,9 @@ ApplicationWindow {
         contextType: "2d"
         property color clear_color: 'white'
         property var context
-        property var feed: game_interface.food
-        property var players: game_interface.players
-        property var viruses: game_interface.viruses
+        // property var feed: game_interface.food
+        // property var players: game_interface.players
+        // property var viruses: game_interface.viruses
         property var this_player
         property int gridSize: 30
         property string authentication

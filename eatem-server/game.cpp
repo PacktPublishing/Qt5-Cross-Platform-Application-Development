@@ -3,6 +3,7 @@
 #include <QJsonObject>
 #include <QWebSocket>
 #include <QJsonArray>
+#include <QTimer>
 #include "authentication.h"
 
 // https://stackoverflow.com/questions/18862963/qt-c-random-string-generation
@@ -11,8 +12,8 @@ QString GetRandomString()
    const QString possibleCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
    const int randomStringLength = 12; // assuming you want random strings of 12 characters
    const int length_characters = possibleCharacters.length();
-    QRandomGenerator random = QRandomGenerator::securelySeeded();
-    QString randomString;
+   QRandomGenerator random = QRandomGenerator::securelySeeded();
+   QString randomString;
    for(int i=0; i<randomStringLength; ++i)
    {
        int index = random.bounded(length_characters);
@@ -50,36 +51,37 @@ void Game::start()
     _game_interface->start_game();
 }
 
+QJsonObject GetMessage(QString authentication)
+{
+    QJsonObject message;
+    // FIXME: Should probably use consts instead of hardcoding strings in here
+
+    message["auth"] = authentication;
+    message["type"] = 11;
+    return message;
+}
+
 void Game::handle_new_connection()
 {
     QWebSocket *web_socket = _websocket_server->nextPendingConnection();
-    // QString origin = web_socket->origin();
     WebSocketTransport *transport = new WebSocketTransport(web_socket);
+
     emit client_connected(transport);
     QString authentication = GetRandomString();
     Player *new_player = new Player(authentication, _game_interface->game_size(), _game_interface);
     _game_interface->add_player(new_player);
-    // FIXME: Figure out a better way to manage this memory
+    qDebug() << _auth->auth_code();
+
+    // https://code.woboq.org/qt5/qtwebchannel/src/webchannel/qmetaobjectpublisher.cpp.html#290
+    // NOTE: might want to take the "specific update" route as seen in the code
+    QJsonObject message = GetMessage(authentication);
+    // {"data":[{"object":"authentication","properties":{"1":"QUaP1SVsQhRL"},"signals":{"5":[]}}],"type":2}
+    // FIXME: this signal triggers the `connectTo` function from QWebChannel. It clobbers the authenticaiton
+    // Note that there is no property cache at this time
+    transport->sendMessage(message);
+
     // currently connecting the WebSocket destroyed to the Player delete Later slot
     connect(web_socket, &QWebSocket::destroyed, [this, new_player](){
         _game_interface->remove_player(new_player);
         new_player->deleteLater();});
-    // https://code.woboq.org/qt5/qtwebchannel/src/webchannel/qmetaobjectpublisher.cpp.html#290
-    // NOTE: might want to take the "specific update" route as seen in the code
-    // FIXME: Should probably use consts instead of hardcoding strings in here
-    QJsonObject message;
-
-    QJsonObject properties;
-    properties["0"] = authentication;
-
-    message[QStringLiteral("object")] = "authentication";
-    // Note: probably leave signals empty?
-    message[QStringLiteral("signals")] = QJsonObject();
-
-    // for index in properities
-    // propertyValue = propertyMap[index]
-    // object.__propertyCache__[propertyIndex] = propertyValue;
-    message[QStringLiteral("properties")] = properties;
-    message["type"] = 2;
-    // transport->sendMessage(message);
 }
