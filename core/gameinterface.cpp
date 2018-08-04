@@ -19,23 +19,7 @@ GameInterface::GameInterface(QObject *parent)
     : QObject(parent)
     , _game_size(new QRect())
 {
-    // create our player
-    // Player *this_player = new Player(_game_size, this);
-    // Now we need to add our player to the list of players.
-    // Our list of players has a type of `QVariantList`
-    // So in order to add to this list, we have to create a new QVariant
-
-    // QVariant is a templated class. This means that we need
-    // to let the class know what our type is
-    // _players.append(QVariant::fromValue<Player*>(this_player));
-    // Note the syntax `QVariant::fromValue<Player*>`
-    // We're letting the templated function `fromValue` know
-    // That it'll be ingesting the type `Player*`
-    // Which is a pointer to our player instance.
-
-    // emit update_this_player();
-
-    _game_interval.setInterval(100);
+    _game_interval.setInterval(50);
     connect(&_game_interval, &QTimer::timeout, this, &GameInterface::increment_game_step);
 }
 
@@ -57,23 +41,26 @@ void GameInterface::create_game_objects()
 {
     create_food(1000);
     create_viruses();
-    emit update_food();
-    emit update_viruses();
+    emit food_changed();
+    emit viruses_changed();
 }
 
 
 void GameInterface::create_food(int number)
 {
     for(int i=0; i<number; i++)
-        _food.append(QVariant::fromValue<Food*>(new Food(_game_size)));
+    {
+        Food *food = new Food(_game_size);
+        _food.append(QVariant::fromValue<Food*>(food));
+    }
 }
 
-QVariantList GameInterface::get_food()
+QVariantList GameInterface::food()
 {
     return _food;
 }
 
-QVariantList GameInterface::get_viruses()
+QVariantList GameInterface::viruses()
 {
     return _viruses;
 }
@@ -85,7 +72,6 @@ Player* GameInterface::get_player(QString authentication)
         Player *player = player_variant.value<Player *>();
         if (player->authentication() == authentication)
         {
-            qDebug() << "found player" << player_variant;
             return player;
         }
     }
@@ -93,7 +79,7 @@ Player* GameInterface::get_player(QString authentication)
 }
 
 
-QVariantList GameInterface::get_players()
+QVariantList GameInterface::players()
 {
     return _players;
 }
@@ -101,12 +87,15 @@ QVariantList GameInterface::get_players()
 void GameInterface::increment_game_step()
 {
     check_game_object_interactions();
+    // emit players_changed();
+    // emit viruses_changed();
+    // emit food_changed();
 }
 
 void GameInterface::remove_player(Player *player)
 {
     _players.removeOne(QVariant::fromValue<Player*>(player));
-    emit update_players();
+    emit players_changed();
 }
 
 // howto handle collisions
@@ -182,13 +171,13 @@ void GameInterface::set_game_width(int width)
 void GameInterface::track_food_fired_by_players(Food *new_food)
 {
     _food.append(QVariant::fromValue<Food*>(new_food));
-    emit update_food();
+    emit food_changed();
 }
 
 void GameInterface::track_new_virus(Virus *virus)
 {
     _viruses.append(QVariant::fromValue<Virus *>(virus));
-    emit update_viruses();
+    viruses_changed();
 }
 
 void GameInterface::remove_virus_from_game(Virus *virus)
@@ -212,5 +201,5 @@ void GameInterface::start_game()
 void GameInterface::add_player(Player *player)
 {
     _players.append(QVariant::fromValue<Player*>(player));
-    emit update_players();
+    emit players_changed();
 }

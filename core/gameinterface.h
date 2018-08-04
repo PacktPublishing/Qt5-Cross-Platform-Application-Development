@@ -12,17 +12,16 @@ class Virus;
 
 class GameInterface : public QObject
 {
-    // `Q_OBJECT` is a macro so that we can use signals and slots on this class
     Q_OBJECT
-    Q_PROPERTY(QVariantList food READ get_food NOTIFY update_food)
-    Q_PROPERTY(QVariantList players READ get_players NOTIFY update_players)
-    Q_PROPERTY(QVariantList viruses READ get_viruses NOTIFY update_viruses)
+    Q_PROPERTY(QVariantList food READ food NOTIFY food_changed)
+    Q_PROPERTY(QVariantList players READ players NOTIFY players_changed)
+    Q_PROPERTY(QVariantList viruses READ viruses NOTIFY viruses_changed)
 
 public:
     explicit GameInterface(QObject *parent = nullptr);
-    QVariantList get_food();
-    QVariantList get_viruses();
-    QVariantList get_players();
+    QVariantList food();
+    QVariantList viruses();
+    QVariantList players();
     void track_food_fired_by_players(Food *new_food);
     void track_new_virus(Virus *virus);
     void remove_virus_from_game(Virus *virus);
@@ -46,10 +45,9 @@ protected:
     void check_game_object_interactions();
 
 signals:
-    void update_food();
-    void update_viruses();
-    void update_players();
-    void update_this_player();
+    void food_changed();
+    void viruses_changed();
+    void players_changed();
 
 private:
     QVariantList _food;

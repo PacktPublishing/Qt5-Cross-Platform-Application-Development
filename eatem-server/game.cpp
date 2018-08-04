@@ -70,7 +70,6 @@ void Game::handle_new_connection()
     QString authentication = GetRandomString();
     Player *new_player = new Player(authentication, _game_interface->game_size(), _game_interface);
     _game_interface->add_player(new_player);
-    qDebug() << _auth->auth_code();
 
     // https://code.woboq.org/qt5/qtwebchannel/src/webchannel/qmetaobjectpublisher.cpp.html#290
     // NOTE: might want to take the "specific update" route as seen in the code
@@ -82,6 +81,5 @@ void Game::handle_new_connection()
 
     // currently connecting the WebSocket destroyed to the Player delete Later slot
     connect(web_socket, &QWebSocket::destroyed, [this, new_player](){
-        _game_interface->remove_player(new_player);
-        new_player->deleteLater();});
+        _game_interface->remove_player(new_player);});
 }

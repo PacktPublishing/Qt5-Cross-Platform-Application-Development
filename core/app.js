@@ -112,10 +112,11 @@ function draw_food(context, feed, this_player)
 function _draw_player_cells_helper(context, player, this_player)
 {
     var cell, x_y;
+    console.log(JSON.stringify(player.cells));
     for (var cell_number=0; cell_number < player.cells.length; cell_number++)
     {
         cell = player.cells[cell_number];
-        x_y = translate(cell, this_player);
+        x_y = translate(cell, this_player, true);
         context.beginPath();
         context.arc(x_y[0],
                     x_y[1],

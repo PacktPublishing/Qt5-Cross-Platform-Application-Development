@@ -19,7 +19,7 @@ class Player : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QColor hue READ hue CONSTANT)
-    Q_PROPERTY(QVariantList cells READ get_cells NOTIFY cells_updated)
+    Q_PROPERTY(QVariantList cells READ get_cells NOTIFY cells_changed)
     Q_PROPERTY(int x READ calc_x NOTIFY x_changed)
     Q_PROPERTY(int y READ calc_y NOTIFY y_changed)
     Q_PROPERTY(qreal zoom_factor READ calc_zoom_factor NOTIFY zoom_changed)
@@ -48,7 +48,7 @@ public:
     QString authentication();
 
 signals:
-    void cells_updated();
+    void cells_changed();
     void x_changed();
     void y_changed();
     void zoom_changed();

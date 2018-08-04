@@ -9,27 +9,19 @@ class Authentication: public QObject
     Q_PROPERTY(QString auth_code READ auth_code NOTIFY change)
 
 public:
-    explicit Authentication(QString authentication = QString(), QObject *parent = nullptr)
+    explicit Authentication(QObject *parent = nullptr)
         : QObject(parent)
-        , _auth(authentication)
     {
     }
 
     QString auth_code()
     {
-        return _auth;
+        return QString();
     }
 
-    void set_string(QString str)
-    {
-        emit change(str);
-    }
 
 signals:
     void change(QString new_auth);
-
-private:
-    QString _auth;
 
 };
 #endif // AUTHENTICATION_H

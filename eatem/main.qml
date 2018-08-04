@@ -44,16 +44,26 @@ ApplicationWindow {
                 break;
             case WebSocket.Open:
                 //open the webchannel with the socket as transport
-                new WebChannel.QWebChannel(socket, set_auth_code, function(channel) {
+                var webchannel = new WebChannel.QWebChannel(socket, set_auth_code, function(channel) {
                     var game_interface = channel.objects.interface
                     window.game_interface = game_interface;
                     canvas.feed = game_interface.food;
+                    game_interface.food_changed.connect(function(args){
+                        canvas.feed = game_interface.food;
+                    });
+
                     canvas.players = game_interface.players;
-                    canvas.viruses = game_interface.viruses
-                    console.log(authentication)
+                    game_interface.players_changed.connect(function(args){
+                        canvas.players = game_interface.players;
+                    });
+
+                    canvas.viruses = game_interface.viruses;
+                    game_interface.viruses_changed.connect(function(args){
+                        canvas.viruses = game_interface.viruses;
+                    });
+
                     game_interface.get_player(authentication, function(this_player){
                         canvas.this_player = this_player;
-                        console.log(this_player);
                         canvas.running = true;
                     });
                 });

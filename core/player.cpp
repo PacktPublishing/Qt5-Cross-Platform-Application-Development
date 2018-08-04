@@ -161,7 +161,6 @@ void Player::combine_cells(Cell *left, Cell *right)
         _javascript_cell_list.removeOne(QVariant::fromValue<Cell*>(left));
         left->deleteLater();
     }
-    emit cells_updated();
 
 }
 
@@ -281,7 +280,7 @@ void Player::request_split(int mouse_x, int mouse_y, QString authentication)
             // TODO: put a smaller nubmer in here if we have a bunch of splits
             _merge_timer_id = startTimer(5000);
             _can_merge = false;
-            emit cells_updated();
+            emit cells_changed();
         }
     }
 }
