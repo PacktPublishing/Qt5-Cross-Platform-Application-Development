@@ -7,6 +7,7 @@
 
 class Food;
 class Player;
+class Ball;
 
 class Cell : public QObject
 {
@@ -30,8 +31,7 @@ public:
     bool is_object_touching(QVector2D other_center, int object_radius);
     // NOTE: Could probably make a typedef of this
     QPointer<Cell> request_split(QVector2D mouse_position);
-    QPointer<Food> request_fire_food(QVector2D mouse_position, QColor player_hue);
-    // qreal calc_radians(int x, int y);
+    QPointer<Food> request_fire_food(QVector2D mouse_position);
 
     // Getters
     int x();
@@ -42,22 +42,16 @@ public:
     qreal velocity();
     void set_mass(qreal mass);
 
+protected:
+    void _connect_ball_property_signals();
+
 signals:
     void x_changed();
     void y_changed();
     void radius_changed();
 
 private:
-    void validate_coordinates();
-
-    QVector2D _position;
-    QRect *_game_size;
-    qreal _mass;
-
-    // NOTE: used when firing
-    QVector2D _velocity;
-
-    int _velocity_ticks;
+    Ball *_ball_properties;
 };
 
 #endif // CELL_H

@@ -18,17 +18,13 @@ Q_DECLARE_METATYPE(Cell *)
 Player::Player(QString authentication, QRect *game_size, GameInterface *game_interface, QObject *parent)
     : QObject(parent)
     , _game_interface(game_interface)
-    // `_can_merg`e tracks if we can remerge a cell
+    // `_can_merge` tracks if we can remerge a cell
     // into another cell.
     // defaults to `true`, but changes to false when
     // we request a split
     , _can_merge(true)
     , _game_size(game_size)
     , _authentication(authentication)
-    // get a random color using our random number generator.
-    // the hue is the only thing that changes here, the saturation and lightness
-    // remain constant
-    , _hue(QColor::fromHsl(QRandomGenerator::securelySeeded().bounded(360),255, 127))
 {
     // A cell is the physcial part of the player, it's the actual representation on the screen
     Cell *start_cell = new Cell(_game_size, this);
@@ -44,14 +40,6 @@ Player::Player(QString authentication, QRect *game_size, GameInterface *game_int
     // 2. a `QVariantList` composed of `QVariant`s who's values are `Cell*` (`Cell` pointers)
     // Here we create our first `QVariant` who's value is a pointer to our first player Cell
     _javascript_cell_list.append(QVariant::fromValue<Cell*>(start_cell));
-}
-
-// `hue`
-//     Hue getter function
-const QColor Player::hue() const
-{
-    // return the hue, which is a `QColor` instance
-    return _hue;
 }
 
 // `_handle_two_cell_case`
@@ -285,7 +273,7 @@ void Player::request_split(int mouse_x, int mouse_y, QString authentication)
     }
 }
 
-QVariantList Player::get_cells()
+QVariantList Player::cells()
 {
     return _javascript_cell_list;
 }
@@ -346,7 +334,7 @@ void Player::request_fire_food(int mouse_x, int mouse_y, QString authentication)
         // Create a new pointer
         QPointer<Food> new_food;
         // request the cells to split
-        new_food = cell->request_fire_food(mouse_position, _hue);
+        new_food = cell->request_fire_food(mouse_position);
         // check to see if we got a new split cell
         if (!new_food.isNull() && _game_interface)
             _game_interface->track_food_fired_by_players(new_food);

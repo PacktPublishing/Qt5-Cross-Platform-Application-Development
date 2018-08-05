@@ -7,74 +7,53 @@
 
 #include "player.h"
 #include "food.h"
+#include "ball.h"
 
 Cell::Cell(QRect *game_size, QObject *parent)
     : QObject(parent)
-    , _mass(Cell::initial_mass)
-    , _game_size(game_size)
-    , _velocity_ticks(-1)
+    , _ball_properties(new Ball(game_size, Cell::initial_mass, this))
 {
-    QRandomGenerator random = QRandomGenerator::securelySeeded();
-    if (_game_size->width() == 0)
-        _position = QVector2D(random.bounded(1000), random.bounded(1000));
-    else
-        _position = QVector2D(random.bounded(_game_size->width()), random.bounded(_game_size->height()));
+    _ball_properties->set_coordinates_random();
+    _connect_ball_property_signals();
 }
 
 Cell::Cell(QVector2D start_position, QVector2D velocity, qreal mass, QRect *game_size, QObject *parent)
     : QObject(parent)
-    , _mass(mass)
-    , _position(start_position)
-    , _game_size(game_size)
-    , _velocity(velocity)
-    , _velocity_ticks(30)
+    , _ball_properties(new Ball(game_size, velocity, 30, start_position, mass, this))
 {
+    _connect_ball_property_signals();
+}
+
+void Cell::_connect_ball_property_signals()
+{
+    connect(_ball_properties, &Ball::x_changed, this, &Cell::x_changed);
+    connect(_ball_properties, &Ball::y_changed, this, &Cell::y_changed);
+    connect(_ball_properties, &Ball::radius_changed, this, &Cell::radius_changed);
 }
 
 qreal Cell::radius()
 {
-    return qSqrt(_mass/M_PI);
-}
-
-void Cell::validate_coordinates()
-{
-    // Check to see if we're within the game width
-    if (_position.x() < 0)
-        _position.setX(0);
-    // Check to see if we're within the game width
-    else if (_position.x() > _game_size->width())
-        _position.setX(_game_size->width());
-
-    // Check to see if we're within the game height
-    if (_position.y() < 0)
-        _position.setY(0);
-    // Check to see if we're within the game height
-    else if (_position.y() > _game_size->height())
-        _position.setY(_game_size->height());
-
-    emit x_changed();
-    emit y_changed();
+    return _ball_properties->radius();
 }
 
 void Cell::add_mass(qreal amount)
 {
-   _mass += amount;
-   emit radius_changed();
+    _ball_properties->add_mass(amount);
 }
 
 qreal Cell::mass()
 {
-    return _mass;
+    return _ball_properties->mass();
 }
 
 int Cell::x()
 {
-    return _position.x();
+    return _ball_properties->x();
 }
 
 int Cell::y()
 {
-    return _position.y();
+    return _ball_properties->y();
 }
 
 void Cell::request_coordinates(QVector2D mouse_position)
@@ -101,7 +80,7 @@ void Cell::request_coordinates(QVector2D mouse_position)
 
 QVector2D Cell::position()
 {
-    return _position;
+    return _ball_properties->position();
 }
 
 void Cell::request_coordinates(QVector2D target_position, Cell *touching_cell)
@@ -139,8 +118,7 @@ qreal Cell::velocity()
 
 void Cell::set_mass(qreal mass)
 {
-   _mass = mass;
-   emit radius_changed();
+    _ball_properties->set_mass(mass);
 }
 
 void Cell::request_coordinates(QVector2D position, QList<Cell *> touching_cells)
@@ -217,7 +195,7 @@ QPointer<Cell> Cell::request_split(QVector2D mouse_position)
     return result;
 }
 
-QPointer<Food> Cell::request_fire_food(QVector2D mouse_position, QColor player_hue)
+QPointer<Food> Cell::request_fire_food(QVector2D mouse_position)
 {
     QPointer<Food> result;
     qreal requested_mass = Food::initial_mass * 20;
@@ -232,7 +210,7 @@ QPointer<Food> Cell::request_fire_food(QVector2D mouse_position, QColor player_h
         // current cell
         QPoint starting_position(_position.x() + start.x(), _position.y() + start.y());
         to_target *= 10;
-        Food *new_food = new Food(to_target, starting_position, requested_mass, _game_size, player_hue);
+        Food *new_food = new Food(to_target, starting_position, requested_mass, _game_size);
         result = new_food;
         _mass -= requested_mass;
     }

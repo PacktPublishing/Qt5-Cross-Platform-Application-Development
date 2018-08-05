@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QVariant>
-#include <QColor>
 #include <QPoint>
 #include <QString>
 
@@ -18,8 +17,7 @@ typedef QList<Cell*> CellList;
 class Player : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QColor hue READ hue CONSTANT)
-    Q_PROPERTY(QVariantList cells READ get_cells NOTIFY cells_changed)
+    Q_PROPERTY(QVariantList cells READ cells NOTIFY cells_changed)
     Q_PROPERTY(int x READ calc_x NOTIFY x_changed)
     Q_PROPERTY(int y READ calc_y NOTIFY y_changed)
     Q_PROPERTY(qreal zoom_factor READ calc_zoom_factor NOTIFY zoom_changed)
@@ -34,13 +32,11 @@ public:
     Q_INVOKABLE void request_split(int mouse_x, int mouse_y, QString authentication);
     Q_INVOKABLE void request_fire_food(int mouse_x, int mouse_y, QString authentication);
 
-    const QColor hue() const;
-
     void handle_touch(Food *food);
     void handle_touch(Virus *virus);
     void handle_touch(Player *other_player);
     bool _touching_helper(int other_x, int other_y);
-    QVariantList get_cells();
+    QVariantList cells();
 
     int calc_x();
     int calc_y();
@@ -66,7 +62,6 @@ private:
     // Here's a list of all our private variables for the class
     // --------------------------------------------------------
 
-    const QColor _hue;
     CellList _cells;
     QVariantList _javascript_cell_list;
     bool _can_merge;

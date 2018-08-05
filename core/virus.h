@@ -9,6 +9,7 @@
 
 class Food;
 class GameInterface;
+class Ball;
 
 class Virus : public QObject
 {
@@ -39,17 +40,11 @@ signals:
     void radius_change();
 
 protected:
-    void timerEvent(QTimerEvent *event);
     void validate_coordinates();
 
 private:
-    QPoint _position;
-    QRect *_game_size;
-    qreal _mass;
+    Ball *_ball_properties;
     GameInterface *_game_interface;
-    int _velocity_ticker;
-    int _timer_id;
-    QVector2D _initial_velocity;
 };
 
 #endif // VIRUS_H
