@@ -12,14 +12,24 @@ Food::Food(QRect *game_size, QObject *parent)
     , _enabled(true)
 {
     _ball_properties->set_coordinates_random();
+    _connect_ball_property_signals();
 }
 
 Food::Food(QVector2D initial_velocity, QPoint initial_position, qreal mass, QRect *game_size, QObject *parent)
     : QObject(parent)
-    , _ball_properties(new Ball(game_size, initial_velocity, 30, initial_position, mass, hue, this))
+    , _ball_properties(new Ball(game_size, initial_velocity, initial_position, mass, this))
     , _enabled(true)
 
 {
+    _connect_ball_property_signals();
+    _ball_properties->set_velocity_ticks(30);
+    _ball_properties->start_counting_velocity_ticks();
+}
+
+void Food::_connect_ball_property_signals()
+{
+    connect(_ball_properties, &Ball::x_changed, this, &Food::x_changed);
+    connect(_ball_properties, &Ball::y_changed, this, &Food::y_changed);
 }
 
 QPoint Food::position()
@@ -29,7 +39,7 @@ QPoint Food::position()
 
 int Food::x()
 {
-    return _ball_properties->x()
+    return _ball_properties->x();
 }
 
 int Food::y()

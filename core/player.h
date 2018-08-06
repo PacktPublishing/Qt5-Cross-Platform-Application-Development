@@ -12,7 +12,9 @@ class Virus;
 class QTimerEvent;
 class GameInterface;
 
+
 typedef QList<Cell*> CellList;
+
 
 class Player : public QObject
 {

@@ -19,9 +19,10 @@ Cell::Cell(QRect *game_size, QObject *parent)
 
 Cell::Cell(QVector2D start_position, QVector2D velocity, qreal mass, QRect *game_size, QObject *parent)
     : QObject(parent)
-    , _ball_properties(new Ball(game_size, velocity, 30, start_position, mass, this))
+    , _ball_properties(new Ball(game_size, velocity, start_position, mass, this))
 {
     _connect_ball_property_signals();
+    _ball_properties->set_velocity_ticks(30);
 }
 
 void Cell::_connect_ball_property_signals()
@@ -58,7 +59,7 @@ int Cell::y()
 
 void Cell::request_coordinates(QVector2D mouse_position)
 {
-    if (abs(mouse_position.x()-_position.x()) <= 1 && abs(mouse_position.y()-_position.y()) <= 1)
+    if (abs(mouse_position.x()-_ball_properties->x()) <= 1 && abs(mouse_position.y()-_ball_properties->y()) <= 1)
         return;
 
     QVector2D target = mouse_position - _position;
@@ -73,9 +74,6 @@ void Cell::request_coordinates(QVector2D mouse_position)
     }
 
     _position += target;
-
-    // ensure we don't run off the map
-    validate_coordinates();
 }
 
 QVector2D Cell::position()
@@ -210,7 +208,7 @@ QPointer<Food> Cell::request_fire_food(QVector2D mouse_position)
         // current cell
         QPoint starting_position(_position.x() + start.x(), _position.y() + start.y());
         to_target *= 10;
-        Food *new_food = new Food(to_target, starting_position, requested_mass, _game_size);
+        Food *new_food = new Food(to_target, starting_position, requested_mass, _ball_properties->game_size());
         result = new_food;
         _mass -= requested_mass;
     }

@@ -20,7 +20,7 @@ class Virus : public QObject
 
 public:
     explicit Virus(QRect *game_size, GameInterface *game_interface = nullptr, QObject *parent = nullptr);
-    explicit Virus(QPoint position, QVector2D initial_velocity, QRect *game_size, GameInterface *game_interface = nullptr, QObject *parent = nullptr);
+    explicit Virus(Ball *ball_properties, GameInterface *game_interface = nullptr, QObject *parent = nullptr);
     static constexpr qreal _initial_mass = 22167;
     static constexpr qreal _radius = 84;
     // agario clone has the intial mass at 100-150, split at 180
@@ -35,12 +35,12 @@ public:
     QPoint position();
 
 signals:
-    void x_change();
-    void y_change();
-    void radius_change();
+    void x_changed();
+    void y_changed();
+    void radius_changed();
 
 protected:
-    void validate_coordinates();
+    void _connect_ball_property_signals();
 
 private:
     Ball *_ball_properties;

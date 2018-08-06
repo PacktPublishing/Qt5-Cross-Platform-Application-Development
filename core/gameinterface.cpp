@@ -105,20 +105,17 @@ void GameInterface::check_game_object_interactions()
     if (_viruses.empty())
         return;
 
-    for (QVariant virus_variant : _viruses)
-    {
-        Virus *virus = virus_variant.value<Virus *>();
-        for (QVariant food_variant : _food)
-        {
-            Food *food = food_variant.value<Food *>();
+    for (QVariant food_variant : _food) {
+        Food *food = food_variant.value<Food *>();
+        if (food->is_disabled())
+            continue;
 
-            if (food->is_disabled())
-                continue;
-
+        for (QVariant virus_variant : _viruses) {
+            Virus *virus = virus_variant.value<Virus *>();
             virus->handle_touch(food);
         }
-
     }
+
     // For each Player QVariant in our QVariantList `_players`...
     for(QVariant player_variant : _players)
     {

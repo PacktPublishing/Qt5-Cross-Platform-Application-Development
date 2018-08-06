@@ -12,20 +12,29 @@ Virus::Virus(QRect *game_size, GameInterface *game_interface, QObject *parent)
     , _ball_properties(new Ball(game_size, Virus::_initial_mass))
     , _game_interface(game_interface)
 {
+    _connect_ball_property_signals();
 }
 
-Virus::Virus(QPoint position, QVector2D initial_velocity, QRect *game_size, GameInterface *game_interface, QObject *parent)
+Virus::Virus(Ball *ball_properties, GameInterface *game_interface, QObject *parent)
     : QObject(parent)
-    , _ball_properties(new Ball(game_size, initial_velocity, 30, position, Virus::_initial_mass, parent))
+    , _ball_properties(ball_properties)
     , _game_interface(game_interface)
 {
-    _ball_properties->set_velocity_ticks(40);
+    _connect_ball_property_signals();
+    _ball_properties->set_velocity_ticks(30);
     _ball_properties->start_counting_velocity_ticks();
 }
 
 QPoint Virus::position()
 {
     return _ball_properties->position();
+}
+
+void Virus::_connect_ball_property_signals()
+{
+    connect(_ball_properties, &Ball::x_changed, this, &Virus::x_changed);
+    connect(_ball_properties, &Ball::y_changed, this, &Virus::y_changed);
+    connect(_ball_properties, &Ball::radius_changed, this, &Virus::radius_changed);
 }
 
 void Virus::handle_touch(Food *food)
@@ -46,8 +55,10 @@ void Virus::handle_touch(Food *food)
         QVector2D velocity = food->intial_velocity().normalized();
         velocity *= 10;
 
-        // FIXME: Use ball copy constructor?
-        Virus *virus = new Virus(_position, velocity, _game_size, _game_interface);
+        Ball *new_ball = new Ball(*_ball_properties);
+        new_ball->set_initial_velocity(velocity);
+
+        Virus *virus = new Virus(new_ball, _game_interface);
         _game_interface->track_new_virus(virus);
         _ball_properties->set_mass(Virus::_initial_mass);
     }

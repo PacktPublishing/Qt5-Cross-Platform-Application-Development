@@ -2,7 +2,10 @@
 #define BALL_H
 
 #include <QObject>
-#include <QTimerEvent>
+#include <QVector2D>
+
+
+class QTimerEvent;
 
 
 class Ball : public QObject
@@ -10,12 +13,11 @@ class Ball : public QObject
     Q_OBJECT
 
 public:
-    explicit Ball(QRect *game_size,
-                  QVector2D intial_velocity,
-                  int velocity_ticks,
-                  QPoint initial_position,
-                  qreal mass,
-                  QObject *parent = nullptr);
+    Ball(QRect *game_size,
+         QVector2D intial_velocity,
+         QPoint initial_position,
+         qreal mass,
+         QObject *parent = nullptr);
 
     explicit Ball(QRect *game_size, qreal mass, QObject *parent = nullptr);
     explicit Ball(const Ball&);
@@ -27,8 +29,11 @@ public:
     QPoint position();
     QRect* game_size();
     QVector2D intial_velocity();
+    int velocity_ticks();
     void set_initial_velocity(QVector2D velocity);
     void set_coordinates_random();
+
+    void request_coordinates(QVector2D mouse_position);
 
     void add_mass(qreal mass);
     void set_mass(qreal mass);
@@ -52,7 +57,7 @@ private:
     qreal _mass;
 
     int _timer_id;
-    int _velocity_ticker;
+    int _velocity_ticks;
     QVector2D _initial_velocity;
 };
 

@@ -1,13 +1,14 @@
 #include "ball.h"
 #include <QRandomGenerator>
+#include <QTimerEvent>
 
-Ball::Ball(QRect *game_size, QVector2D initial_velocity, int velocity_ticks, QPoint initial_position, qreal mass, QObject *parent)
+
+Ball::Ball(QRect *game_size, QVector2D initial_velocity, QPoint initial_position, qreal mass, QObject *parent)
     : QObject(parent)
     , _game_size(game_size)
     , _mass(mass)
     , _initial_velocity(initial_velocity)
-    , _velocity_ticker(velocity_ticks)
-    , _timer_id(startTimer(10))
+    , _velocity_ticks(-1)
 {
 }
 
@@ -15,7 +16,7 @@ Ball::Ball(QRect *game_size, qreal mass, QObject *parent)
     : QObject(parent)
     , _game_size(game_size)
     , _mass(mass)
-    , _velocity_ticker(-1)
+    , _velocity_ticks(-1)
 {
 }
 
@@ -23,7 +24,7 @@ Ball::Ball(QRect *game_size, qreal mass, QObject *parent)
     : QObject(parent)
     , _game_size(game_size)
     , _mass(mass)
-    , _velocity_ticker(-1)
+    , _velocity_ticks(-1)
 {
 }
 
@@ -33,7 +34,7 @@ Ball::Ball(const Ball &old_ball)
     , _position(old_ball.position())
     , _mass(old_ball.mass())
     , _initial_velocity(old_ball.intial_velocity())
-    , _velocity_ticker(-1)
+    , _velocity_ticks(-1)
 {
 }
 
@@ -48,10 +49,10 @@ void Ball::timerEvent(QTimerEvent *event)
     {
         _position.setX(_position.x() + _initial_velocity.x());
         _position.setY(_position.y() + _initial_velocity.y());
-        if (_velocity_ticker == 0)
+        if (_velocity_ticks == 0)
             killTimer(_timer_id);
 
-        _velocity_ticker--;
+        _velocity_ticks--;
         validate_coordinates();
     }
 }
@@ -107,6 +108,11 @@ QVector2D Ball::intial_velocity()
     return _initial_velocity;
 }
 
+int Ball::velocity_ticks()
+{
+    return _velocity_ticks;
+}
+
 void Ball::set_initial_velocity(QVector2D velocity)
 {
     _initial_velocity = velocity;
@@ -121,24 +127,10 @@ void Ball::set_coordinates_random()
 
 void Ball::set_velocity_ticks(int ticks)
 {
-    _velocity_ticker(ticks);
+    _velocity_ticks = ticks;
 }
 
 void Ball::start_counting_velocity_ticks()
 {
     _timer_id = startTimer(10);
-}
-
-void Ball::timerEvent(QTimerEvent *event)
-{
-
-    if (event->timerId() == _timer_id) {
-        _position.setX(_position.x() + _initial_velocity.x());
-        _position.setY(_position.y() + _initial_velocity.y());
-        if (_velocity_ticker == 0)
-            killTimer(_timer_id);
-
-        _velocity_ticker--;
-        validate_coordinates();
-    }
 }

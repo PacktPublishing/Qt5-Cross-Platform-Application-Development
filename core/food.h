@@ -48,11 +48,11 @@ signals:
     void enabled_changed();
 
 protected:
-    void validate_coordinates();
+    void _connect_ball_property_signals();
 
 private:
-    bool _enabled;
     Ball *_ball_properties;
+    bool _enabled;
 };
 
 #endif // FOOD_H
