@@ -46,7 +46,7 @@ Player::Player(QString authentication, QRect *game_size, GameInterface *game_int
 //         A private function that...
 void Player::_handle_two_cell_case(Cell *left, Cell *right, QVector2D mouse_position)
 {
-    bool cells_touching = left->is_object_touching(right->position(), right->radius());
+    bool cells_touching = left->is_touching(right->ball_properties());
     // bool overlaped_enough
     if (!cells_touching)
     {
@@ -196,7 +196,7 @@ void Player::request_coordinates(int x, int y, QString authentication)
             if (cell == other_cell)
                 continue;
 
-            if (cell->is_object_touching(other_cell->position(), other_cell->radius()))
+            if (cell->is_touching(other_cell->ball_properties()))
                     _cell_touches.insert(cell, other_cell);
         }
 
@@ -212,7 +212,7 @@ void Player::handle_touch(Food *food)
 {
     for (Cell *cell : _cells)
     {
-        if (cell->is_object_touching(food->position(), food->radius()))
+        if (cell->is_touching(food->ball_properties()))
         {
             // disable the food
             food->set_enabled(false);
@@ -283,7 +283,7 @@ void Player::handle_touch(Virus *virus)
     for(Cell *cell : _cells)
     {
         // TODO: add in fudge factor to radius
-        if (cell->is_object_touching(virus->position(), virus->radius()))
+        if (cell->is_touching(virus->ball_properties()))
         {
             // compare mass since there's no math
             if (cell->mass() <= virus->mass())

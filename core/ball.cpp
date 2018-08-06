@@ -87,6 +87,16 @@ int Ball::x()
     return _position.x();
 }
 
+bool Ball::is_touching(Ball *other)
+{
+
+    int radiuses = qPow(other->radius()+ radius(), 2);
+    int diff_x = qPow(_position.x() - other.x(), 2);
+    int diff_y = qPow(_position.y() - other.y(), 2);
+
+    return radiuses > diff_x + diff_y;
+}
+
 int Ball::y()
 {
     return _position.y();

@@ -30,6 +30,11 @@ QPoint Virus::position()
     return _ball_properties->position();
 }
 
+Ball* Virus::ball_properties()
+{
+    return _ball_properties;
+}
+
 void Virus::_connect_ball_property_signals()
 {
     connect(_ball_properties, &Ball::x_changed, this, &Virus::x_changed);

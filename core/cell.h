@@ -27,11 +27,12 @@ public:
     void request_coordinates(QVector2D target_position, Cell* touching_cells);
     void request_coordinates(QVector2D position, QList<Cell*> touching_cells);
 
-    bool is_object_touching(QPoint center_point, int object_radius);
-    bool is_object_touching(QVector2D other_center, int object_radius);
+    bool is_touching(Ball *other);
+
     // NOTE: Could probably make a typedef of this
     QPointer<Cell> request_split(QVector2D mouse_position);
     QPointer<Food> request_fire_food(QVector2D mouse_position);
+    void set_mass(qreal mass);
 
     // Getters
     int x();
@@ -40,7 +41,8 @@ public:
     qreal mass();
     QVector2D position();
     qreal velocity();
-    void set_mass(qreal mass);
+    Ball* ball_properties();
+
 
 protected:
     void _connect_ball_property_signals();

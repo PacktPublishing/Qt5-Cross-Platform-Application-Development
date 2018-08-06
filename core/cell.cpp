@@ -114,6 +114,11 @@ qreal Cell::velocity()
     return 3.;
 }
 
+Ball *Cell::ball_properties()
+{
+    return _ball_properties;
+}
+
 void Cell::set_mass(qreal mass)
 {
     _ball_properties->set_mass(mass);
@@ -147,23 +152,9 @@ void Cell::request_coordinates(QVector2D position, QList<Cell *> touching_cells)
     _position += to_target_non_collide;
 }
 
-bool Cell::is_object_touching(QVector2D other_center, int object_radius)
+bool Cell::is_touching(Ball *other)
 {
-    int radiuses = qPow(object_radius + radius(), 2);
-    int diff_x = qPow(_position.x() - other_center.x(), 2);
-    int diff_y = qPow(_position.y() - other_center.y(), 2);
-
-    return radiuses > diff_x + diff_y;
-}
-
-bool Cell::is_object_touching(QPoint center_point, int object_radius)
-{
-    // FIXME: clean up naming
-    int radiuses = qPow(object_radius + radius(), 2);
-    int diff_x = qPow(_position.x() - center_point.x(), 2);
-    int diff_y = qPow(_position.y() - center_point.y(), 2);
-
-    return radiuses > diff_x + diff_y;
+    return _ball_properties->is_touching(other);
 }
 
 QPointer<Cell> Cell::request_split(QVector2D mouse_position)

@@ -41,6 +41,7 @@ public:
     void set_velocity_ticks(int ticks);
     // FIXME: Better name?
     void start_counting_velocity_ticks();
+    bool is_touching(Ball *other);
 
 protected:
     void timerEvent(QTimerEvent *event);

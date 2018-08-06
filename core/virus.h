@@ -33,6 +33,7 @@ public:
     void add_mass(qreal mass);
     void handle_touch(Food *food);
     QPoint position();
+    Ball* ball_properties();
 
 signals:
     void x_changed();

@@ -73,3 +73,8 @@ bool Food::is_disabled()
 {
     return !_enabled;
 }
+
+Ball *Food::ball_properties()
+{
+    return _ball_properties;
+}

@@ -41,6 +41,7 @@ public:
     void set_enabled(bool value);
     bool is_disabled();
     QVector2D intial_velocity();
+    Ball *ball_properties();
 
 signals:
     void x_changed();
