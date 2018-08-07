@@ -112,7 +112,11 @@ function draw_food(context, feed, this_player)
 function _draw_player_cells_helper(context, player, this_player)
 {
     var cell, x_y;
-    console.log(JSON.stringify(player.cells));
+    // console.log(JSON.stringify(player));
+
+    if (!player.cells)
+        return;
+
     for (var cell_number=0; cell_number < player.cells.length; cell_number++)
     {
         cell = player.cells[cell_number];
@@ -129,12 +133,21 @@ function _draw_player_cells_helper(context, player, this_player)
 
 function draw_players(context, players, this_player)
 {
-    var player;
+    var cell, x_y;
+    // console.log(JSON.stringify(players))
 
     for (var z=0; z < players.length; z++)
     {
-        player = players[z];
-        context.fillStyle = player.hue;
-        _draw_player_cells_helper(context, player, this_player)
+        // _draw_player_cells_helper(context, player, this_player)
+        cell = players[z];
+        context.fillStyle = cell.hue;
+        x_y = translate(cell, this_player, true);
+        context.beginPath();
+        context.arc(x_y[0],
+                    x_y[1],
+                    cell.radius,
+                    0, 2*Math.PI);
+
+        context.fill();
     }
 }

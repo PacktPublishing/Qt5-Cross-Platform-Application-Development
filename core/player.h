@@ -22,7 +22,7 @@ class Player : public QObject
     Q_OBJECT
     Q_PROPERTY(int x READ calc_x NOTIFY x_changed)
     Q_PROPERTY(int y READ calc_y NOTIFY y_changed)
-    Q_PROPERTY(QVariantList cells READ cells NOTIFY cells_changed)
+    // Q_PROPERTY(QVariantList cells READ cells NOTIFY cells_changed)
     Q_PROPERTY(qreal zoom_factor READ calc_zoom_factor NOTIFY zoom_changed)
 
 public:
@@ -52,6 +52,7 @@ signals:
     void x_changed();
     void y_changed();
     void zoom_changed();
+    void new_cell(Cell *cell);
 
 protected:
     void combine_cells(Cell* left, Cell* right);

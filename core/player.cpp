@@ -245,12 +245,13 @@ void Player::request_split(int mouse_x, int mouse_y, QString authentication)
         if (!split_cell.isNull())
         {
             // Track the new split cell if we did
-            Cell* new_cell = split_cell.data();
-            _javascript_cell_list.append(QVariant::fromValue<Cell*>(new_cell));
-            _cells.append(new_cell);
+            Cell* cell_data = split_cell.data();
+            _javascript_cell_list.append(QVariant::fromValue<Cell*>(cell_data));
+            _cells.append(cell_data);
             // TODO: put a smaller nubmer in here if we have a bunch of splits
             _merge_timer_id = startTimer(5000);
             _can_merge = false;
+            emit new_cell(cell_data);
             emit cells_changed();
         }
     }

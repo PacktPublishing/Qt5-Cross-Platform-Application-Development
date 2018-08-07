@@ -128,18 +128,20 @@ void Ball::request_coordinates(QPoint mouse_position, QList<Ball *> touching_bal
 
 void Ball::add_mass(qreal mass)
 {
-    _mass =+ mass;
+    _mass += mass;
+    emit radius_changed();
 }
 
 void Ball::remove_mass(qreal mass)
 {
     _mass -= mass;
-
+    emit radius_changed();
 }
 
 void Ball::set_mass(qreal mass)
 {
     _mass = mass;
+    emit radius_changed();
 }
 
 void Ball::move(QVector2D distance)
