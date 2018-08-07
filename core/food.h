@@ -20,11 +20,7 @@ public:
     // Default constructor, uses `game_size` to ensure creation in the game
     explicit Food(QRect *game_size, QObject *parent = nullptr);
     // Constructor used when players `fire` off, or create food from themselves
-    explicit Food(QVector2D initial_velocity,
-                  QPoint initial_position,
-                  qreal mass,
-                  QRect *game_size,
-                  QObject *parent = nullptr);
+    explicit Food(Ball* ball_properties, QObject *parent = nullptr);
 
     // the standard mass used in creation
     static constexpr qreal initial_mass = 78.54;

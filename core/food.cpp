@@ -15,15 +15,16 @@ Food::Food(QRect *game_size, QObject *parent)
     _connect_ball_property_signals();
 }
 
-Food::Food(QVector2D initial_velocity, QPoint initial_position, qreal mass, QRect *game_size, QObject *parent)
+Food::Food(Ball* ball_properties, QObject *parent)
     : QObject(parent)
-    , _ball_properties(new Ball(game_size, initial_velocity, initial_position, mass, this))
+    , _ball_properties(ball_properties)
     , _enabled(true)
 
 {
     _connect_ball_property_signals();
     _ball_properties->set_velocity_ticks(30);
     _ball_properties->start_counting_velocity_ticks();
+    _ball_properties->setParent(this);
 }
 
 void Food::_connect_ball_property_signals()

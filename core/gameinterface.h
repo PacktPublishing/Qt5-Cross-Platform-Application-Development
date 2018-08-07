@@ -35,8 +35,8 @@ public:
 public slots:
     void increment_game_step();
     void remove_player(Player *player);
-    // void set_game_height(int height);
-    // void set_game_width(int width);
+    void _check_virus_interactions(Food* food);
+    void _check_player_interactions(Food* food);
 
 protected:
     void create_game_objects();

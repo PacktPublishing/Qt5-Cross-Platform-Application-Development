@@ -34,17 +34,17 @@ public:
     Q_INVOKABLE void request_split(int mouse_x, int mouse_y, QString authentication);
     Q_INVOKABLE void request_fire_food(int mouse_x, int mouse_y, QString authentication);
 
-    void handle_touch(Food *food);
-    void handle_touch(Virus *virus);
-    void handle_touch(Player *other_player);
     bool _touching_helper(int other_x, int other_y);
     QVariantList cells();
+    CellList internal_cell_list();
 
     int calc_x();
     int calc_y();
     qreal calc_zoom_factor();
     QString authentication();
 
+    void handle_touch(Player *other_player);
+    void handle_touch(Virus *virus);
 signals:
     void cells_changed();
     void x_changed();
@@ -58,7 +58,7 @@ protected:
 
 private:
     void validate_coordinates();
-    void _handle_two_cell_case(Cell* left, Cell* right, QVector2D mouse_position);
+    void _handle_two_cell_case(Cell* left, Cell* right, QPoint mouse_position);
 
     // --------------------------------------------------------
     // Here's a list of all our private variables for the class

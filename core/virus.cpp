@@ -36,25 +36,20 @@ Ball* Virus::ball_properties()
     return _ball_properties;
 }
 
+bool Virus::is_touching(Ball *other)
+{
+    return _ball_properties->is_touching(other);
+}
+
 void Virus::_connect_ball_property_signals()
 {
     connect(_ball_properties, &Ball::x_changed, this, &Virus::x_changed);
     connect(_ball_properties, &Ball::y_changed, this, &Virus::y_changed);
     connect(_ball_properties, &Ball::radius_changed, this, &Virus::radius_changed);
 }
-
-void Virus::handle_touch(Food *food)
+void Virus::eat_food(Food *food)
 {
-    int radiuses = qPow(radius() + food->radius(), 2);
-    int diff_x = qPow(_ball_properties->x() - food->x(), 2);
-    int diff_y = qPow(_ball_properties->y() - food->y(), 2);
-
-    // If the virus and food are not touching, return
-    if (!(radiuses > diff_x + diff_y))
-        return;
-
     _ball_properties->add_mass(food->mass());
-    food->set_enabled(false);
 
     if (_ball_properties->mass() > Virus::_split_mass && _game_interface)
     {

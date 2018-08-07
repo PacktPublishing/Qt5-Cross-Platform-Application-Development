@@ -2,6 +2,7 @@
 #include "player.h"
 #include "virus.h"
 #include "food.h"
+#include "cell.h"
 #include <QDebug>
 
 
@@ -75,7 +76,6 @@ Player* GameInterface::get_player(QString authentication)
             return player;
         }
     }
-    // FIXME: default error?
 }
 
 
@@ -98,23 +98,60 @@ void GameInterface::remove_player(Player *player)
     emit players_changed();
 }
 
-// howto handle collisions
-// https://www.reddit.com/r/gamedev/comments/6aqu5x/how_do_games_like_agario_handle_collisions/
+bool GameInterface::_check_player_interactions(Food *food)
+{
+    // For each Player QVariant in our QVariantList `_players`...
+    for(QVariant player_variant : _players){
+        // cast each player variant into into a `Player` pointer
+        Player *player = player_variant.value<Player*>();
+
+        for (Cell* cell : player->internal_cell_list())
+        {
+            if (cell->is_touching(food->ball_properties()))
+            {
+                cell->eat_food(food);
+                food->set_enabled(false);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool GameInterface::_check_virus_interactions(Food *food)
+{
+    for (QVariant virus_variant : _viruses) {
+        Virus *virus = virus_variant.value<Virus *>();
+
+        if (virus->is_touching(food->ball_properties()))
+        {
+            virus->eat_food(food);
+            food->set_enabled(false);
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void GameInterface::check_game_object_interactions()
 {
-    if (_viruses.empty())
+    if (_viruses.empty() and _food.empty())
         return;
 
     for (QVariant food_variant : _food) {
         Food *food = food_variant.value<Food *>();
-        if (food->is_disabled())
+        bool food_disabled = food->is_disabled();
+
+        if (food_disabled)
             continue;
 
-        for (QVariant virus_variant : _viruses) {
-            Virus *virus = virus_variant.value<Virus *>();
-            // FIXME: add in is touching && a continue
-            virus->handle_touch(food);
-        }
+        food_disabled = _check_virus_interactions(food);
+
+        if (food_disabled)
+            continue;
+
+        _check_player_interactions(food);
     }
 
     // For each Player QVariant in our QVariantList `_players`...
@@ -122,16 +159,6 @@ void GameInterface::check_game_object_interactions()
     {
         // cast each player variant into into a `Player` pointer
         Player *player = player_variant.value<Player*>();
-
-        // Now iterate through every food variant
-        for(QVariant food_variant : _food)
-        {
-            // cast the food variant into into a `Food` pointer
-            Food *food = food_variant.value<Food*>();
-            if (food->is_disabled())
-                continue;
-            player->handle_touch(food);
-        }
 
         // Now iterate through every virus variant
         for (QVariant virus_variant: _viruses)
@@ -152,19 +179,6 @@ void GameInterface::check_game_object_interactions()
         }
     }
 }
-/*
-void GameInterface::set_game_height(int height)
-{
-    _game_size->setHeight(height);
-}
-
-void GameInterface::set_game_width(int width)
-{
-    _game_size->setWidth(width);
-    // NOTE: Slight hack
-    emit create_game_objects();
-}
-*/
 
 void GameInterface::track_food_fired_by_players(Food *new_food)
 {

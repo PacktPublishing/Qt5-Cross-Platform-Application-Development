@@ -45,7 +45,7 @@ Player::Player(QString authentication, QRect *game_size, GameInterface *game_int
 
 // `_handle_two_cell_case`
 //         A private function that...
-void Player::_handle_two_cell_case(Cell *left, Cell *right, QVector2D mouse_position)
+void Player::_handle_two_cell_case(Cell *left, Cell *right, QPoint mouse_position)
 {
     bool cells_touching = left->is_touching(right->ball_properties());
     // bool overlaped_enough
@@ -163,7 +163,7 @@ void Player::request_coordinates(int x, int y, QString authentication)
     if (authentication != _authentication)
         return;
 
-    QVector2D mouse_position(x, y);
+    QPoint mouse_position(x, y);
     // Hardcode in the most common options, no cell split
     if (_cells.length() == 1)
     {
@@ -208,25 +208,6 @@ void Player::request_coordinates(int x, int y, QString authentication)
     emit y_changed();
 }
 
-
-void Player::handle_touch(Food *food)
-{
-    for (Cell *cell : _cells)
-    {
-        if (cell->is_touching(food->ball_properties()))
-        {
-            // disable the food
-            food->set_enabled(false);
-
-            // add the mass
-            cell->add_mass(food->mass());
-
-            // we're done here!
-            break;
-        }
-    }
-}
-
 void Player::timerEvent(QTimerEvent *event)
 {
     if (event->timerId() == _merge_timer_id)
@@ -252,7 +233,7 @@ void Player::request_split(int mouse_x, int mouse_y, QString authentication)
     if (authentication != _authentication)
         return;
 
-    QVector2D mouse_position(mouse_x, mouse_y);
+    QPoint mouse_position(mouse_x, mouse_y);
     for (Cell* cell : _cells)
     {
         // Create a new pointer
@@ -331,7 +312,7 @@ void Player::request_fire_food(int mouse_x, int mouse_y, QString authentication)
     if (authentication != _authentication)
         return;
 
-    QVector2D mouse_position(mouse_x, mouse_y);
+    QPoint mouse_position(mouse_x, mouse_y);
 
     for (Cell* cell : _cells)
     {

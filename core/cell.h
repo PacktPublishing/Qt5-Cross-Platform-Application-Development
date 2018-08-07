@@ -22,8 +22,8 @@ public:
     void add_mass(qreal amount);
 
     void request_coordinates(QPoint mouse_position);
-    void request_coordinates(QPoint target_position, Cell* touching_cells);
-    void request_coordinates(QPoint position, QList<Cell*> touching_cells);
+    void request_coordinates(QPoint target_position, Ball* touching_ball);
+    void request_coordinates(QPoint position, QList<Ball *> touching_balls);
 
     bool is_touching(Ball *other);
 
@@ -35,9 +35,10 @@ public:
     // Getters
     int x();
     int y();
+    void eat_food(Food* food);
     qreal radius();
     qreal mass();
-    QVector2D position();
+    QPosition position();
     qreal velocity();
     Ball* ball_properties();
 

@@ -31,9 +31,10 @@ public:
     int radius();
     qreal mass();
     void add_mass(qreal mass);
-    void handle_touch(Food *food);
     QPoint position();
     Ball* ball_properties();
+    bool is_touching(Ball *ball_properties);
+    void eat_food(Food* food);
 
 signals:
     void x_changed();

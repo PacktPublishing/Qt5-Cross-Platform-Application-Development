@@ -78,6 +78,59 @@ void Ball::request_coordinates(QPoint mouse_position)
 
 }
 
+void Ball::request_coordinates(QPoint mouse_position, Ball *touching_ball)
+{
+    QVector2D to_target = target_position - position();
+    QVector2D target_normalized = to_target.normalized();
+
+    QVector2D collision_normal = (position() - touching_cell->position()).normalized();
+    float into_collision_contribution;
+
+    into_collision_contribution = qMin(QVector2D::dotProduct(target_normalized, collision_normal), (float) 0);
+    collision_normal *= into_collision_contribution;
+
+    QVector2D to_target_non_collide = target_normalized - collision_normal;
+
+    if (_ball_properties->velocity_ticks() > 0) {
+        to_target_non_collide += _velocity;
+        _velocity_ticks -= 1;
+    }
+    else {
+        to_target_non_collide *= velocity();
+    }
+
+    // FIXME: add in some sort of clamp down to 3.
+    // or could add in as an acceleration, to avoid the zig-zag
+    _position += to_target_non_collide;
+
+    validate_coordinates();
+}
+
+void Ball::request_coordinates(QPoint mouse_position, QList<Ball *> touching_balls)
+{
+    QVector2D to_target = position - _position;
+    QVector2D target_normalized = to_target.normalized();
+    QVector2D to_target_non_collide(target_normalized);
+
+    for (Cell* touching_cell : touching_balls) {
+        QVector2D collision_normal = (_position - touching_cell->position()).normalized();
+        float into_collision_contribution;
+        into_collision_contribution = qMin(QVector2D::dotProduct(target_normalized, collision_normal), (float) 0);
+        collision_normal *= into_collision_contribution;
+        to_target_non_collide -= collision_normal;
+    }
+
+    if (_velocity_ticks > 0) {
+        to_target_non_collide += _velocity;
+        _velocity_ticks -= 1;
+    }
+    else {
+        to_target_non_collide *= velocity();
+    }
+
+    _position += to_target_non_collide;
+}
+
 void Ball::validate_coordinates()
 {
     // Check to see if we're within the game width
@@ -163,5 +216,5 @@ void Ball::set_velocity_ticks(int ticks)
 
 void Ball::start_counting_velocity_ticks()
 {
-    _timer_id = startTimer(10);
+    _timer_id = startTimer(Ball::_timer_interval);
 }

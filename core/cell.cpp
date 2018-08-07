@@ -57,43 +57,26 @@ int Cell::y()
     return _ball_properties->y();
 }
 
+void Cell::eat_food(Food *food)
+{
+    _ball_properties->add_mass(food->mass());
+}
+
 void Cell::request_coordinates(QPoint mouse_position)
 {
     _ball_properties->request_coordinates(mouse_position);
 }
 
-QVector2D Cell::position()
+void Cell::request_coordinates(QPoint target_position, Ball *touching_ball)
 {
-    return QVector2D(_ball_properties->position());
+    _ball_properties->request_coordinates(target_position, touching_ball);
 }
 
-void Cell::request_coordinates(QPoint target_position, Cell *touching_cell)
+QPoint Cell::position()
 {
-    QVector2D to_target = target_position - position();
-    QVector2D target_normalized = to_target.normalized();
-
-    QVector2D collision_normal = (position() - touching_cell->position()).normalized();
-    float into_collision_contribution;
-
-    into_collision_contribution = qMin(QVector2D::dotProduct(target_normalized, collision_normal), (float) 0);
-    collision_normal *= into_collision_contribution;
-
-    QVector2D to_target_non_collide = target_normalized - collision_normal;
-
-    if (_ball_properties->velocity_ticks() > 0) {
-        to_target_non_collide += _velocity;
-        _velocity_ticks -= 1;
-    }
-    else {
-        to_target_non_collide *= velocity();
-    }
-
-    // FIXME: add in some sort of clamp down to 3.
-    // or could add in as an acceleration, to avoid the zig-zag
-    _position += to_target_non_collide;
-
-    validate_coordinates();
+    return _ball_properties->position();
 }
+
 
 qreal Cell::velocity()
 {
@@ -110,32 +93,12 @@ void Cell::set_mass(qreal mass)
     _ball_properties->set_mass(mass);
 }
 
-void Cell::request_coordinates(QPoint position, QList<Cell *> touching_cells)
+void Cell::request_coordinates(QPoint position, QList<Ball *> touching_balls)
 {
-    if (touching_cells.isEmpty())
+    if (touching_balls.isEmpty())
         return request_coordinates(position);
 
-    QVector2D to_target = position - _position;
-    QVector2D target_normalized = to_target.normalized();
-    QVector2D to_target_non_collide(target_normalized);
-
-    for (Cell* touching_cell : touching_cells) {
-        QVector2D collision_normal = (_position - touching_cell->position()).normalized();
-        float into_collision_contribution;
-        into_collision_contribution = qMin(QVector2D::dotProduct(target_normalized, collision_normal), (float) 0);
-        collision_normal *= into_collision_contribution;
-        to_target_non_collide -= collision_normal;
-    }
-
-    if (_velocity_ticks > 0) {
-        to_target_non_collide += _velocity;
-        _velocity_ticks -= 1;
-    }
-    else {
-        to_target_non_collide *= velocity();
-    }
-
-    _position += to_target_non_collide;
+    return _ball_properties->request_coordinates(position, touching_balls);
 }
 
 bool Cell::is_touching(Ball *other)
