@@ -78,11 +78,6 @@ QPoint Cell::position()
 }
 
 
-qreal Cell::velocity()
-{
-    return 3.;
-}
-
 Ball *Cell::ball_properties()
 {
     return _ball_properties;
@@ -112,10 +107,11 @@ QPointer<Cell> Cell::request_split(QPoint mouse_position)
     int two_times_intial = 2 * Cell::initial_mass;
     if (_ball_properties->mass() > two_times_intial)
     {
-        QVector2D target = mouse_position - QVector2D(_ball_properties->position());
+        QPoint target_point = mouse_position - _ball_properties->position();
 
-        target.normalize();
-        QVector2D normalized_target(target);
+        QVector2D target = QVector2D(target_point).normalized();
+
+        // QVector2D normalized_target(target);
         target *= 10;
 
         qreal new_mass = _ball_properties->mass()/2;
@@ -128,8 +124,8 @@ QPointer<Cell> Cell::request_split(QPoint mouse_position)
         // FIXME: think about pushing cell half the radius to the right
         Cell *split_cell = new Cell(new_ball, parent());
 
-        // FIXME
-        _position += normalized_target;
+        // FIXME: verify this works without, see line 118
+        // _position += normalized_target;
 
         // QVector2D start_position, QVector2D velocity, qreal mass, QRect *game_size, QPlayer *owning_player
         result = split_cell;
@@ -143,20 +139,25 @@ QPointer<Food> Cell::request_fire_food(QPoint mouse_position)
 {
     QPointer<Food> result;
     qreal requested_mass = Food::initial_mass * 20;
-    if (_mass - requested_mass > Cell::initial_mass)
+    if (_ball_properties->mass() - requested_mass > Cell::initial_mass)
     {
-        QVector2D to_target = (mouse_position - _position).normalized();
+        QVector2D to_target = QVector2D(mouse_position - _ball_properties->position()).normalized();
         QVector2D start(to_target);
         start *= radius();
         start *= 1.3;
 
         // Need to put the new food starting position outside of the
         // current cell
-        QPoint starting_position(_position.x() + start.x(), _position.y() + start.y());
+        QPoint starting_position(_ball_properties->x() + start.x(), _ball_properties->y() + start.y());
         to_target *= 10;
-        Food *new_food = new Food(to_target, starting_position, requested_mass, _ball_properties->game_size());
+
+        Ball *new_ball = new Ball(ball_properties()->game_size(), to_target, starting_position, requested_mass);
+        new_ball->set_velocity_ticks(30);
+        new_ball->start_counting_velocity_ticks();
+
+        Food *new_food = new Food(new_ball);
         result = new_food;
-        _mass -= requested_mass;
+        _ball_properties->remove_mass(requested_mass);
     }
 
     return result;

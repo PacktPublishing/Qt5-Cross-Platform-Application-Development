@@ -38,8 +38,7 @@ public:
     void eat_food(Food* food);
     qreal radius();
     qreal mass();
-    QPosition position();
-    qreal velocity();
+    QPoint position();
     Ball* ball_properties();
 
 

@@ -14,13 +14,14 @@ class Ball;
 class Virus : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int x READ x NOTIFY x_change)
-    Q_PROPERTY(int y READ y NOTIFY y_change)
-    Q_PROPERTY(int radius READ radius NOTIFY radius_change)
+    Q_PROPERTY(int x READ x NOTIFY x_changed)
+    Q_PROPERTY(int y READ y NOTIFY y_changed)
+    Q_PROPERTY(int radius READ radius NOTIFY radius_changed)
 
 public:
     explicit Virus(QRect *game_size, GameInterface *game_interface = nullptr, QObject *parent = nullptr);
     explicit Virus(Ball *ball_properties, GameInterface *game_interface = nullptr, QObject *parent = nullptr);
+
     static constexpr qreal _initial_mass = 22167;
     static constexpr qreal _radius = 84;
     // agario clone has the intial mass at 100-150, split at 180
@@ -28,13 +29,16 @@ public:
 
     int x();
     int y();
-    int radius();
-    qreal mass();
-    void add_mass(qreal mass);
+
     QPoint position();
     Ball* ball_properties();
-    bool is_touching(Ball *ball_properties);
+
+    int radius();
+    qreal mass();
+
+    void add_mass(qreal mass);
     void eat_food(Food* food);
+    bool is_touching(Ball *ball_properties);
 
 signals:
     void x_changed();

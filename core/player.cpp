@@ -18,13 +18,14 @@ Q_DECLARE_METATYPE(Cell *)
 // The Player constructor function
 Player::Player(QString authentication, QRect *game_size, GameInterface *game_interface, QObject *parent)
     : QObject(parent)
-    , _game_interface(game_interface)
+    , _can_merge(true)
+    , _merge_timer_id(-1)
     // `_can_merge` tracks if we can remerge a cell
     // into another cell.
     // defaults to `true`, but changes to false when
     // we request a split
-    , _can_merge(true)
     , _game_size(game_size)
+    , _game_interface(game_interface)
     , _authentication(authentication)
 {
     // A cell is the physcial part of the player, it's the actual representation on the screen
@@ -64,8 +65,8 @@ void Player::_handle_two_cell_case(Cell *left, Cell *right, QPoint mouse_positio
         right->request_coordinates(mouse_position);
     }
     else {
-        left->request_coordinates(mouse_position, right);
-        right->request_coordinates(mouse_position, left);
+        left->request_coordinates(mouse_position, right->ball_properties());
+        right->request_coordinates(mouse_position, left->ball_properties());
     }
 }
 
@@ -198,10 +199,10 @@ void Player::request_coordinates(int x, int y, QString authentication)
                 continue;
 
             if (cell->is_touching(other_cell->ball_properties()))
-                    _cell_touches.insert(cell, other_cell);
+                    _cell_touches.insert(cell, other_cell->ball_properties());
         }
 
-        QList<Cell*> all_cell_touches = _cell_touches.values(cell);
+        QList<Ball *> all_cell_touches = _cell_touches.values(cell);
         cell->request_coordinates(mouse_position, all_cell_touches);
     }
     emit x_changed();
@@ -258,6 +259,11 @@ void Player::request_split(int mouse_x, int mouse_y, QString authentication)
 QVariantList Player::cells()
 {
     return _javascript_cell_list;
+}
+
+CellList Player::internal_cell_list()
+{
+    return _cells;
 }
 
 void Player::handle_touch(Virus *virus)

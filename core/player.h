@@ -6,6 +6,7 @@
 #include <QPoint>
 #include <QString>
 
+class Ball;
 class Cell;
 class Food;
 class Virus;
@@ -19,9 +20,9 @@ typedef QList<Cell*> CellList;
 class Player : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QVariantList cells READ cells NOTIFY cells_changed)
     Q_PROPERTY(int x READ calc_x NOTIFY x_changed)
     Q_PROPERTY(int y READ calc_y NOTIFY y_changed)
+    Q_PROPERTY(QVariantList cells READ cells NOTIFY cells_changed)
     Q_PROPERTY(qreal zoom_factor READ calc_zoom_factor NOTIFY zoom_changed)
 
 public:
@@ -45,6 +46,7 @@ public:
 
     void handle_touch(Player *other_player);
     void handle_touch(Virus *virus);
+
 signals:
     void cells_changed();
     void x_changed();
@@ -64,13 +66,17 @@ private:
     // Here's a list of all our private variables for the class
     // --------------------------------------------------------
 
+    bool _can_merge;
+    int _merge_timer_id;
+
     CellList _cells;
     QVariantList _javascript_cell_list;
-    bool _can_merge;
-    QMultiHash<Cell*, Cell*> _cell_touches;
-    int _merge_timer_id;
+
+    QMultiHash<Cell*, Ball*> _cell_touches;
+
     QRect *_game_size;
     QPoint _average_position;
+
     GameInterface *_game_interface;
     QString _authentication;
 };

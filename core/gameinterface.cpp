@@ -76,6 +76,7 @@ Player* GameInterface::get_player(QString authentication)
             return player;
         }
     }
+    return nullptr;
 }
 
 

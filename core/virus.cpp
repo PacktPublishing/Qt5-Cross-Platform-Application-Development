@@ -47,13 +47,14 @@ void Virus::_connect_ball_property_signals()
     connect(_ball_properties, &Ball::y_changed, this, &Virus::y_changed);
     connect(_ball_properties, &Ball::radius_changed, this, &Virus::radius_changed);
 }
+
 void Virus::eat_food(Food *food)
 {
     _ball_properties->add_mass(food->mass());
 
     if (_ball_properties->mass() > Virus::_split_mass && _game_interface)
     {
-        QVector2D velocity = food->intial_velocity().normalized();
+        QVector2D velocity = food->ball_properties()->initial_velocity();
         velocity *= 10;
 
         Ball *new_ball = new Ball(*_ball_properties);

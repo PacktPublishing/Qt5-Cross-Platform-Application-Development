@@ -35,14 +35,15 @@ public:
 public slots:
     void increment_game_step();
     void remove_player(Player *player);
-    void _check_virus_interactions(Food* food);
-    void _check_player_interactions(Food* food);
 
 protected:
     void create_game_objects();
     void create_viruses(int number=5);
     void create_food(int number=500);
     void check_game_object_interactions();
+
+    bool _check_virus_interactions(Food* food);
+    bool _check_player_interactions(Food* food);
 
 signals:
     void food_changed();

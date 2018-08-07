@@ -17,7 +17,7 @@ class Ball : public QObject
 
 public:
     Ball(QRect *game_size,
-         QVector2D intial_velocity,
+         QVector2D initial_velocity,
          QPoint initial_position,
          qreal mass,
          QObject *parent = nullptr);
@@ -25,14 +25,14 @@ public:
     explicit Ball(QRect *game_size, qreal mass, QObject *parent = nullptr);
     explicit Ball(const Ball&);
 
-    int x();
-    int y();
-    qreal radius();
-    qreal mass();
-    QPoint position();
-    QRect* game_size();
-    QVector2D intial_velocity();
-    int velocity_ticks();
+    int x() const;
+    int y() const;
+    qreal radius() const;
+    qreal mass() const;
+    QPoint position() const;
+    QRect* game_size() const;
+    QVector2D initial_velocity() const;
+    int velocity_ticks() const;
     void set_initial_velocity(QVector2D velocity);
     void set_coordinates_random();
 
@@ -41,6 +41,7 @@ public:
     void request_coordinates(QPoint mouse_position, QList<Ball *> touching_balls);
 
     void add_mass(qreal mass);
+    void remove_mass(qreal mass);
     void set_mass(qreal mass);
 
     void set_velocity_ticks(int ticks);
@@ -51,13 +52,15 @@ public:
 protected:
     void timerEvent(QTimerEvent *event);
     void validate_coordinates();
+    void move(QVector2D distance);
 
     // NOTE: The game interval timer blocks the event loop long enough
     // that this number works and prevents stuttering associated with not
     // being associated with the game interval timer. Not a great hack
     // if the game was better optimized. All objects moving of their own
     // speed would go a LOT faster.
-    static int _timer_interval = 10;
+    static const int _timer_interval = 10;
+    static constexpr qreal _player_speed = 3.;
 
 
 signals:
