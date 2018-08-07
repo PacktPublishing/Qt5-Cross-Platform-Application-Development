@@ -3,10 +3,8 @@
 
 #include <QObject>
 #include <QPointer>
-#include <QVector2D>
 
 class Food;
-class Player;
 class Ball;
 
 class Cell : public QObject
@@ -18,20 +16,20 @@ class Cell : public QObject
 
 public:
     explicit Cell(QRect *game_size, QObject *parent);
-    explicit Cell(QVector2D start_position, QVector2D velocity, qreal mass, QRect *game_size, QObject *parent);
+    explicit Cell(Ball *ball_properties, QObject *parent);
     static constexpr qreal initial_mass = 2827.43;
 
     void add_mass(qreal amount);
 
-    void request_coordinates(QVector2D mouse_position);
-    void request_coordinates(QVector2D target_position, Cell* touching_cells);
-    void request_coordinates(QVector2D position, QList<Cell*> touching_cells);
+    void request_coordinates(QPoint mouse_position);
+    void request_coordinates(QPoint target_position, Cell* touching_cells);
+    void request_coordinates(QPoint position, QList<Cell*> touching_cells);
 
     bool is_touching(Ball *other);
 
     // NOTE: Could probably make a typedef of this
-    QPointer<Cell> request_split(QVector2D mouse_position);
-    QPointer<Food> request_fire_food(QVector2D mouse_position);
+    QPointer<Cell> request_split(QPoint mouse_position);
+    QPointer<Food> request_fire_food(QPoint mouse_position);
     void set_mass(qreal mass);
 
     // Getters

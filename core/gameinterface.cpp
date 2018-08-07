@@ -112,6 +112,7 @@ void GameInterface::check_game_object_interactions()
 
         for (QVariant virus_variant : _viruses) {
             Virus *virus = virus_variant.value<Virus *>();
+            // FIXME: add in is touching && a continue
             virus->handle_touch(food);
         }
     }

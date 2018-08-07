@@ -57,6 +57,27 @@ void Ball::timerEvent(QTimerEvent *event)
     }
 }
 
+void Ball::request_coordinates(QPoint mouse_position)
+{
+    if (abs(mouse_position.x()- x()) <= 1 && abs(mouse_position.y()-y()) <= 1)
+        return;
+
+    // FIXME
+    QVector2D target = mouse_position - _position;
+    target.normalize();
+
+    if (_velocity_ticks > 0) {
+        target += _velocity;
+        _velocity_ticks -= 1;
+    }
+    else {
+        target *= velocity();
+    }
+
+    _position += target;
+
+}
+
 void Ball::validate_coordinates()
 {
     // Check to see if we're within the game width

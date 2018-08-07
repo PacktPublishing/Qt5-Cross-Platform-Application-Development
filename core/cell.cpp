@@ -17,12 +17,12 @@ Cell::Cell(QRect *game_size, QObject *parent)
     _connect_ball_property_signals();
 }
 
-Cell::Cell(QVector2D start_position, QVector2D velocity, qreal mass, QRect *game_size, QObject *parent)
+Cell::Cell(Ball *ball_properties, QObject *parent)
     : QObject(parent)
-    , _ball_properties(new Ball(game_size, velocity, start_position, mass, this))
+    , _ball_properties(ball_properties)
 {
     _connect_ball_property_signals();
-    _ball_properties->set_velocity_ticks(30);
+    _ball_properties->setParent(this);
 }
 
 void Cell::_connect_ball_property_signals()
@@ -57,36 +57,22 @@ int Cell::y()
     return _ball_properties->y();
 }
 
-void Cell::request_coordinates(QVector2D mouse_position)
+void Cell::request_coordinates(QPoint mouse_position)
 {
-    if (abs(mouse_position.x()-_ball_properties->x()) <= 1 && abs(mouse_position.y()-_ball_properties->y()) <= 1)
-        return;
-
-    QVector2D target = mouse_position - _position;
-    target.normalize();
-
-    if (_velocity_ticks > 0) {
-        target += _velocity;
-        _velocity_ticks -= 1;
-    }
-    else {
-        target *= velocity();
-    }
-
-    _position += target;
+    _ball_properties->request_coordinates(mouse_position);
 }
 
 QVector2D Cell::position()
 {
-    return _ball_properties->position();
+    return QVector2D(_ball_properties->position());
 }
 
-void Cell::request_coordinates(QVector2D target_position, Cell *touching_cell)
+void Cell::request_coordinates(QPoint target_position, Cell *touching_cell)
 {
-    QVector2D to_target = target_position - _position;
+    QVector2D to_target = target_position - position();
     QVector2D target_normalized = to_target.normalized();
 
-    QVector2D collision_normal = (_position - touching_cell->position()).normalized();
+    QVector2D collision_normal = (position() - touching_cell->position()).normalized();
     float into_collision_contribution;
 
     into_collision_contribution = qMin(QVector2D::dotProduct(target_normalized, collision_normal), (float) 0);
@@ -94,7 +80,7 @@ void Cell::request_coordinates(QVector2D target_position, Cell *touching_cell)
 
     QVector2D to_target_non_collide = target_normalized - collision_normal;
 
-    if (_velocity_ticks > 0) {
+    if (_ball_properties->velocity_ticks() > 0) {
         to_target_non_collide += _velocity;
         _velocity_ticks -= 1;
     }
@@ -124,7 +110,7 @@ void Cell::set_mass(qreal mass)
     _ball_properties->set_mass(mass);
 }
 
-void Cell::request_coordinates(QVector2D position, QList<Cell *> touching_cells)
+void Cell::request_coordinates(QPoint position, QList<Cell *> touching_cells)
 {
     if (touching_cells.isEmpty())
         return request_coordinates(position);
@@ -157,34 +143,40 @@ bool Cell::is_touching(Ball *other)
     return _ball_properties->is_touching(other);
 }
 
-QPointer<Cell> Cell::request_split(QVector2D mouse_position)
+QPointer<Cell> Cell::request_split(QPoint mouse_position)
 {
     QPointer<Cell> result;
     int two_times_intial = 2 * Cell::initial_mass;
-    if (_mass > two_times_intial)
+    if (_ball_properties->mass() > two_times_intial)
     {
-        QVector2D target = mouse_position - _position;
+        QVector2D target = mouse_position - QVector2D(_ball_properties->position());
 
         target.normalize();
         QVector2D normalized_target(target);
         target *= 10;
 
-        // FIXME: think about pushing cell half the radius to the right
-        Cell *split_cell = new Cell(_position, target, _mass/2, _game_size, parent());
+        qreal new_mass = _ball_properties->mass()/2;
 
+        Ball *new_ball = new Ball(*_ball_properties);
+        new_ball->set_initial_velocity(target);
+        new_ball->set_mass(new_mass);
+        new_ball->set_velocity_ticks(30);
+
+        // FIXME: think about pushing cell half the radius to the right
+        Cell *split_cell = new Cell(new_ball, parent());
+
+        // FIXME
         _position += normalized_target;
 
         // QVector2D start_position, QVector2D velocity, qreal mass, QRect *game_size, QPlayer *owning_player
         result = split_cell;
-
-        _mass /= 2;
-        emit radius_changed();
+        _ball_properties->set_mass(new_mass);
     }
 
     return result;
 }
 
-QPointer<Food> Cell::request_fire_food(QVector2D mouse_position)
+QPointer<Food> Cell::request_fire_food(QPoint mouse_position)
 {
     QPointer<Food> result;
     qreal requested_mass = Food::initial_mass * 20;

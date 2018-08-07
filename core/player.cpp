@@ -10,6 +10,7 @@
 #include "cell.h"
 #include "food.h"
 #include "virus.h"
+#include "ball.h"
 
 Q_DECLARE_METATYPE(Cell *)
 
@@ -314,7 +315,10 @@ void Player::explode_cell_from_virus(Cell *cell, Virus *virus)
     {
         QVector2D velocity(qSin(delta * i), qCos(delta * i));
         velocity *= 10;
-        Cell *new_cell = new Cell(cell->position(), velocity, Cell::initial_mass, _game_size, this);
+        Ball *ball_properties = new Ball(*cell->ball_properties());
+        ball_properties->set_initial_velocity(velocity);
+        ball_properties->set_velocity_ticks(30);
+        Cell *new_cell = new Cell(ball_properties, this);
         _cells.append(new_cell);
         _javascript_cell_list.append(QVariant::fromValue<Cell *>(new_cell));
     }

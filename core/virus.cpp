@@ -9,7 +9,7 @@
 
 Virus::Virus(QRect *game_size, GameInterface *game_interface, QObject *parent)
     : QObject(parent)
-    , _ball_properties(new Ball(game_size, Virus::_initial_mass))
+    , _ball_properties(new Ball(game_size, Virus::_initial_mass, this))
     , _game_interface(game_interface)
 {
     _connect_ball_property_signals();
@@ -23,6 +23,7 @@ Virus::Virus(Ball *ball_properties, GameInterface *game_interface, QObject *pare
     _connect_ball_property_signals();
     _ball_properties->set_velocity_ticks(30);
     _ball_properties->start_counting_velocity_ticks();
+    _ball_properties->setParent(this);
 }
 
 QPoint Virus::position()
