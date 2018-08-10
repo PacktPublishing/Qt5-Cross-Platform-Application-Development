@@ -1,14 +1,10 @@
 function _draw_circle(context, centerX, centerY, radius, sides) {
-    var theta = 0;
-    var x = 0;
-    var y = 0;
-
     context.beginPath();
 
     for (var i = 0; i < sides; i++) {
-        theta = (i / sides) * 2 * Math.PI;
-        x = centerX + radius * Math.sin(theta);
-        y = centerY + radius * Math.cos(theta);
+        var theta = (i / sides) * 2 * Math.PI;
+        var x = centerX + radius * Math.sin(theta);
+        var y = centerY + radius * Math.cos(theta);
         context.lineTo(x, y);
     }
 
@@ -58,16 +54,15 @@ function draw_grid()
 
 function draw_viruses(context, viruses, this_player)
 {
-    var x_y, virus, x, y, radius;
     // console.log(viruses.length);
     for (var i = 0; i < viruses.length; i++)
     {
-        virus = viruses[i];
-        radius = virus.radius
-        x_y = translate(virus, this_player)
+        var virus = viruses[i];
+        var radius = virus.radius
+        var x_y = translate(virus, this_player)
 
-        x = x_y[0];
-        y = x_y[1];
+        var x = x_y[0];
+        var y = x_y[1];
 
         if (x > width + radius || x < 0 - radius)
             continue;
@@ -84,17 +79,15 @@ function draw_viruses(context, viruses, this_player)
 
 function draw_food(context, feed, this_player)
 {
-    var x_y, food, x, y;
-
     for (var i = 0; i < feed.length; i++)
     {
-        food = feed[i];
+        var food = feed[i];
 
         if (!food.enabled)
             continue;
-        x_y = translate(food, this_player);
-        x = x_y[0];
-        y = x_y[1];
+        var x_y = translate(food, this_player);
+        var x = x_y[0];
+        var y = x_y[1];
         if (x > width || x < 0)
             continue;
         if (y > height || y < 0)
@@ -111,7 +104,6 @@ function draw_food(context, feed, this_player)
 
 function _draw_player_cells_helper(context, player, this_player)
 {
-    var cell, x_y;
     // console.log(JSON.stringify(player));
 
     if (!player.cells)
@@ -119,8 +111,8 @@ function _draw_player_cells_helper(context, player, this_player)
 
     for (var cell_number=0; cell_number < player.cells.length; cell_number++)
     {
-        cell = player.cells[cell_number];
-        x_y = translate(cell, this_player, true);
+        var cell = player.cells[cell_number];
+        var x_y = translate(cell, this_player, true);
         context.beginPath();
         context.arc(x_y[0],
                     x_y[1],
@@ -133,15 +125,12 @@ function _draw_player_cells_helper(context, player, this_player)
 
 function draw_players(context, players, this_player)
 {
-    var cell, x_y;
-    // console.log(JSON.stringify(players))
-
     for (var z=0; z < players.length; z++)
     {
         // _draw_player_cells_helper(context, player, this_player)
-        cell = players[z];
+        var cell = players[z];
         context.fillStyle = cell.hue;
-        x_y = translate(cell, this_player, true);
+        var x_y = translate(cell, this_player, true);
         context.beginPath();
         context.arc(x_y[0],
                     x_y[1],
