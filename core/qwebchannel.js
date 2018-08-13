@@ -79,6 +79,7 @@ var QWebChannel = function(transport, auth_callback, initCallback)
         if (typeof data === "string") {
             data = JSON.parse(data);
         }
+
         switch (data.type) {
             case QWebChannelMessageTypes.signal:
                 channel.handleSignal(data);
@@ -312,7 +313,8 @@ function QObject(name, data, webChannel)
         // update property cache
         for (var propertyIndex in propertyMap) {
             var propertyValue = propertyMap[propertyIndex];
-            object.__propertyCache__[propertyIndex] = propertyValue;
+
+            object.__propertyCache__[propertyIndex] = object.unwrapQObject(propertyValue);
         }
 
         for (var signalName in signals) {
@@ -383,6 +385,9 @@ function QObject(name, data, webChannel)
         Object.defineProperty(object, propertyName, {
             configurable: true,
             get: function () {
+                if (object.__propertyCache__ === undefined)
+                    console.log(object, propertyName, propertyIndex)
+
                 var propertyValue = object.__propertyCache__[propertyIndex];
                 if (propertyValue === undefined) {
                     // This shouldn't happen

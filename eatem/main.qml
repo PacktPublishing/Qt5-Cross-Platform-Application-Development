@@ -48,12 +48,7 @@ ApplicationWindow {
                     var game_interface = channel.objects.interface;
                     window.game_interface = game_interface;
                     canvas.feed = game_interface.food;
-                    canvas.players = game_interface.player_cells;
-                    game_interface.players_changed.connect(function(args){
-                        console.log(JSON.stringify(game_interface))
-                        console.log(JSON.stringify(game_interface.player_cells))
-                    });
-
+                    canvas.players = game_interface.players;
                     canvas.viruses = game_interface.viruses;
                     game_interface.get_player(authentication, function(this_player){
                         canvas.this_player = this_player;

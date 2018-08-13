@@ -15,9 +15,9 @@ class GameInterface : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QVariantList food READ food NOTIFY food_changed)
-    // Q_PROPERTY(QVariantList players READ players NOTIFY players_changed)
+    Q_PROPERTY(QVariantList players READ players NOTIFY players_changed)
     Q_PROPERTY(QVariantList viruses READ viruses NOTIFY viruses_changed)
-    Q_PROPERTY(QVariantList player_cells READ player_cells NOTIFY players_changed)
+    // Q_PROPERTY(QVariantList player_cells READ player_cells NOTIFY players_changed)
 
 public:
     explicit GameInterface(QObject *parent = nullptr);
@@ -25,7 +25,7 @@ public:
     QVariantList food();
     QVariantList viruses();
     QVariantList players();
-    QVariantList player_cells();
+    // QVariantList player_cells();
 
     void track_food_fired_by_players(Food *new_food);
     void track_new_virus(Virus *virus);
@@ -41,8 +41,11 @@ public slots:
     void increment_game_step();
     void remove_player(Player *player);
 
+/*
 protected slots:
     void added_cell(Cell *cell);
+    void remove_cells(Cell *cell);
+*/
 
 protected:
     void create_game_objects();
@@ -57,13 +60,13 @@ signals:
     void food_changed();
     void viruses_changed();
     void players_changed();
-    void player_cells_changed();
+    // void player_cells_changed();
 
 private:
     QVariantList _food;
     QVariantList _viruses;
     QVariantList _players;
-    QVariantList _player_cells;
+    // QVariantList _player_cells;
     QRect *_game_size;
     QTimer _game_interval;
 };
