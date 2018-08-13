@@ -85,13 +85,6 @@ QVariantList GameInterface::players()
     return _players;
 }
 
-/*
-QVariantList GameInterface::player_cells()
-{
-    return _player_cells;
-}
-*/
-
 void GameInterface::increment_game_step()
 {
     check_game_object_interactions();
@@ -99,32 +92,10 @@ void GameInterface::increment_game_step()
 
 void GameInterface::remove_player(Player *player)
 {
-    /*
-    for (QVariant cell: player->cells())
-    {
-        _player_cells.removeOne(cell);
-    }
-    */
-
     _players.removeOne(QVariant::fromValue<Player*>(player));
     player->deleteLater();
     emit players_changed();
 }
-
-/*
-void GameInterface::added_cell(Cell *cell)
-{
-    _player_cells.append(QVariant::fromValue<Cell *>(cell));
-    emit players_changed();
-}
-
-void GameInterface::remove_cells(Cell *cell)
-{
-    _player_cells.removeOne(QVariant::fromValue<Cell *>(cell));
-    cell->deleteLater();
-    emit players_changed();
-}
-*/
 
 bool GameInterface::_check_player_interactions(Food *food)
 {
@@ -242,10 +213,5 @@ void GameInterface::start_game()
 void GameInterface::add_player(Player *player)
 {
     _players.append(QVariant::fromValue<Player*>(player));
-    /*
-    _player_cells.append(player->cells()[0]);
-    connect(player, &Player::new_cell, this, &GameInterface::added_cell);
-    connect(player, &Player::remove_cell, this, &GameInterface::remove_cells);
-    */
     emit players_changed();
 }

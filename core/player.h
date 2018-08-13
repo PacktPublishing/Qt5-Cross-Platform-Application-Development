@@ -74,8 +74,6 @@ private:
 
     QVariantList _cells;
 
-    QMultiHash<Cell*, Ball*> _cell_touches;
-
     QRect *_game_size;
     QPoint _average_position;
 

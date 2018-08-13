@@ -180,7 +180,7 @@ void Player::request_coordinates(int x, int y, QString authentication)
         return;
     }
 
-    _cell_touches.clear();
+    QMultiHash<Cell*, Ball*> cell_touches;
 
     // For every cell
     for (QVariant cell_variant : _cells)
@@ -196,10 +196,10 @@ void Player::request_coordinates(int x, int y, QString authentication)
             Cell *other_cell = other_cell_variant.value<Cell *>();
 
             if (cell->is_touching(other_cell->ball_properties()))
-                    _cell_touches.insert(cell, other_cell->ball_properties());
+                    cell_touches.insert(cell, other_cell->ball_properties());
         }
 
-        QList<Ball *> all_cell_touches = _cell_touches.values(cell);
+        QList<Ball *> all_cell_touches = cell_touches.values(cell);
         cell->request_coordinates(mouse_position, all_cell_touches);
     }
     emit x_changed();
