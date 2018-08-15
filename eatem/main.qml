@@ -47,7 +47,9 @@ ApplicationWindow {
                 var webchannel = new WebChannel.QWebChannel(socket, set_auth_code, function(channel) {
                     var game_interface = channel.objects.interface;
                     window.game_interface = game_interface;
+                    console.log(JSON.stringify(game_interface));
                     canvas.feed = game_interface.food;
+                    console.log(game_interface.food)
                     for (var i = 0; i < canvas.feed.length; i++){
                         var hue_num = Math.round(Math.random() * 360)
                         canvas.food_colors.push('hsl(' + hue_num + ', 100%, 50%)');

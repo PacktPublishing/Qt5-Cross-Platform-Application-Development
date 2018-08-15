@@ -1,8 +1,11 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QRect>
+#include <QDebug>
 
 #include "gameinterface.h"
+#include "player.h"
 
 
 int main(int argc, char *argv[])
@@ -25,5 +28,11 @@ int main(int argc, char *argv[])
         // if we didn't load correctly, exit the main loop with the error/integer, `-1`
         return -1;
 
+    QObject *window = engine.rootObjects().first();
+    GameInterface *game_interface = window->findChild<GameInterface *>("game_interface");
+    qDebug() << game_interface << window << window->children();
+    // game_interface->set_game_size(1000, 1000);
+
+    Player *this_player = new Player("DEFAULT_AUTH", new QRect(0, 1000, 0, 1000), game_interface);
     return app.exec();
 }
