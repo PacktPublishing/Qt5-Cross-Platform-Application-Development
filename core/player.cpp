@@ -35,7 +35,7 @@ Player::Player(QString authentication, QRect *game_size, GameInterface *game_int
     // 1. an actual cell object list
     // 2. a `QVariantList` composed of `QVariant`s who's values are `Cell*` (`Cell` pointers)
     // Here we create our first `QVariant` who's value is a pointer to our first player Cell
-    _cells.append(start_cell);
+    _cells.append(QVariant::fromValue<Cell*>(start_cell));
 }
 
 // `_handle_two_cell_case`
@@ -67,12 +67,14 @@ void Player::_handle_two_cell_case(Cell *left, Cell *right, QPoint mouse_positio
 int Player::calc_x()
 {
     if (_cells.length() == 1)
-        return _cells[0]->x();
+        return _cells[0].value<Cell *>()->x();
 
     int total_x = 0;
     int total_y = 0;
-    for (Cell *cell : _cells)
+    for (QVariant cell_variant : _cells)
     {
+        Cell *cell = cell_variant.value<Cell *>();
+
         total_x += cell->x();
         total_y += cell->y();
     }
@@ -88,7 +90,7 @@ int Player::calc_x()
 int Player::calc_y()
 {
     if (_cells.length() == 1)
-        return _cells[0]->y();
+        return _cells[0].value<Cell *>()->y();
 
     return _average_position.y();
 }
@@ -97,11 +99,12 @@ qreal Player::calc_zoom_factor()
 {
     float value;
     if (_cells.length() == 1){
-        float value = 30./_cells[0]->radius();
+        float value = 30./_cells[0].value<Cell *>()->radius();
     }
     else{
         qreal total_mass = 0;
-        for (Cell *cell : _cells){
+        for (QVariant cell_variant : _cells){
+            Cell *cell = cell_variant.value<Cell *>();
             total_mass += cell->mass();
         }
         // TODO: validate if this makes sense
@@ -132,13 +135,13 @@ void Player::combine_cells(Cell *left, Cell *right)
     if (left->mass() > right->mass())
     {
         left->add_mass(right->mass());
-        _cells.removeOne(right);
+        _cells.removeOne(QVariant::fromValue<Cell *>(right));
         right->deleteLater();
     }
     else
     {
         right->add_mass(left->mass());
-        _cells.removeOne(left);
+        _cells.removeOne(QVariant::fromValue<Cell *>(left));
         left->deleteLater();
     }
 
@@ -159,7 +162,7 @@ void Player::request_coordinates(int x, int y, QString authentication)
     // Hardcode in the most common options, no cell split
     if (_cells.length() == 1)
     {
-        _cells[0]->request_coordinates(mouse_position);
+        _cells[0].value<Cell *>()->request_coordinates(mouse_position);
         emit x_changed();
         emit y_changed();
         return;
@@ -169,8 +172,8 @@ void Player::request_coordinates(int x, int y, QString authentication)
     // Hardcode in second most common option, cell split once
     else if(_cells.length() == 2)
     {
-        Cell* left = _cells[0];
-        Cell* right = _cells[1];
+        Cell* left = _cells[0].value<Cell *>();
+        Cell* right = _cells[1].value<Cell *>();
         _handle_two_cell_case(left, right, mouse_position);
         emit x_changed();
         emit y_changed();
@@ -180,14 +183,18 @@ void Player::request_coordinates(int x, int y, QString authentication)
     QMultiHash<Cell*, Ball*> cell_touches;
 
     // For every cell
-    for (Cell *cell : _cells)
+    for (QVariant cell_variant : _cells)
     {
+        Cell *cell = cell_variant.value<Cell *>();
+
         // Check if we're in contact with our own cells
         // by iterating through every cell again
-        for (Cell *other_cell : _cells)
+        for (QVariant other_cell_variant : _cells)
         {
-            if (cell == other_cell)
+            if (cell_variant == other_cell_variant)
                 continue;
+            Cell *other_cell = other_cell_variant.value<Cell *>();
+
             if (cell->is_touching(other_cell->ball_properties()))
                     cell_touches.insert(cell, other_cell->ball_properties());
         }
@@ -211,7 +218,7 @@ void Player::timerEvent(QTimerEvent *event)
 
 void Player::handle_touch(Player *other_player)
 {
-    for(Cell *cell : _cells)
+    for(QVariant cell : _cells)
     {
         // FIXME: this will be more complicated because
         // the radius will come into larger effect than points.
@@ -225,8 +232,9 @@ void Player::request_split(int mouse_x, int mouse_y, QString authentication)
         return;
 
     QPoint mouse_position(mouse_x, mouse_y);
-    for (Cell *cell : _cells)
+    for (QVariant cell_variant : _cells)
     {
+        Cell *cell = cell_variant.value<Cell *>();
         // Create a new pointer
         QPointer<Cell> split_cell;
         // request the cells to split
@@ -236,7 +244,7 @@ void Player::request_split(int mouse_x, int mouse_y, QString authentication)
         {
             // Track the new split cell if we did
             Cell* cell_data = split_cell.data();
-            _cells.append(cell_data);
+            _cells.append(QVariant::fromValue<Cell*>(cell_data));
             // TODO: put a smaller nubmer in here if we have a bunch of splits
             _merge_timer_id = startTimer(5000);
             _can_merge = false;
@@ -246,20 +254,17 @@ void Player::request_split(int mouse_x, int mouse_y, QString authentication)
     }
 }
 
-QQmlListProperty<Cell> Player::cells()
-{
-    return QQmlListProperty<Cell>(this, _cells);
-}
-
-CellList Player::internal_cell_list()
+QVariantList Player::cells()
 {
     return _cells;
 }
 
 void Player::handle_touch(Virus *virus)
 {
-    for(Cell *cell : _cells)
+    for(QVariant cell_variant : _cells)
     {
+        Cell *cell = cell_variant.value<Cell *>();
+
         // TODO: add in fudge factor to radius
         if (cell->is_touching(virus->ball_properties()))
         {
@@ -296,7 +301,7 @@ void Player::explode_cell_from_virus(Cell *cell, Virus *virus)
         ball_properties->set_initial_velocity(velocity);
         ball_properties->set_velocity_ticks(30);
         Cell *new_cell = new Cell(ball_properties, this);
-        _cells.append(new_cell);
+        _cells.append(QVariant::fromValue<Cell *>(new_cell));
     }
 
     _game_interface->remove_virus_from_game(virus);
@@ -309,8 +314,9 @@ void Player::request_fire_food(int mouse_x, int mouse_y, QString authentication)
 
     QPoint mouse_position(mouse_x, mouse_y);
 
-    for (Cell *cell : _cells)
+    for (QVariant cell_variant : _cells)
     {
+        Cell *cell = cell_variant.value<Cell *>();
         // Create a new pointer
         QPointer<Food> new_food;
         // request the cells to split

@@ -5,7 +5,6 @@
 #include <QVariant>
 #include <QPoint>
 #include <QString>
-#include <QQmlListProperty>
 
 class Ball;
 class Cell;
@@ -23,7 +22,7 @@ class Player : public QObject
     Q_OBJECT
     Q_PROPERTY(int x READ calc_x NOTIFY x_changed)
     Q_PROPERTY(int y READ calc_y NOTIFY y_changed)
-    Q_PROPERTY(QQmlListProperty<Cell> cells READ cells NOTIFY cells_changed)
+    Q_PROPERTY(QVariantList cells READ cells NOTIFY cells_changed)
     Q_PROPERTY(qreal zoom_factor READ calc_zoom_factor NOTIFY zoom_changed)
 
 public:
@@ -36,7 +35,7 @@ public:
     Q_INVOKABLE void request_split(int mouse_x, int mouse_y, QString authentication);
     Q_INVOKABLE void request_fire_food(int mouse_x, int mouse_y, QString authentication);
 
-    QQmlListProperty<Cell> cells();
+    QVariantList cells();
     CellList internal_cell_list();
 
     int calc_x();
@@ -73,7 +72,7 @@ private:
     bool _can_merge;
     int _merge_timer_id;
 
-    CellList _cells;
+    QVariantList _cells;
 
     QRect *_game_size;
     QPoint _average_position;

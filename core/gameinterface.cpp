@@ -11,13 +11,9 @@
 // We need to add them into `QVaraint` so that we can pass them to QML
 // in a `QVariantList`. `QVariantList` works as a list in JavaScript
 
-Q_DECLARE_METATYPE(QQmlListProperty<Player>)
-Q_DECLARE_METATYPE(QQmlListProperty<Food>)
-Q_DECLARE_METATYPE(QQmlListProperty<Virus>)
-
-Q_DECLARE_METATYPE(Player *)
 Q_DECLARE_METATYPE(Virus *)
 Q_DECLARE_METATYPE(Food *)
+Q_DECLARE_METATYPE(Player *)
 // NOTE: `QVaraint` will NOT take object values, hence the use of pointers here
 
 GameInterface::GameInterface(QObject *parent)
@@ -38,7 +34,7 @@ void GameInterface::create_viruses(int number)
 {
     for(int i=0; i < number; i++) {
         Virus *virus = new Virus(_game_size, this);
-        _viruses.append(virus);
+        _viruses.append(QVariant::fromValue<Virus*>(virus));
     }
 }
 
@@ -56,36 +52,37 @@ void GameInterface::create_food(int number)
     for(int i=0; i<number; i++)
     {
         Food *food = new Food(_game_size);
-        _food.append(food);
+        _food.append(QVariant::fromValue<Food*>(food));
     }
 }
 
-QQmlListProperty<Food> GameInterface::food()
+QVariantList GameInterface::food()
 {
-    return QQmlListProperty<Food>(this, _food);
+    return _food;
 }
 
-QQmlListProperty<Virus> GameInterface::viruses()
+QVariantList GameInterface::viruses()
 {
-    return QQmlListProperty<Virus>(this, _viruses);
+    return _viruses;
 }
 
-QVariant GameInterface::get_player(QString authentication)
+Player* GameInterface::get_player(QString authentication)
 {
-    for (Player *player : _players)
+    for (QVariant player_variant : _players)
     {
+        Player *player = player_variant.value<Player *>();
         if (player->authentication() == authentication)
         {
-            return QVariant::fromValue<Player *>(player);
+            return player;
         }
     }
-    return QVariant();
+    return nullptr;
 }
 
 
-QQmlListProperty<Player> GameInterface::players()
+QVariantList GameInterface::players()
 {
-    return QQmlListProperty<Player>(this, _players);
+    return _players;
 }
 
 void GameInterface::increment_game_step()
@@ -95,7 +92,7 @@ void GameInterface::increment_game_step()
 
 void GameInterface::remove_player(Player *player)
 {
-    _players.removeAll(player);
+    _players.removeOne(QVariant::fromValue<Player*>(player));
     player->deleteLater();
     emit players_changed();
 }
@@ -103,9 +100,13 @@ void GameInterface::remove_player(Player *player)
 bool GameInterface::_check_player_interactions(Food *food)
 {
     // For each Player QVariant in our QVariantList `_players`...
-    for(Player *player : _players){
-        for (Cell *cell: player->internal_cell_list())
+    for(QVariant player_variant : _players){
+        // cast each player variant into into a `Player` pointer
+        Player *player = player_variant.value<Player*>();
+
+        for (QVariant cell_variant : player->cells())
         {
+            Cell *cell = cell_variant.value<Cell *>();
             if (cell->is_touching(food->ball_properties()))
             {
                 cell->eat_food(food);
@@ -119,7 +120,9 @@ bool GameInterface::_check_player_interactions(Food *food)
 
 bool GameInterface::_check_virus_interactions(Food *food)
 {
-    for (Virus *virus : _viruses) {
+    for (QVariant virus_variant : _viruses) {
+        Virus *virus = virus_variant.value<Virus *>();
+
         if (virus->is_touching(food->ball_properties()))
         {
             virus->eat_food(food);
@@ -136,7 +139,8 @@ void GameInterface::check_game_object_interactions()
     if (_viruses.empty() and _food.empty())
         return;
 
-    for (Food *food : _food) {
+    for (QVariant food_variant : _food) {
+        Food *food = food_variant.value<Food *>();
         bool food_disabled = food->is_disabled();
 
         if (food_disabled)
@@ -150,18 +154,25 @@ void GameInterface::check_game_object_interactions()
         _check_player_interactions(food);
     }
 
-    // For each Player in our list `_players`...
-    for(Player *player : _players)
+    // For each Player QVariant in our QVariantList `_players`...
+    for(QVariant player_variant : _players)
     {
+        // cast each player variant into into a `Player` pointer
+        Player *player = player_variant.value<Player*>();
+
         // Now iterate through every virus variant
-        for (Virus *virus : _viruses)
+        for (QVariant virus_variant: _viruses)
         {
+            // cast the virius variant into into a `Virus` pointer
+            Virus *virus = virus_variant.value<Virus*>();
             player->handle_touch(virus);
         }
 
         // Now iterate through every other player variant
-        for (Player *other_player : _players)
+        for (QVariant other_player_variant : _players)
         {
+            // cast the other player variant into into a `Player` pointer
+            Player *other_player = other_player_variant.value<Player*>();
             if (player == other_player)
                 continue;
             player->handle_touch(other_player);
@@ -171,19 +182,19 @@ void GameInterface::check_game_object_interactions()
 
 void GameInterface::track_food_fired_by_players(Food *new_food)
 {
-    _food.append(new_food);
+    _food.append(QVariant::fromValue<Food*>(new_food));
     emit food_changed();
 }
 
 void GameInterface::track_new_virus(Virus *virus)
 {
-    _viruses.append(virus);
+    _viruses.append(QVariant::fromValue<Virus *>(virus));
     viruses_changed();
 }
 
 void GameInterface::remove_virus_from_game(Virus *virus)
 {
-    _viruses.removeOne(virus);
+    _viruses.removeOne(QVariant::fromValue<Virus*>(virus));
 }
 
 QRect *GameInterface::game_size()
@@ -201,6 +212,6 @@ void GameInterface::start_game()
 
 void GameInterface::add_player(Player *player)
 {
-    _players.append(player);
+    _players.append(QVariant::fromValue<Player*>(player));
     emit players_changed();
 }

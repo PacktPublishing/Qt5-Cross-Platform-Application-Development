@@ -13,8 +13,8 @@ ApplicationWindow {
     GameInterface {
         id: game_interface
         Component.onCompleted: {
-            canvas.this_player = game_interface.get_player("DEFAULT_AUTH");
-            console.log(canvas.this_player)
+            game_interface.set_game_size(1000, 1000);
+            canvas.this_player = game_interface.get_this_player("AUTHENTICATION");
         }
 
     }
@@ -26,9 +26,9 @@ ApplicationWindow {
         contextType: "2d"
         property color clear_color: 'white'
         property var context
-        property var feed: game_interface.food
-        property var players: game_interface.players
-        property var viruses: game_interface.viruses
+        // property var feed: game_interface.food
+        // property var players: game_interface.players
+        // property var viruses: game_interface.viruses
         property var this_player
         property int gridSize: 30
         property string authentication

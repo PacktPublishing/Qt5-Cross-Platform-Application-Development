@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QTimer>
 #include <QVariant>
-#include <QQmlListProperty>
 
 class Player;
 class Food;
@@ -12,20 +11,19 @@ class Virus;
 class Cell;
 
 
-// https://stackoverflow.com/questions/26398932/running-into-issues-with-qvariantlists-and-qlists-of-custom-qobjects
 class GameInterface : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QQmlListProperty<Food> food READ food NOTIFY food_changed)
-    Q_PROPERTY(QQmlListProperty<Player> players READ players NOTIFY players_changed)
-    Q_PROPERTY(QQmlListProperty<Virus> viruses READ viruses NOTIFY viruses_changed)
+    Q_PROPERTY(QVariantList food READ food NOTIFY food_changed)
+    Q_PROPERTY(QVariantList players READ players NOTIFY players_changed)
+    Q_PROPERTY(QVariantList viruses READ viruses NOTIFY viruses_changed)
 
 public:
     explicit GameInterface(QObject *parent = nullptr);
 
-    QQmlListProperty<Food> food();
-    QQmlListProperty<Virus> viruses();
-    QQmlListProperty<Player> players();
+    QVariantList food();
+    QVariantList viruses();
+    QVariantList players();
 
     void track_food_fired_by_players(Food *new_food);
     void track_new_virus(Virus *virus);
@@ -35,7 +33,7 @@ public:
     void add_player(Player* player);
 
     void set_game_size(int width, int height);
-    Q_INVOKABLE QVariant get_player(QString authentication);
+    Q_INVOKABLE Player* get_player(QString authentication);
 
 public slots:
     void increment_game_step();
@@ -56,9 +54,9 @@ signals:
     void players_changed();
 
 private:
-    QList<Food *> _food;
-    QList<Virus *> _viruses;
-    QList<Player *> _players;
+    QVariantList _food;
+    QVariantList _viruses;
+    QVariantList _players;
 
     QRect *_game_size;
     QTimer _game_interval;

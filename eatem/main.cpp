@@ -1,10 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-#include <QQmlListProperty>
-#include "gameinterface.h"
-
-Q_DECLARE_METATYPE(QQmlListProperty<GameInterface>)
 
 
 int main(int argc, char *argv[])
