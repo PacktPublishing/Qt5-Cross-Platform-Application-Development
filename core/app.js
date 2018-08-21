@@ -77,7 +77,7 @@ function draw_viruses(context, viruses, this_player)
 
 }
 
-function draw_food(context, feed, food_colors, this_player)
+function draw_food(context, feed, this_player)
 {
     for (var i = 0; i < feed.length; i++)
     {
@@ -93,7 +93,7 @@ function draw_food(context, feed, food_colors, this_player)
         if (y > height || y < 0)
             continue;
         context.beginPath();
-        context.fillStyle = food_colors[i];
+        context.fillStyle = food.hue;
         context.arc(x,
                     y,
                     food.radius, 0, 2*Math.PI);
@@ -123,6 +123,7 @@ function draw_players(context, players, this_player)
     for (var i=0; i < players.length; i++)
     {
         var player = players[i];
+        context.fillStyle = player.hue;
         _draw_player_cells_helper(context, player, this_player)
         /* var cell = players[z];
         context.fillStyle = cell.hue;

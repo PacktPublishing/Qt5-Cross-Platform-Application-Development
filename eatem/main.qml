@@ -50,10 +50,16 @@ ApplicationWindow {
                     canvas.feed = game_interface.food;
                     for (var i = 0; i < canvas.feed.length; i++){
                         var hue_num = Math.round(Math.random() * 360)
-                        canvas.food_colors.push('hsl(' + hue_num + ', 100%, 50%)');
+                        canvas.feed[i].hue = 'hsl(' + hue_num + ', 100%, 50%)';
                     }
 
                     canvas.players = game_interface.players;
+                    for (i = 0; i < canvas.players.length; i++){
+                        var hue_num = Math.round(Math.random() * 360)
+                        canvas.players[i].hue = 'hsl(' + hue_num + ', 100%, 50%)';
+                    }
+
+                    console.log(JSON.stringify(canvas.players[0]))
                     canvas.viruses = game_interface.viruses;
                     game_interface.get_player(authentication, function(this_player){
                         canvas.this_player = this_player;
@@ -74,7 +80,6 @@ ApplicationWindow {
         property color clear_color: 'white'
         property var context
         property var feed
-        property var food_colors: []
         property var players
         property var viruses
         property var this_player
@@ -110,7 +115,7 @@ ApplicationWindow {
             // draw_grid();
 
             // draw the food
-            App.draw_food(context, feed, food_colors, this_player);
+            App.draw_food(context, feed, this_player);
 
             // and draw the players
             App.draw_players(context, players, this_player);
