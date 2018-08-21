@@ -1,0 +1,3 @@
+[submodule "qtwebchannel"]
+	path = qtwebchannel
+	url = https://github.com/benhoff/qtwebchannel
