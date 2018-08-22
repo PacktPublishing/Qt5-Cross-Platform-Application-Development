@@ -5,8 +5,10 @@
 #include <QPoint>
 #include <QVector2D>
 
+
 class QRect;
 class Ball;
+
 
 class Food : public QObject
 {

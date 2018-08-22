@@ -18,7 +18,7 @@ class Game : public QObject
     Q_OBJECT
 public:
     explicit Game(QObject *parent = nullptr);
-    void start();
+    bool start();
 
 protected slots:
     void handle_new_connection();

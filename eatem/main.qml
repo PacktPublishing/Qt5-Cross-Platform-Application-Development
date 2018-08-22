@@ -58,8 +58,8 @@ ApplicationWindow {
                         var hue_num = Math.round(Math.random() * 360)
                         canvas.players[i].hue = 'hsl(' + hue_num + ', 100%, 50%)';
                     }
+                    // FIXME: add in on signal change handlers for both the players and the food
 
-                    console.log(JSON.stringify(canvas.players[0]))
                     canvas.viruses = game_interface.viruses;
                     game_interface.get_player(authentication, function(this_player){
                         canvas.this_player = this_player;

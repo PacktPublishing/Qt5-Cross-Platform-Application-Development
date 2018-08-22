@@ -39,16 +39,14 @@ Game::Game(QObject *parent)
 
 }
 
-void Game::start()
+bool Game::start()
 {
     bool listening = _websocket_server->listen(QHostAddress::LocalHost, 5555);
-    qDebug() << listening;
-    if (!listening)
-        return;
 
     // NOTE: should think about setting game interval in here too?
     _game_interface->set_game_size(1000, 1000);
     _game_interface->start_game();
+    return listening;
 }
 
 QJsonObject GetMessage(QString authentication)
@@ -75,11 +73,10 @@ void Game::handle_new_connection()
     // NOTE: might want to take the "specific update" route as seen in the code
     QJsonObject message = GetMessage(authentication);
     // {"data":[{"object":"authentication","properties":{"1":"QUaP1SVsQhRL"},"signals":{"5":[]}}],"type":2}
-    // FIXME: this signal triggers the `connectTo` function from QWebChannel. It clobbers the authenticaiton
-    // Note that there is no property cache at this time
     transport->sendMessage(message);
 
     // currently connecting the WebSocket destroyed to the Player delete Later slot
-    connect(web_socket, &QWebSocket::destroyed, [this, new_player](){
-        _game_interface->remove_player(new_player);});
+    connect(web_socket, &QWebSocket::disconnected, [this, new_player](){
+        _game_interface->remove_player(new_player);
+    });
 }

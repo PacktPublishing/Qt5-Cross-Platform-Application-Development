@@ -4,8 +4,10 @@
 #include <QObject>
 #include <QPointer>
 
+
 class Food;
 class Ball;
+
 
 class Cell : public QObject
 {

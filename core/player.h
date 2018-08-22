@@ -14,7 +14,6 @@ class QTimerEvent;
 class GameInterface;
 
 
-typedef QList<Cell*> CellList;
 
 
 class Player : public QObject
@@ -36,6 +35,9 @@ public:
     Q_INVOKABLE void request_fire_food(int mouse_x, int mouse_y, QString authentication);
 
     QVariantList cells();
+
+    typedef QList<Cell*> CellList;
+
     CellList internal_cell_list();
 
     int calc_x();

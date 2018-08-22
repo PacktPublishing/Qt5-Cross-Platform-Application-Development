@@ -74,8 +74,11 @@ WebSocketTransport::WebSocketTransport(QWebSocket *socket)
 {
     connect(socket, &QWebSocket::textMessageReceived,
             this, &WebSocketTransport::textMessageReceived);
+    // FIXME: this causes the server to crash
+    /*
     connect(socket, &QWebSocket::disconnected,
             this, &WebSocketTransport::deleteLater);
+    */
 }
 
 /*!

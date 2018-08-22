@@ -169,6 +169,8 @@ var QWebChannel = function(transport, auth_callback, initCallback)
         }
         // now unwrap properties, which might reference other registered objects
         for (var objectName in channel.objects) {
+            // unwrap properties turns around and calls unwrap qobject
+            // NOTE: need to figure out what the params are to unwrap QObject
             channel.objects[objectName].unwrapProperties();
         }
         if (initCallback) {
@@ -386,7 +388,7 @@ function QObject(name, data, webChannel)
             configurable: true,
             get: function () {
                 if (object.__propertyCache__ === undefined)
-                    console.log(object, propertyName, propertyIndex)
+                    console.log('property cache undefined', JSON.stringify(object), propertyName, propertyIndex)
 
                 var propertyValue = object.__propertyCache__[propertyIndex];
                 if (propertyValue === undefined) {
