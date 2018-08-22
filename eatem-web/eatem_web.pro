@@ -4,8 +4,9 @@ CONFIG -= qt
 
 DISTFILES += \
     index.html \
-    main.css \
-    app.js \
-    canvas.js \
-    global.js
+    css/main.css \
+    js/app.js \
+    js/canvas.js \
+    js/global.js \
+    ../core/qwebchannel.js
 

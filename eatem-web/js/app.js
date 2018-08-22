@@ -1,6 +1,6 @@
-var io = require('socket.io-client');
 var Canvas = require('./canvas');
 var global = require('./global');
+var WebChannel = require('../core/qwebchannel.js')
 
 var playerNameInput = document.getElementById('playerNameInput');
 var socket;
@@ -26,7 +26,7 @@ function startGame(type) {
     document.getElementById('startMenuWrapper').style.maxHeight = '0px';
     document.getElementById('gameAreaWrapper').style.opacity = 1;
     if (!socket) {
-        socket = io({query:"type=" + type});
+        socket = new WebSocket("ws://localhost:5555");
         setupSocket(socket);
     }
     if (!global.animLoopHandle)
@@ -151,54 +151,46 @@ $( "#split" ).click(function() {
 
 // socket stuff.
 function setupSocket(socket) {
-    // Handle ping.
-    socket.on('pongcheck', function () {
-        var latency = Date.now() - global.startPingTime;
-        debug('Latency: ' + latency + 'ms');
-        // window.chat.addSystemLine('Ping: ' + latency + 'ms');
-    });
-
     // Handle error.
-    socket.on('connect_failed', function () {
-        socket.close();
+    socket.onerror = function(){
+        console.error("web channel closed")
         global.disconnected = true;
-    });
+    }
 
+    /*
     socket.on('disconnect', function () {
         socket.close();
         global.disconnected = true;
     });
+    */
 
     // Handle connection.
-    socket.on('welcome', function (playerSettings) {
+    socket.onopen = function(){
+        new QWebChannel(socket, function(channel) {
+            var game_interface = channel.objectgs.interface;
+            game_interface.food;
+            game_interface.players;
+            game_interface.viruses;
+
+        });
+
         player = playerSettings;
         player.name = global.playerName;
         player.screenWidth = global.screenWidth;
         player.screenHeight = global.screenHeight;
         player.target = window.canvas.target;
         global.player = player;
-        socket.emit('gotit', player);
+        // socket.emit('gotit', player);
         global.gameStart = true;
         debug('Game started at: ' + global.gameStart);
         c.focus();
-    });
+    };
 
+    // FIXME
     socket.on('gameSetup', function(data) {
         global.gameWidth = data.gameWidth;
         global.gameHeight = data.gameHeight;
         resize();
-    });
-
-    socket.on('playerDied', function (data) {
-        // window.chat.addSystemLine('{GAME} - <b>' + (data.name.length < 1 ? 'An unnamed cell' : data.name) + '</b> was eaten.');
-    });
-
-    socket.on('playerDisconnect', function (data) {
-        // window.chat.addSystemLine('{GAME} - <b>' + (data.name.length < 1 ? 'An unnamed cell' : data.name) + '</b> disconnected.');
-    });
-
-    socket.on('playerJoin', function (data) {
-        // window.chat.addSystemLine('{GAME} - <b>' + (data.name.length < 1 ? 'An unnamed cell' : data.name) + '</b> joined.');
     });
 
     socket.on('leaderboard', function (data) {
@@ -220,10 +212,6 @@ function setupSocket(socket) {
         }
         //status += '<br />Players: ' + data.players;
         document.getElementById('status').innerHTML = status;
-    });
-
-    socket.on('serverMSG', function (data) {
-        // window.chat.addSystemLine(data);
     });
 
     // Handle movement.
