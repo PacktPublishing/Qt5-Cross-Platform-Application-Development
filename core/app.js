@@ -79,6 +79,7 @@ function draw_viruses(context, viruses, this_player)
 
 function draw_food(context, feed, this_player)
 {
+    console.log(feed.length)
     for (var i = 0; i < feed.length; i++)
     {
         var food = feed[i];

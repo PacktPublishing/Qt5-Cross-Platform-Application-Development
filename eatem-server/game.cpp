@@ -25,9 +25,9 @@ QString GetRandomString()
 
 Game::Game(QObject *parent)
     : QObject(parent)
+    , _game_interface(new GameInterface(this))
     , _webchannel(new QWebChannel())
     , _websocket_server(new QWebSocketServer("Eatem", QWebSocketServer::NonSecureMode))
-    , _game_interface(new GameInterface(this))
     , _auth(new Authentication())
 {
     _webchannel->registerObject("interface", _game_interface);

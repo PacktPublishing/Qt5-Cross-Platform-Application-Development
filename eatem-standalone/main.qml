@@ -1,6 +1,5 @@
 import QtQuick 2.11
 import QtQuick.Controls 1.4
-import GameInterfaces 1.0
 
 import "../core/app.js" as App
 
@@ -10,15 +9,6 @@ ApplicationWindow {
     title: "eatem"
     visible: true
 
-    GameInterface {
-        id: game_interface
-        Component.onCompleted: {
-            game_interface.set_game_size(1000, 1000);
-            canvas.this_player = game_interface.get_this_player("AUTHENTICATION");
-        }
-
-    }
-
     Canvas {
         id: canvas
         anchors.fill: parent
@@ -26,10 +16,10 @@ ApplicationWindow {
         contextType: "2d"
         property color clear_color: 'white'
         property var context
-        // property var feed: game_interface.food
-        // property var players: game_interface.players
-        // property var viruses: game_interface.viruses
-        property var this_player
+        property var feed: game_interface.food
+        property var players: game_interface.players
+        property var viruses: game_interface.viruses
+        property var this_player: game_interface.get_player("AUTH")
         property int gridSize: 30
         property string authentication
 
@@ -66,14 +56,14 @@ ApplicationWindow {
 
         Keys.onSpacePressed: {
             var x_y = translate_mouse(mouse);
-            this_player.request_split(x_y[0], x_y[1], "AUTHENTICATION");
+            this_player.request_split(x_y[0], x_y[1], "AUTH");
         }
 
         Keys.onPressed: {
             if (event.key === Qt.Key_W)
             {
                 var x_y = translate_mouse(mouse);
-                this_player.request_fire_food(x_y[0], x_y[1], "AUTHENTICATION");
+                this_player.request_fire_food(x_y[0], x_y[1], "AUTH");
                 event.accepted = true
             }
         }
@@ -97,7 +87,7 @@ ApplicationWindow {
             running: true
             onTriggered: {
                 var x_y = canvas.translate_mouse(mouse);
-                canvas.this_player.request_coordinates(x_y[0], x_y[1], "AUTHENTICATION");
+                canvas.this_player.request_coordinates(x_y[0], x_y[1], "AUTH");
             }
         }
     }
