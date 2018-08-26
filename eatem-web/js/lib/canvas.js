@@ -2,7 +2,7 @@
 // https://requirejs.org/docs/why.html#9
 // https://stackoverflow.com/questions/4869530/requirejs-how-to-define-modules-that-contain-a-single-class
 
-define('Canvas', ['./global'], function(global) {
+define(['../global'], function(global) {
     function Canvas(){
         this.directionLock = false;
         this.target = global.target;

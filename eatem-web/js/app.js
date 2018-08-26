@@ -1,23 +1,20 @@
 requirejs.config({
-    //By default load any module IDs from js/lib
-    baseUrl: 'js/lib',
+    baseUrl: 'js',
     //except, if the module ID starts with "app",
     //load it from the js/app directory. paths
     //config is relative to the baseUrl, and
     //never includes a ".js" extension since
     //the paths config could be for a directory.
     paths: {
-        app: '../app',
-        qwebchannel: '../../../core/qwebchannel',
-        global: '../global'
+        qwebchannel: '../../core/qwebchannel',
+        global: 'global',
+        jquery: 'lib/jquery'
+
     }
 });
 
-// https://bitbucket.org/eterpstra/cattoy/src/e27c725ee256e47935aeb5d461abc2bfd1e18f5c/src/catToy.js?at=master&fileviewer=file-view-default
-// http://ericterpstra.com/2013/05/a-simple-require-js-setup-with-canvas-and-hammer-js/
-
 // Start the main app logic.
-requirejs(['jquery', 'canvas', 'global', 'qwebchannel'], function($, Canvas, global, WebChannel) {
+requirejs(['jquery', 'lib/canvas', 'global', 'qwebchannel'], function($, Canvas, global, WebChannel) {
     //jQuery, canvas and the app/sub module are all
     //loaded and can be used here now.
 
