@@ -1,7 +1,9 @@
-var global = require('./global');
 
-class Canvas {
-    constructor(params) {
+// https://requirejs.org/docs/why.html#9
+// https://stackoverflow.com/questions/4869530/requirejs-how-to-define-modules-that-contain-a-single-class
+
+define('Canvas', ['./global'], function(global) {
+    function Canvas(){
         this.directionLock = false;
         this.target = global.target;
         this.reenviar = true;
@@ -27,7 +29,7 @@ class Canvas {
     }
 
     // Function called when a key is pressed, will change direction if arrow key.
-    directionDown(event) {
+    Canvas.prototype.directionDown = function(event) {
         var key = event.which || event.keyCode;
         var self = this.parent; // have to do this so we are not using the cv object
         if (self.directional(key)) {
@@ -40,7 +42,7 @@ class Canvas {
     }
 
     // Function called when a key is lifted, will change direction if arrow key.
-    directionUp(event) {
+    Canvas.prototype.directionUp = function(event) {
         var key = event.which || event.keyCode;
         if (this.directional(key)) { // this == the actual class
             if (this.newDirection(key, this.directions, false)) {
@@ -52,7 +54,7 @@ class Canvas {
     }
 
     // Updates the direction array including information about the new direction.
-    newDirection(direction, list, isAddition) {
+    Canvas.prototype.newDirection = function(direction, list, isAddition) {
         var result = false;
         var found = false;
         for (var i = 0, len = list.length; i < len; i++) {
@@ -76,7 +78,7 @@ class Canvas {
     }
 
     // Updates the target according to the directions in the directions array.
-    updateTarget(list) {
+    Canvas.prototype.updateTarget = function(list) {
         this.target = { x : 0, y: 0 };
         var directionHorizontal = 0;
         var directionVertical = 0;
@@ -95,27 +97,27 @@ class Canvas {
         global.target = this.target;
     }
 
-    directional(key) {
+    Canvas.prototype.directional = function(key) {
         return this.horizontal(key) || this.vertical(key);
     }
 
-    horizontal(key) {
+    Canvas.prototype.horizontal = function(key) {
         return key == global.KEY_LEFT || key == global.KEY_RIGHT;
     }
 
-    vertical(key) {
+    Canvas.prototype.vertical = function(key) {
         return key == global.KEY_DOWN || key == global.KEY_UP;
     }
 
     // Register when the mouse goes off the canvas.
-    outOfBounds() {
+    Canvas.prototype.outOfBounds = function() {
         if (!global.continuity) {
             this.parent.target = { x : 0, y: 0 };
             global.target = this.parent.target;
         }
     }
 
-    gameInput(mouse) {
+    Canvas.prototype.gameInput = function(mouse) {
         if (!this.directionLock) {
             this.parent.target.x = mouse.clientX - this.width / 2;
             this.parent.target.y = mouse.clientY - this.height / 2;
@@ -123,7 +125,7 @@ class Canvas {
         }
     }
 
-    touchInput(touch) {
+    Canvas.prototype.touchInput = function(touch) {
         touch.preventDefault();
         touch.stopPropagation();
         if (!this.directionLock) {
@@ -134,7 +136,7 @@ class Canvas {
     }
 
     // Chat command callback functions.
-    keyInput(event) {
+    Canvas.prototype.keyInput = function(event) {
         var key = event.which || event.keyCode;
         if (key === global.KEY_FIREFOOD && this.parent.reenviar) {
             this.parent.socket.emit('1');
@@ -145,12 +147,7 @@ class Canvas {
             this.parent.socket.emit('2');
             this.parent.reenviar = false;
         }
-        /*
-        else if (key === global.KEY_CHAT) {
-            document.getElementById('chatInput').focus();
-        }
-        */
     }
-}
 
-module.exports = Canvas;
+    return Canvas;
+});
