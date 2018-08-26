@@ -23,6 +23,20 @@ ApplicationWindow {
         property int gridSize: 30
         property string authentication
 
+        Component.onCompleted: {
+            for (var i = 0; i < canvas.feed.length; i++){
+                var hue_num = Math.round(Math.random() * 360)
+                canvas.feed[i].hue = 'hsl(' + hue_num + ', 100%, 50%)';
+            }
+
+            canvas.players = game_interface.players;
+            for (i = 0; i < canvas.players.length; i++){
+                var hue_num = Math.round(Math.random() * 360)
+                canvas.players[i].hue = 'hsl(' + hue_num + ', 100%, 50%)';
+            }
+
+        }
+
         onPaint: {
             context = getContext("2d");
             game_loop();
