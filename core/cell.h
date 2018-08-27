@@ -25,7 +25,7 @@ public:
 
     void request_coordinates(QPoint mouse_position);
     void request_coordinates(QPoint target_position, Ball* touching_ball);
-    void request_coordinates(QPoint position, QList<Ball *> touching_balls);
+    void request_coordinates(QPoint position, QList<Cell *> touching_cells);
 
     bool is_touching(Ball *other);
 
@@ -33,6 +33,8 @@ public:
     QPointer<Cell> request_split(QPoint mouse_position);
     QPointer<Food> request_fire_food(QPoint mouse_position);
     void set_mass(qreal mass);
+
+    void move();
 
     // Getters
     int x();

@@ -10,10 +10,7 @@ class Ball;
 class Cell;
 class Food;
 class Virus;
-class QTimerEvent;
 class GameInterface;
-
-
 
 
 class Player : public QObject
@@ -48,6 +45,8 @@ public:
     void handle_touch(Player *other_player);
     void handle_touch(Virus *virus);
 
+    void move();
+
 signals:
     void cells_changed();
     void x_changed();
@@ -61,7 +60,6 @@ signals:
 protected:
     void combine_cells(Cell* left, Cell* right);
     void explode_cell_from_virus(Cell* cell, Virus* virus);
-    void timerEvent(QTimerEvent *event);
 
 private:
     void validate_coordinates();
@@ -72,7 +70,7 @@ private:
     // --------------------------------------------------------
 
     bool _can_merge;
-    int _merge_timer_id;
+    int _merge_tick_countdown;
 
     QVariantList _cells;
 

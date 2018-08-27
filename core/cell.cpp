@@ -88,10 +88,20 @@ void Cell::set_mass(qreal mass)
     _ball_properties->set_mass(mass);
 }
 
-void Cell::request_coordinates(QPoint position, QList<Ball *> touching_balls)
+void Cell::move()
 {
-    if (touching_balls.isEmpty())
+    _ball_properties->move();
+}
+
+void Cell::request_coordinates(QPoint position, QList<Cell *> touching_cells)
+{
+    if (touching_cells.isEmpty())
         return request_coordinates(position);
+
+    QList<Ball *> touching_balls;
+
+    for (Cell* cell : touching_cells)
+        touching_balls.append(cell->ball_properties());
 
     return _ball_properties->request_coordinates(position, touching_balls);
 }
@@ -153,7 +163,6 @@ QPointer<Food> Cell::request_fire_food(QPoint mouse_position)
 
         Ball *new_ball = new Ball(ball_properties()->game_size(), to_target, starting_position, requested_mass);
         new_ball->set_velocity_ticks(30);
-        new_ball->start_counting_velocity_ticks();
 
         Food *new_food = new Food(new_ball);
         result = new_food;

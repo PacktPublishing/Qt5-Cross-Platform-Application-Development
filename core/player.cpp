@@ -3,7 +3,6 @@
 #include <QDebug>
 #include <QtMath>
 #include <QPointer>
-#include <QTimerEvent>
 #include <QRandomGenerator>
 
 #include "gameinterface.h"
@@ -19,7 +18,7 @@ Q_DECLARE_METATYPE(Cell *)
 Player::Player(QString authentication, QRect *game_size, GameInterface *game_interface, QObject *parent)
     : QObject(parent)
     , _can_merge(true)
-    , _merge_timer_id(-1)
+    , _merge_tick_countdown(-1)
     // `_can_merge` tracks if we can remerge a cell
     // into another cell.
     // defaults to `true`, but changes to false when
@@ -180,7 +179,8 @@ void Player::request_coordinates(int x, int y, QString authentication)
         return;
     }
 
-    QMultiHash<Cell*, Ball*> cell_touches;
+    QMultiHash<Cell*, Cell*> cell_touches;
+    Cell *deleted_cell;
 
     // For every cell
     for (QVariant cell_variant : _cells)
@@ -194,26 +194,34 @@ void Player::request_coordinates(int x, int y, QString authentication)
             if (cell_variant == other_cell_variant)
                 continue;
             Cell *other_cell = other_cell_variant.value<Cell *>();
+            if (!other_cell)
+                continue;
+            if (!cell)
+                break;
 
             if (cell->is_touching(other_cell->ball_properties()))
-                    cell_touches.insert(cell, other_cell->ball_properties());
+                    cell_touches.insert(cell, other_cell);
         }
 
-        QList<Ball *> all_cell_touches = cell_touches.values(cell);
-        cell->request_coordinates(mouse_position, all_cell_touches);
+        QList<Cell *> all_cell_touches = cell_touches.values(cell);
+        all_cell_touches.removeAll(deleted_cell);
+
+        // FIXME: Need to combine some of these cells
+        if (_can_merge && !all_cell_touches.empty())
+        {
+            deleted_cell = all_cell_touches.first();
+            combine_cells(cell, deleted_cell);
+            // 50 ms is the game step interval
+            _merge_tick_countdown = 100;
+            _can_merge = false;
+        }
+        else
+            cell->request_coordinates(mouse_position, all_cell_touches);
     }
+
+
     emit x_changed();
     emit y_changed();
-}
-
-void Player::timerEvent(QTimerEvent *event)
-{
-    if (event->timerId() == _merge_timer_id)
-    {
-        _can_merge = true;
-        killTimer(_merge_timer_id);
-        _merge_timer_id = -1;
-    }
 }
 
 void Player::handle_touch(Player *other_player)
@@ -245,8 +253,8 @@ void Player::request_split(int mouse_x, int mouse_y, QString authentication)
             // Track the new split cell if we did
             Cell* cell_data = split_cell.data();
             _cells.append(QVariant::fromValue<Cell*>(cell_data));
-            // TODO: put a smaller nubmer in here if we have a bunch of splits
-            _merge_timer_id = startTimer(5000);
+            // TODO: put a smaller number in here if we have a bunch of splits
+            _merge_tick_countdown = 100 / _cells.length();
             _can_merge = false;
             // emit new_cell(cell_data);
             emit cells_changed();
@@ -277,6 +285,14 @@ void Player::handle_touch(Virus *virus)
                 explode_cell_from_virus(cell, virus);
         }
     }
+}
+
+void Player::move()
+{
+    if (_merge_tick_countdown < 0 && !_can_merge)
+        _can_merge = true;
+    else if(_merge_tick_countdown >= 0)
+        _merge_tick_countdown --;
 }
 
 void Player::explode_cell_from_virus(Cell *cell, Virus *virus)

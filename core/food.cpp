@@ -23,7 +23,6 @@ Food::Food(Ball* ball_properties, QObject *parent)
 {
     _connect_ball_property_signals();
     _ball_properties->set_velocity_ticks(30);
-    _ball_properties->start_counting_velocity_ticks();
     _ball_properties->setParent(this);
 }
 
@@ -78,4 +77,9 @@ bool Food::is_disabled()
 Ball *Food::ball_properties()
 {
     return _ball_properties;
+}
+
+void Food::move()
+{
+    _ball_properties->move();
 }

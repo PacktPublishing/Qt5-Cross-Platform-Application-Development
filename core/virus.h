@@ -27,6 +27,8 @@ public:
     // agario clone has the intial mass at 100-150, split at 180
     static constexpr qreal _split_mass = 34334;
 
+    void move();
+
     int x();
     int y();
 

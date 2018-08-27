@@ -41,6 +41,8 @@ public:
     QVector2D intial_velocity();
     Ball *ball_properties();
 
+    void move();
+
 signals:
     void x_changed();
     void y_changed();

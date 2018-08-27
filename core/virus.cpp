@@ -22,8 +22,12 @@ Virus::Virus(Ball *ball_properties, GameInterface *game_interface, QObject *pare
 {
     _connect_ball_property_signals();
     _ball_properties->set_velocity_ticks(30);
-    _ball_properties->start_counting_velocity_ticks();
     _ball_properties->setParent(this);
+}
+
+void Virus::move()
+{
+    _ball_properties->move();
 }
 
 QPoint Virus::position()

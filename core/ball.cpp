@@ -3,6 +3,7 @@
 #include <QTimerEvent>
 #include <QRect>
 #include <QtMath>
+#include <QDebug>
 
 
 Ball::Ball(QRect *game_size, QVector2D initial_velocity, QPoint initial_position, qreal mass, QObject *parent)
@@ -35,20 +36,6 @@ Ball::Ball(const Ball &old_ball)
 QRect* Ball::game_size() const
 {
     return _game_size;
-}
-
-void Ball::timerEvent(QTimerEvent *event)
-{
-    if (event->timerId() == _timer_id)
-    {
-        _position.setX(_position.x() + _initial_velocity.x());
-        _position.setY(_position.y() + _initial_velocity.y());
-        if (_velocity_ticks == 0)
-            killTimer(_timer_id);
-
-        _velocity_ticks--;
-        validate_coordinates();
-    }
 }
 
 void Ball::request_coordinates(QPoint mouse_position)
@@ -144,6 +131,19 @@ void Ball::set_mass(qreal mass)
     emit radius_changed();
 }
 
+void Ball::move()
+{
+    if (_velocity_ticks < 0)
+        return;
+    qDebug() <<  _velocity_ticks;
+
+    _position.setX(_position.x() + _initial_velocity.x());
+    _position.setY(_position.y() + _initial_velocity.y());
+
+    _velocity_ticks--;
+    validate_coordinates();
+}
+
 void Ball::move(QVector2D distance)
 {
     QPoint move(distance.x(), distance.y());
@@ -232,9 +232,4 @@ void Ball::set_coordinates_random()
 void Ball::set_velocity_ticks(int ticks)
 {
     _velocity_ticks = ticks;
-}
-
-void Ball::start_counting_velocity_ticks()
-{
-    _timer_id = startTimer(Ball::_timer_interval);
 }

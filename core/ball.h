@@ -43,14 +43,12 @@ public:
     void add_mass(qreal mass);
     void remove_mass(qreal mass);
     void set_mass(qreal mass);
+    void move();
 
     void set_velocity_ticks(int ticks);
-    // FIXME: Better name?
-    void start_counting_velocity_ticks();
     bool is_touching(Ball *other);
 
 protected:
-    void timerEvent(QTimerEvent *event);
     void validate_coordinates();
     void move(QVector2D distance);
 
@@ -73,7 +71,6 @@ private:
     QPoint _position;
     qreal _mass;
 
-    int _timer_id;
     int _velocity_ticks;
     QVector2D _initial_velocity;
 };
