@@ -166,7 +166,6 @@ void Player::request_coordinates(int x, int y, QString authentication)
         emit y_changed();
         return;
     }
-    // FIXME: handle `_can_merge` at this level?
 
     // Hardcode in second most common option, cell split once
     else if(_cells.length() == 2)
@@ -179,45 +178,10 @@ void Player::request_coordinates(int x, int y, QString authentication)
         return;
     }
 
-    QMultiHash<Cell*, Cell*> cell_touches;
-    Cell *deleted_cell;
+    bool cell_deleted = _handle_multiple_cells(mouse_position);
 
-    // For every cell
-    for (QVariant cell_variant : _cells)
-    {
-        Cell *cell = cell_variant.value<Cell *>();
-
-        // Check if we're in contact with our own cells
-        // by iterating through every cell again
-        for (QVariant other_cell_variant : _cells)
-        {
-            if (cell_variant == other_cell_variant)
-                continue;
-            Cell *other_cell = other_cell_variant.value<Cell *>();
-            if (!other_cell)
-                continue;
-            if (!cell)
-                break;
-
-            if (cell->is_touching(other_cell->ball_properties()))
-                    cell_touches.insert(cell, other_cell);
-        }
-
-        QList<Cell *> all_cell_touches = cell_touches.values(cell);
-        all_cell_touches.removeAll(deleted_cell);
-
-        // FIXME: Need to combine some of these cells
-        if (_can_merge && !all_cell_touches.empty())
-        {
-            deleted_cell = all_cell_touches.first();
-            combine_cells(cell, deleted_cell);
-            // 50 ms is the game step interval
-            _merge_tick_countdown = 100;
-            _can_merge = false;
-        }
-        else
-            cell->request_coordinates(mouse_position, all_cell_touches);
-    }
+    if (cell_deleted)
+        _handle_multiple_cells(mouse_position);
 
 
     emit x_changed();
@@ -321,6 +285,48 @@ void Player::explode_cell_from_virus(Cell *cell, Virus *virus)
     }
 
     _game_interface->remove_virus_from_game(virus);
+}
+
+bool Player::_handle_multiple_cells(QPoint mouse_position)
+{
+    QMultiHash<Cell*, Cell*> cell_touches;
+    Cell *deleted_cell;
+
+    // For every cell
+    for (QVariant cell_variant : _cells)
+    {
+        Cell *cell = cell_variant.value<Cell *>();
+
+        // Check if we're in contact with our own cells
+        // by iterating through every cell again
+        for (QVariant other_cell_variant : _cells)
+        {
+            if (cell_variant == other_cell_variant)
+                continue;
+            Cell *other_cell = other_cell_variant.value<Cell *>();
+
+            if (cell->is_touching(other_cell->ball_properties()))
+                    cell_touches.insert(cell, other_cell);
+        }
+
+        QList<Cell *> all_cell_touches = cell_touches.values(cell);
+        all_cell_touches.removeAll(deleted_cell);
+
+        // FIXME: Grab from last?
+        if (_can_merge && !all_cell_touches.empty())
+        {
+            deleted_cell = all_cell_touches.first();
+            combine_cells(cell, deleted_cell);
+            // 50 ms is the game step interval
+            _merge_tick_countdown = 100;
+            _can_merge = false;
+            return true;
+        }
+        else
+            cell->request_coordinates(mouse_position, all_cell_touches);
+    }
+    return false;
+
 }
 
 void Player::request_fire_food(int mouse_x, int mouse_y, QString authentication)

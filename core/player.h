@@ -60,6 +60,7 @@ signals:
 protected:
     void combine_cells(Cell* left, Cell* right);
     void explode_cell_from_virus(Cell* cell, Virus* virus);
+    bool _handle_multiple_cells(QPoint mouse_position);
 
 private:
     void validate_coordinates();
