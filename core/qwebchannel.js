@@ -201,6 +201,7 @@ function QObject(name, data, webChannel)
             // support list of objects
             var ret = new Array(response.length);
             for (var i = 0; i < response.length; ++i) {
+                // what if I wrapped or connected the destroyed to a splice here?
                 ret[i] = object.unwrapQObject(response[i]);
             }
             return ret;
@@ -245,7 +246,16 @@ function QObject(name, data, webChannel)
     this.unwrapProperties = function()
     {
         for (var propertyIdx in object.__propertyCache__) {
-            object.__propertyCache__[propertyIdx] = object.unwrapQObject(object.__propertyCache__[propertyIdx]);
+            var property_value = object.__propertyCache__[propertyIdx];
+            object.__propertyCache__[propertyIdx] = object.unwrapQObject(value);
+            // check if is instance of array
+            if (value instanceof Array)
+            {
+                for (var i=0; i++; i < value.length)
+                {
+
+                }
+            }
         }
     }
 
