@@ -9,7 +9,6 @@
 Food::Food(QRect *game_size, QObject *parent)
     : QObject(parent)
     , _ball_properties(new Ball(game_size, Food::initial_mass, this))
-    , _enabled(true)
 {
     _ball_properties->set_coordinates_random();
     _connect_ball_property_signals();
@@ -18,7 +17,6 @@ Food::Food(QRect *game_size, QObject *parent)
 Food::Food(Ball* ball_properties, QObject *parent)
     : QObject(parent)
     , _ball_properties(ball_properties)
-    , _enabled(true)
 
 {
     _connect_ball_property_signals();
@@ -56,22 +54,6 @@ qreal Food::mass()
 qreal Food::radius()
 {
     return _ball_properties->radius();
-}
-
-bool Food::enabled()
-{
-    return _enabled;
-}
-
-void Food::set_enabled(bool value)
-{
-    _enabled = value;
-    emit enabled_changed();
-}
-
-bool Food::is_disabled()
-{
-    return !_enabled;
 }
 
 Ball *Food::ball_properties()

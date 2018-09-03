@@ -13,6 +13,7 @@ Virus::Virus(QRect *game_size, GameInterface *game_interface, QObject *parent)
     , _game_interface(game_interface)
 {
     _connect_ball_property_signals();
+    _ball_properties->set_coordinates_random();
 }
 
 Virus::Virus(Ball *ball_properties, GameInterface *game_interface, QObject *parent)

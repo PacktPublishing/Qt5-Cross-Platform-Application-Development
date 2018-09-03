@@ -40,7 +40,7 @@ void GameInterface::create_viruses(int number)
 
 void GameInterface::create_game_objects()
 {
-    create_food(1000);
+    create_food(500);
     create_viruses(5);
     emit food_changed();
     emit viruses_changed();
@@ -130,8 +130,8 @@ bool GameInterface::_check_virus_interactions(Food *food)
         {
             virus->eat_food(food);
             _food.removeOne(QVariant::fromValue<Food *>(food));
-            food->deleteLater();
             emit food_changed();
+            food->deleteLater();
             return true;
         }
     }
@@ -143,11 +143,6 @@ void GameInterface::check_game_object_interactions()
 {
     for (QVariant food_variant : _food) {
         Food *food = food_variant.value<Food *>();
-        if (!food)
-        {
-            _food.removeOne(food_variant);
-            continue;
-        }
         // NOTE: `_check_virus_interactions` calls `Virus::move()`
         bool food_disabled = _check_virus_interactions(food);
 

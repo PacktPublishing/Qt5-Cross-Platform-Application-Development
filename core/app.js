@@ -82,10 +82,9 @@ function draw_food(context, feed, this_player)
     for (var i = 0; i < feed.length; i++)
     {
         var food = feed[i];
-
-        if (!food.enabled)
-            continue;
+        // NOTE: pretty sure this is where we are failing
         var x_y = translate(food, this_player);
+
         var x = x_y[0];
         var y = x_y[1];
         if (x > width || x < 0)

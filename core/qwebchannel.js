@@ -40,6 +40,54 @@
 
 "use strict";
 
+// https://tc39.github.io/ecma262/#sec-array.prototype.findIndex
+if (!Array.prototype.findIndex) {
+  Object.defineProperty(Array.prototype, 'findIndex', {
+    value: function(predicate) {
+     // 1. Let O be ? ToObject(this value).
+      if (this == null) {
+        throw new TypeError('"this" is null or not defined');
+      }
+
+      var o = Object(this);
+
+      // 2. Let len be ? ToLength(? Get(O, "length")).
+      var len = o.length >>> 0;
+
+      // 3. If IsCallable(predicate) is false, throw a TypeError exception.
+      if (typeof predicate !== 'function') {
+        throw new TypeError('predicate must be a function');
+      }
+
+      // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
+      var thisArg = arguments[1];
+
+      // 5. Let k be 0.
+      var k = 0;
+
+      // 6. Repeat, while k < len
+      while (k < len) {
+        // a. Let Pk be ! ToString(k).
+        // b. Let kValue be ? Get(O, Pk).
+        // c. Let testResult be ToBoolean(? Call(predicate, T, « kValue, k, O »)).
+        // d. If testResult is true, return k.
+        var kValue = o[k];
+        if (predicate.call(thisArg, kValue, k, o)) {
+          return k;
+        }
+        // e. Increase k by 1.
+        k++;
+      }
+
+      // 7. Return -1.
+      return -1;
+    },
+    configurable: true,
+    writable: true
+  });
+}
+
+
 var QWebChannelMessageTypes = {
     signal: 1,
     propertyUpdate: 2,
@@ -202,7 +250,16 @@ function QObject(name, data, webChannel)
             var ret = new Array(response.length);
             for (var i = 0; i < response.length; ++i) {
                 // what if I wrapped or connected the destroyed to a splice here?
-                ret[i] = object.unwrapQObject(response[i]);
+                var new_object = object.unwrapQObject(response[i]);
+                ret[i] = new_object;
+                new_object.destroyed.connect(function(){
+                    ret.splice(ret.findIndex(function(element){
+                            for (var name in element) {
+                                return false;
+                            }
+                            return true;
+                    }), 1);
+                })
             }
             return ret;
         }
@@ -246,16 +303,7 @@ function QObject(name, data, webChannel)
     this.unwrapProperties = function()
     {
         for (var propertyIdx in object.__propertyCache__) {
-            var property_value = object.__propertyCache__[propertyIdx];
-            object.__propertyCache__[propertyIdx] = object.unwrapQObject(value);
-            // check if is instance of array
-            if (value instanceof Array)
-            {
-                for (var i=0; i++; i < value.length)
-                {
-
-                }
-            }
+            object.__propertyCache__[propertyIdx] = object.unwrapQObject(object.__propertyCache__[propertyIdx]);
         }
     }
 

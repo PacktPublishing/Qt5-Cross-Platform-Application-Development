@@ -16,7 +16,6 @@ class Food : public QObject
     Q_PROPERTY(int x READ x NOTIFY x_changed)
     Q_PROPERTY(int y READ y NOTIFY y_changed)
     Q_PROPERTY(int radius READ radius CONSTANT)
-    Q_PROPERTY(bool enabled READ enabled NOTIFY enabled_changed)
 
 public:
     // Default constructor, uses `game_size` to ensure creation in the game
@@ -34,10 +33,7 @@ public:
     int y();
     qreal radius();
     qreal mass();
-    bool enabled();
     QPoint position();
-    void set_enabled(bool value);
-    bool is_disabled();
     QVector2D intial_velocity();
     Ball *ball_properties();
 
@@ -53,7 +49,6 @@ protected:
 
 private:
     Ball *_ball_properties;
-    bool _enabled;
 };
 
 #endif // FOOD_H
