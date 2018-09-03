@@ -25,7 +25,7 @@ public:
     QVariantList viruses();
     QVariantList players();
 
-    void track_food_fired_by_players(Food *new_food);
+    void track_food_fired_by_players(Food *food);
     void track_new_virus(Virus *virus);
     void remove_virus_from_game(Virus *virus);
     QRect *game_size();
@@ -52,6 +52,9 @@ signals:
     void food_changed();
     void viruses_changed();
     void players_changed();
+    void new_player(QVariant food);
+    void new_virus(QVariant virus);
+    void new_food(QVariant food);
 
 private:
     QVariantList _food;

@@ -63,10 +63,23 @@ ApplicationWindow {
                     }
 
                     canvas.viruses = game_interface.viruses;
+                    game_interface.new_virus.connect(function(new_virus){
+                        canvas.viruses.push(new_virus);
+                    });
+
+                    game_interface.new_player.connect(function(new_player){
+                        canvas.players.push(new_player);
+                    });
+
+                    game_interface.new_food.connect(function(new_food){
+                        canvas.feed.push(new_food);
+                    });
+
                     game_interface.get_player(authentication, function(this_player){
                         canvas.this_player = this_player;
                         canvas.running = true;
                     });
+
                 });
                 break;
             }

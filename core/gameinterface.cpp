@@ -185,16 +185,20 @@ void GameInterface::check_game_object_interactions()
     }
 }
 
-void GameInterface::track_food_fired_by_players(Food *new_food)
+void GameInterface::track_food_fired_by_players(Food *food)
 {
-    _food.append(QVariant::fromValue<Food*>(new_food));
+    QVariant food_variant = QVariant::fromValue<Food*>(food);
+    _food.append(food_variant);
     emit food_changed();
+    emit new_food(food_variant);
 }
 
 void GameInterface::track_new_virus(Virus *virus)
 {
-    _viruses.append(QVariant::fromValue<Virus *>(virus));
+    QVariant virus_variant = QVariant::fromValue<Virus *>(virus);
+    _viruses.append(virus_variant);
     viruses_changed();
+    emit new_virus(virus_variant);
 }
 
 void GameInterface::remove_virus_from_game(Virus *virus)
@@ -219,6 +223,8 @@ void GameInterface::start_game()
 
 void GameInterface::add_player(Player *player)
 {
-    _players.append(QVariant::fromValue<Player*>(player));
+    QVariant player_variant = QVariant::fromValue<Player*>(player);
+    _players.append(player_variant);
     emit players_changed();
+    emit new_player(player_variant);
 }

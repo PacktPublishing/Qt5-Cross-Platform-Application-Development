@@ -190,10 +190,18 @@ void Player::request_coordinates(int x, int y, QString authentication)
 
 void Player::handle_touch(Player *other_player)
 {
-    for(QVariant cell : _cells)
+    for(QVariant cell_variant : _cells)
     {
-        // FIXME: this will be more complicated because
-        // the radius will come into larger effect than points.
+        Cell *cell = cell_variant.value<Cell *>();
+        for (QVariant other_cell_variant : other_player->cells())
+        {
+            Cell *other_cell = other_cell_variant.value<Cell *>();
+            if (cell->is_touching(other_cell->ball_properties()))
+            {
+
+            }
+
+        }
     }
 
 }
@@ -243,8 +251,6 @@ void Player::handle_touch(Virus *virus)
             // compare mass since there's no math
             if (cell->mass() <= virus->mass())
                 continue;
-            // FIXME: you can eat viruses if you're big enough
-            // else if ()
             else
                 explode_cell_from_virus(cell, virus);
         }

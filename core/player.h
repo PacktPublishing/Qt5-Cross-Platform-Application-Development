@@ -48,9 +48,9 @@ public:
     void move();
 
 signals:
-    void cells_changed();
     void x_changed();
     void y_changed();
+    void cells_changed();
     void zoom_changed();
     /*
     void new_cell(Cell *cell);

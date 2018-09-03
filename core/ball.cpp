@@ -135,7 +135,6 @@ void Ball::move()
 {
     if (_velocity_ticks < 0)
         return;
-    qDebug() <<  _velocity_ticks;
 
     _position.setX(_position.x() + _initial_velocity.x());
     _position.setY(_position.y() + _initial_velocity.y());
