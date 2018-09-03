@@ -153,7 +153,7 @@ void Ball::move(QVector2D distance)
 
 qreal Ball::speed()
 {
-    return _initial_player_speed * qPow(_mass / 2827.43, -0.439);
+    return qMax(_initial_player_speed * qPow(_mass / 2827.43, -0.439), 3.);
 
 }
 

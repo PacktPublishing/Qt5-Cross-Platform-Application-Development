@@ -52,7 +52,7 @@ protected:
     void validate_coordinates();
     void move(QVector2D distance);
 
-    static constexpr qreal _initial_player_speed = 3.;
+    static constexpr qreal _initial_player_speed = 6.;
     qreal speed();
 
 
