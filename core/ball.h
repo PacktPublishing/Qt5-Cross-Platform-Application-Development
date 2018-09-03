@@ -52,13 +52,8 @@ protected:
     void validate_coordinates();
     void move(QVector2D distance);
 
-    // NOTE: The game interval timer blocks the event loop long enough
-    // that this number works and prevents stuttering associated with not
-    // being associated with the game interval timer. Not a great hack
-    // if the game was better optimized. All objects moving of their own
-    // speed would go a LOT faster.
-    static const int _timer_interval = 10;
-    static constexpr qreal _player_speed = 3.;
+    static constexpr qreal _initial_player_speed = 3.;
+    qreal speed();
 
 
 signals:

@@ -5,13 +5,13 @@
 #include <QtMath>
 #include <QDebug>
 
-
 Ball::Ball(QRect *game_size, QVector2D initial_velocity, QPoint initial_position, qreal mass, QObject *parent)
     : QObject(parent)
     , _game_size(game_size)
+    , _position(initial_position)
     , _mass(mass)
-    , _initial_velocity(initial_velocity)
     , _velocity_ticks(-1)
+    , _initial_velocity(initial_velocity)
 {
 }
 
@@ -28,8 +28,8 @@ Ball::Ball(const Ball &old_ball)
     , _game_size(old_ball.game_size())
     , _position(old_ball.position())
     , _mass(old_ball.mass())
-    , _initial_velocity(old_ball.initial_velocity())
     , _velocity_ticks(-1)
+    , _initial_velocity(old_ball.initial_velocity())
 {
 }
 
@@ -51,7 +51,7 @@ void Ball::request_coordinates(QPoint mouse_position)
         _velocity_ticks -= 1;
     }
     else {
-        target *= Ball::_player_speed;
+        target *= speed();
     }
 
     move(target);
@@ -79,7 +79,7 @@ void Ball::request_coordinates(QPoint mouse_position, Ball *touching_ball)
         _velocity_ticks -= 1;
     }
     else {
-        to_target_non_collide *= Ball::_player_speed;
+        to_target_non_collide *= speed();
     }
 
     // FIXME: add in some sort of clamp down to 3.
@@ -107,7 +107,7 @@ void Ball::request_coordinates(QPoint mouse_position, QList<Ball *> touching_bal
         _velocity_ticks -= 1;
     }
     else {
-        to_target_non_collide *= Ball::_player_speed;
+        to_target_non_collide *= speed();
     }
 
     move(to_target_non_collide);
@@ -149,6 +149,12 @@ void Ball::move(QVector2D distance)
     QPoint move(distance.x(), distance.y());
     _position += move;
     validate_coordinates();
+}
+
+qreal Ball::speed()
+{
+    return _initial_player_speed * qPow(_mass / 2827.43, -0.439);
+
 }
 
 void Ball::validate_coordinates()

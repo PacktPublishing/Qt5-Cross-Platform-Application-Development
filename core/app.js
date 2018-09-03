@@ -82,7 +82,6 @@ function draw_food(context, feed, this_player)
     for (var i = 0; i < feed.length; i++)
     {
         var food = feed[i];
-        // NOTE: pretty sure this is where we are failing
         var x_y = translate(food, this_player);
 
         var x = x_y[0];
@@ -124,16 +123,5 @@ function draw_players(context, players, this_player)
         var player = players[i];
         context.fillStyle = player.hue;
         _draw_player_cells_helper(context, player, this_player)
-        /* var cell = players[z];
-        context.fillStyle = cell.hue;
-        var x_y = translate(cell, this_player, true);
-        context.beginPath();
-        context.arc(x_y[0],
-                    x_y[1],
-                    cell.radius,
-                    0, 2*Math.PI);
-
-        context.fill();
-        */
     }
 }

@@ -4,6 +4,7 @@
 #include "food.h"
 #include "cell.h"
 #include <QDebug>
+#include <QRect>
 
 
 // Need to declare these pointers as Qt metatypes using the
@@ -40,7 +41,8 @@ void GameInterface::create_viruses(int number)
 
 void GameInterface::create_game_objects()
 {
-    create_food(500);
+    // create_food(40);
+    create_food();
     create_viruses(5);
     emit food_changed();
     emit viruses_changed();

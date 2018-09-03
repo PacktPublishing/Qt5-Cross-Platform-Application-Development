@@ -2,14 +2,13 @@
 #define VIRUS_H
 
 #include <QObject>
-#include <QPoint>
-#include <QRect>
 #include <QVector2D>
-#include <QTimerEvent>
 
 class Food;
 class GameInterface;
 class Ball;
+class QRect;
+class QPoint;
 
 class Virus : public QObject
 {

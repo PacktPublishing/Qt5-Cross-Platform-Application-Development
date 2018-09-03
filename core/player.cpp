@@ -264,7 +264,7 @@ void Player::explode_cell_from_virus(Cell *cell, Virus *virus)
     if (!_game_interface)
         return;
 
-    int number_new_cells = (int) cell->mass() % (int) Cell::initial_mass;
+    int number_new_cells = static_cast<int>(cell->mass()) % static_cast<int>(Cell::initial_mass);
     if (number_new_cells + _cells.length() > 16)
         number_new_cells = 16 - _cells.length();
 
