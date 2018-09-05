@@ -129,13 +129,13 @@ ApplicationWindow {
             context.clearRect(0, 0, canvas.width, canvas.height);
             // draw_grid();
 
-            // draw the food
-            App.draw_food(context, feed, this_player);
-
-            // and draw the players
-            App.draw_players(context, players, this_player);
-
-            App.draw_viruses(context, viruses, this_player);
+            App.draw_objects(context,
+                                         feed,
+                                         players,
+                                         viruses,
+                                         this_player,
+                                         canvas.width,
+                                         canvas.height);
         }
 
         Keys.onSpacePressed: {
