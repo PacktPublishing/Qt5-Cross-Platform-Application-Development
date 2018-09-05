@@ -112,8 +112,6 @@ bool GameInterface::_check_player_interactions(Food *food)
             if (cell->is_touching(food->ball_properties()))
             {
                 cell->eat_food(food);
-                _food.removeOne(QVariant::fromValue<Food *>(food));
-                emit food_changed();
                 food->deleteLater();
                 return true;
             }
@@ -131,8 +129,6 @@ bool GameInterface::_check_virus_interactions(Food *food)
         if (virus->is_touching(food->ball_properties()))
         {
             virus->eat_food(food);
-            _food.removeOne(QVariant::fromValue<Food *>(food));
-            emit food_changed();
             food->deleteLater();
             return true;
         }
@@ -143,17 +139,28 @@ bool GameInterface::_check_virus_interactions(Food *food)
 
 void GameInterface::check_game_object_interactions()
 {
-    for (QVariant food_variant : _food) {
+    QMutableListIterator<QVariant> i(_food);
+    while (i.hasNext()) {
+        QVariant food_variant = i.next();
         Food *food = food_variant.value<Food *>();
         // NOTE: `_check_virus_interactions` calls `Virus::move()`
         bool food_disabled = _check_virus_interactions(food);
 
         if (food_disabled)
+        {
+            i.remove();
+            emit food_changed();
             continue;
+        }
 
         food_disabled = _check_player_interactions(food);
 
-        if (!food_disabled)
+        if (food_disabled)
+        {
+            i.remove();
+            emit food_changed();
+        }
+        else
             food->move();
     }
 
